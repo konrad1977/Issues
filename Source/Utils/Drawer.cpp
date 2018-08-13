@@ -36,13 +36,21 @@ Drawer::GetStringFromWidth(const char *input, BFont font, float width, BString &
 	BString buffer(input);
 	size_t position = buffer.CountChars();
 	int32 fittableSize = CharactedFittedFor(buffer, &font, width);
+	
+	//Checks if it fits on one line. Remove all from buffer then.
 	if (fittableSize > position) {
 		output.RemoveChars(0, position);
 		return buffer.String();
 	}
 	
+	int32 lastSpace = 0;
+	if (lastSpace = buffer.FindLast(" ", fittableSize)) {
+		printf("Last space pos %d fittableSize %d\n", lastSpace, fittableSize);
+		fittableSize = lastSpace;
+	}
+	
 	output.RemoveChars(0, fittableSize);
-	return buffer.RemoveChars(fittableSize, position).String();
+	return buffer.RemoveChars(fittableSize, position).Trim().String();
 }
 	
 int32 
