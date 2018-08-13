@@ -9,7 +9,7 @@
 
 #include <posix/stdio.h>
 #include <posix/stdlib.h>
-
+#include <string>
 
 Drawer::Drawer(BView *parent)
 	:fParent(parent)
@@ -31,25 +31,25 @@ Drawer::SetInsets(BSize size)
 }
 
 const char *
-Drawer::GetStringFromWidth(const char *input, BFont font, float width, string &output)
+Drawer::GetStringFromWidth(const char *input, BFont font, float width, BString &output)
 {
-	std::string buffer(input);
-	size_t position = buffer.size();
+	BString buffer(input);
+	size_t position = buffer.CountChars();
 	int32 fittableSize = CharactedFittedFor(buffer, &font, width);
 	if (fittableSize > position) {
-		output.erase(0, position);
-		return buffer.c_str();
+		output.RemoveChars(0, position);
+		return buffer.String();
 	}
 	
-	output.erase(0, fittableSize);
-	return buffer.erase(fittableSize, position).c_str();
+	output.RemoveChars(0, fittableSize);
+	return buffer.RemoveChars(fittableSize, position).String();
 }
 	
 int32 
-Drawer::CharactedFittedFor(string text, BFont *font, float width) const
+Drawer::CharactedFittedFor(BString text, BFont *font, float width) const
 {
-	const float textWidth = font->StringWidth(text.c_str());
-	const float sizePerChar = textWidth / (text.size());
+	const float textWidth = font->StringWidth(text.String());
+	const float sizePerChar = textWidth / text.CountChars();
 	return int32(width / sizePerChar);
 }
 
@@ -68,13 +68,13 @@ Drawer::DrawString(BRect frame, const char *text)
 	fParent->SetHighColor(0,0,0);
 	fParent->SetDrawingMode( B_OP_COPY );	
 	
-	std::string string(text);
+	BString string(text);
 	
 	int32 lines = 1;
 	const float linePosition = frame.LeftTop().y + fontHeight;
 	
-	while( string.size() > 0 ) {
-		fParent->DrawString(GetStringFromWidth(string.c_str(), font, textWidth, string));
+	while( string.CountChars() > 0 ) {
+		fParent->DrawString(GetStringFromWidth(string.String(), font, textWidth, string));
 		fParent->MovePenTo( fInsets.width, linePosition + fontHeight * lines);
 		lines++;
 	}  

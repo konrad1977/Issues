@@ -13,9 +13,7 @@ MainWindow::MainWindow(BRect rect)
 {
 	MultiLineStringView *textView =  new MultiLineStringView(Bounds());
 	textView->SetText(
-		"Bacon ipsum dolor amet short ribs beef ribs meatball tri-tip kielbasa pig tail burgdoggen. "
-		"Boudin landjaeger ham hock shank alcatra fatback hamburger jowl, corned beef pancetta leberkas filet mignon chuck. Ham bacon jowl, frankfurter buffalo beef ribs corned beef chicken. "
-		"Spare ribs tongue flank beef. Strip steak burgdoggen jowl, chuck t-bone hamburger pork loin. Shoulder fatback buffalo rump beef cupim."
+		"Mikael testar att skriva lite längre text med som innehåller följande bokstäver. "
 	);
 	textView->SetViewColor(255,255,255);
 	AddChild(textView);
