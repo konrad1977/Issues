@@ -22,6 +22,7 @@ public:
 private:
 	char *fText;
 	Drawer *fDrawer;
+	float previousWidth;
 };
 
 #endif // _H

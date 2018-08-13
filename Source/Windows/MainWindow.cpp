@@ -12,8 +12,12 @@ MainWindow::MainWindow(BRect rect)
 	:BWindow(rect, "Main", B_DOCUMENT_WINDOW, B_QUIT_ON_WINDOW_CLOSE, 0)
 {
 	MultiLineStringView *textView =  new MultiLineStringView(Bounds());
-	textView->SetText("Bacon ipsum dolor amet buffalo brisket turkey bacon rump. Flank boudin chicken cow, frankfurter porchetta tail sirloin. Spare ribs sirloin pork, meatloaf tongue short ribs shank ball tip tail corned beef t-bone. Chicken brisket pork loin hamburger, fatback spare ribs buffalo short loin chuck jowl short ribs sirloin ribeye ball tip. Fatback tenderloin turducken meatloaf meatball ball tip doner ham hock salami strip steak frankfurter turkey brisket hamburger. Prosciutto turkey picanha ribeye ham hock t-bone chuck meatball tri-tip. Prosciutto leberkas venison ribeye tenderloin pork belly pig buffalo salami pastrami shank meatball.");
-	textView->SetViewColor(127,127,127);
+	textView->SetText(
+		"Bacon ipsum dolor amet short ribs beef ribs meatball tri-tip kielbasa pig tail burgdoggen. "
+		"Boudin landjaeger ham hock shank alcatra fatback hamburger jowl, corned beef pancetta leberkas filet mignon chuck. Ham bacon jowl, frankfurter buffalo beef ribs corned beef chicken. "
+		"Spare ribs tongue flank beef. Strip steak burgdoggen jowl, chuck t-bone hamburger pork loin. Shoulder fatback buffalo rump beef cupim."
+	);
+	textView->SetViewColor(255,255,255);
 	AddChild(textView);
 }
 

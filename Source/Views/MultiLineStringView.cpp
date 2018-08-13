@@ -14,6 +14,7 @@ MultiLineStringView::MultiLineStringView(BRect rect)
 	:BView(rect, "MultiLine", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS )
 	,fText(NULL)	
 	,fDrawer(NULL)
+	,previousWidth(0.0)
 {
 	fDrawer = new Drawer(this);
 }
@@ -34,12 +35,17 @@ MultiLineStringView::SetText(const char *text)
 void
 MultiLineStringView::FrameResized(float width, float height) 
 {
-	Invalidate();
+	if (previousWidth != width) {
+		Invalidate();
+		previousWidth = width;
+	}
+	
 	BView::FrameResized(width, height);
 }
 	
 void 
 MultiLineStringView::Draw(BRect rect)
 {
-	fDrawer->DrawString(Bounds(), fText);
+	BRect r(Bounds());
+	fDrawer->DrawString(r, fText);
 }	

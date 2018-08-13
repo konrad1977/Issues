@@ -10,6 +10,8 @@
 #include <InterfaceDefs.h>
 #include <View.h>
 #include <Font.h>
+#include <string>
+
 
 class Drawer {
 public:
@@ -21,9 +23,8 @@ public:
 	void SetInsets(BSize insets);
 	
 private:
-
-	const char *GetFirstLineFromWidth(const char *text, BFont font, float width);
-	inline const char *GetStringFromWidth(const char *text, BFont font, float width);
+	const char *GetStringFromWidth(const char *input, BFont font, float width, string &output);
+	int32 CharactedFittedFor(string text, BFont *font, float width) const;
 	
 	BView 			*fParent;
 	BSize 			fInsets;

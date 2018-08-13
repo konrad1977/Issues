@@ -22,7 +22,7 @@ App::App(void)
 	,fGithubClient(NULL)
 {		
 
-	MainWindow *win = new MainWindow(BRect(30,30, 200, 200));
+	MainWindow *win = new MainWindow(BRect(30,30, 300, 200));
 	win->Show();
 	
 	/*
