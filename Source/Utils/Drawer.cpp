@@ -14,7 +14,7 @@
 Drawer::Drawer(BView *parent)
 	:fParent(parent)
 {
-	SetInsets(BSize(2,2));
+	SetInsets(BSize(5,5));
 	BFont font(be_plain_font);
 	fParent->SetFont(&font);
 }
@@ -34,30 +34,30 @@ const char *
 Drawer::GetStringFromWidth(const char *input, BFont font, float width, BString &output)
 {
 	BString buffer(input);
-	size_t position = buffer.CountChars();
-	int32 fittableSize = CharactedFittedFor(buffer, &font, width);
-	
-	//Checks if it fits on the current line. Remove all from buffer then.
-	if (fittableSize > position) {
-		output.RemoveChars(0, position);
-		return buffer.String();
-	}
-	
-	int32 lastSpace = 0;
-	if (lastSpace = buffer.FindLast(" ", fittableSize)) {
-		printf("Last space pos %d fittableSize %d\n", lastSpace, fittableSize);
-		fittableSize = lastSpace;
-	}
-	
-	output.RemoveChars(0, fittableSize);
-	return buffer.RemoveChars(fittableSize, position).Trim().String();
+	size_t size = buffer.CountChars();
+	int32 fharatersThatFits = CharactedFittedFor(buffer, &font, width);
+
+	int32 breakAt = 0;
+	if ((breakAt = buffer.FindLast(" ", fharatersThatFits)) != B_ERROR) {
+		fharatersThatFits = breakAt; 
+	} if ((breakAt = buffer.FindFirst('\n', 0)) != B_ERROR) {
+		printf("Found symbolic break at %d\n", breakAt);
+		fharatersThatFits = breakAt; 
+	} 
+	printf("size:(%d) Fits:(%d)\n", size, fharatersThatFits);
+	output.RemoveChars(0, fharatersThatFits).Trim();
+	return buffer.RemoveChars(fharatersThatFits, size).String();
 }
 	
 int32 
 Drawer::CharactedFittedFor(BString text, BFont *font, float width) const
 {
-	const float textWidth = font->StringWidth(text.String());
-	const float sizePerChar = textWidth / text.CountChars();
+	if (text.CountChars() == 0) {
+		return 0;
+	}
+	
+	const float textWidth = font->StringWidth(text.String());	
+	const float sizePerChar = textWidth / text.CountChars();	
 	return int32(width / sizePerChar);
 }
 
@@ -69,7 +69,7 @@ Drawer::DrawString(BRect frame, const char *text)
 	font.GetHeight(&fh);
 		
 	const float fontHeight = fh.ascent + fh.descent + fh.leading;
-	const float textWidth = frame.Width() - fInsets.width;
+	const float textWidth = frame.InsetBySelf(fInsets.width, fInsets.height).Width();
 
 	fParent->MovePenTo( fInsets.width, frame.LeftTop().y + fontHeight);	
 	fParent->SetLowColor(fParent->ViewColor());	
