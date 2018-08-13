@@ -37,7 +37,7 @@ Drawer::GetStringFromWidth(const char *input, BFont font, float width, BString &
 	size_t position = buffer.CountChars();
 	int32 fittableSize = CharactedFittedFor(buffer, &font, width);
 	
-	//Checks if it fits on one line. Remove all from buffer then.
+	//Checks if it fits on the current line. Remove all from buffer then.
 	if (fittableSize > position) {
 		output.RemoveChars(0, position);
 		return buffer.String();
