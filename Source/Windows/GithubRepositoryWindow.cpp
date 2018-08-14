@@ -5,7 +5,7 @@
 
 
 #include "GithubRepositoryWindow.h"
-#include "GithubProject.h"
+#include "GithubRepository.h"
 #include "GithubTokenWindow.h"
 #include "GithubClient.h"
 #include "SettingsManager.h"
@@ -110,8 +110,8 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 			BMessage repositoryMessage;
 			if (repositoriesMessage.FindMessage(name, &repositoryMessage) == B_OK) {
 				repositoryMessage.PrintToStream();
-				GithubProject *project = new GithubProject(repositoryMessage);
-				fRepositoryListView->AddItem( new BStringItem(project->name.String()));
+				GithubRepository *repository = new GithubRepository(repositoryMessage);
+				fRepositoryListView->AddItem( new BStringItem(repository->name.String()));
 				//printf("%d %s\n", project->id, project->name.String());
 			}
 		}

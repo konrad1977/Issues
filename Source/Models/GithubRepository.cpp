@@ -4,9 +4,9 @@
  */
 
 
-#include "GithubProject.h"
+#include "GithubRepository.h"
 
-GithubProject::GithubProject(BMessage message) 
+GithubRepository::GithubRepository(BMessage message) 
 {
 	double tempId;
 	message.FindDouble("id", &tempId);
@@ -19,19 +19,19 @@ GithubProject::GithubProject(BMessage message)
 	message.FindString("url", &url);
 }
 
-GithubProject::~GithubProject()
+GithubRepository::~GithubRepository()
 {
 
 }
 
 bool
-GithubProject::IsFork() const 
+GithubRepository::IsFork() const 
 {
 	return fIsFork;
 }
 
 bool
-GithubProject::IsPrivate() const 
+GithubRepository::IsPrivate() const 
 {
 	return fIsPrivate;
 }

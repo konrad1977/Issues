@@ -2,18 +2,18 @@
  * Copyright 2015 Your Name <your@email.address>
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef GITHUBPROJECT_H
-#define GITHUBPROJECT_H
+#ifndef GITHUBREPOSITORY_H
+#define GITHUBREPOSITORY_H
 
 
 #include <SupportDefs.h>
 #include <Message.h>
 #include <String.h>
 
-class GithubProject {
+class GithubRepository {
 public:
-	GithubProject(BMessage message);
-	~GithubProject();
+	GithubRepository(BMessage message);
+	~GithubRepository();
 
 	BString name;
 	BString description;
