@@ -97,17 +97,14 @@ MultiLineTextDrawer::GetFontHeight(BFont &font) const
 	return fh.ascent + fh.descent + fh.leading;
 }
 
-void 
+float 
 MultiLineTextDrawer::DrawString(BRect frame, const char *text)
-{
+{	
 	BFont font;
 	fParent->GetFont(&font); 
 	
 	const float fontHeight = GetFontHeight(font);
 	BRect textFrame = frame.InsetBySelf(fInsets.width, fInsets.height);
-
-	fParent->SetHighColor(254, 227, 227);
-	fParent->FillRect(textFrame);
 	
 	fParent->SetHighColor(fTextColor);
 	fParent->SetDrawingMode( B_OP_OVER );	
@@ -152,4 +149,5 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text)
 		default:
 			break;
 	}
+	return fontHeight * lines;
 }

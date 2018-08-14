@@ -9,6 +9,7 @@
 #include "GithubTokenWindow.h"
 #include "GithubClient.h"
 #include "SettingsManager.h"
+#include "RepositoryListItem.h"
 #include "Constants.h"
 
 #include <locale/Catalog.h>
@@ -26,7 +27,7 @@
 #define B_TRANSLATION_CONTEXT "GithubRepositoryWindow"
 
 GithubRepositoryWindow::GithubRepositoryWindow() 
-	:BWindow(BRect(30,30, 300, 400), "Repositories", B_DOCUMENT_WINDOW, 0)
+	:BWindow(BRect(30,30, 300, 400), "Repositories", B_DOCUMENT_WINDOW, B_QUIT_ON_WINDOW_CLOSE)
 	,fGithubTokenWindow(NULL)
 	,fGithubClient(NULL)
 	,fRepositoryListView(NULL)
@@ -111,7 +112,8 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 			if (repositoriesMessage.FindMessage(name, &repositoryMessage) == B_OK) {
 				repositoryMessage.PrintToStream();
 				GithubRepository *repository = new GithubRepository(repositoryMessage);
-				fRepositoryListView->AddItem( new BStringItem(repository->name.String()));
+				RepositoryListItem *listItem = new RepositoryListItem(repository);
+				fRepositoryListView->AddItem( listItem );
 				//printf("%d %s\n", project->id, project->name.String());
 			}
 		}
