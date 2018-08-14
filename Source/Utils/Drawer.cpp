@@ -3,7 +3,6 @@
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
-
 #include "Drawer.h"
 #include <String.h>
 
@@ -14,9 +13,15 @@
 Drawer::Drawer(BView *parent)
 	:fParent(parent)
 {
-	SetInsets(BSize(5,5));
+	rgb_color textColor = { 0,0,0 };
+	SetTextColor(textColor);
+	SetInsets(BSize(10,10));
+
 	BFont font(be_plain_font);
-	fParent->SetFont(&font);
+	font.SetSize(13.0);
+	SetFont(&font);
+	
+	fParent->SetLowColor(fParent->ViewColor());	
 }
 
 Drawer::~Drawer()
@@ -24,29 +29,50 @@ Drawer::~Drawer()
 	
 }
 
+void 
+Drawer::Invalidate() 
+{
+	fParent->Invalidate();
+}
+
+void 
+Drawer::SetFont(BFont *font) 
+{
+	fParent->SetFont(font);
+	Invalidate();
+}
+	
+void 
+Drawer::SetTextColor(rgb_color color)
+{
+	fTextColor = color;
+	Invalidate();
+}
+
 void
 Drawer::SetInsets(BSize size) 
 {
 	fInsets = size;
+	Invalidate();
 }
 
 const char *
 Drawer::GetStringFromWidth(const char *input, BFont font, float width, BString &output)
 {
 	BString buffer(input);
-	size_t size = buffer.CountChars();
-	int32 fharatersThatFits = CharactedFittedFor(buffer, &font, width);
+	const size_t size = buffer.Length();
+	int32 charatersThatFits = CharactedFittedFor(buffer, &font, width);
+	
+	int32 breakAt = B_ERROR;
 
-	int32 breakAt = 0;
-	if ((breakAt = buffer.FindLast(" ", fharatersThatFits)) != B_ERROR) {
-		fharatersThatFits = breakAt; 
-	} if ((breakAt = buffer.FindFirst('\n', 0)) != B_ERROR) {
-		printf("Found symbolic break at %d\n", breakAt);
-		fharatersThatFits = breakAt; 
+	if ( size > charatersThatFits && (breakAt = buffer.FindLast(" ", charatersThatFits)) != B_ERROR) {
+		charatersThatFits = breakAt;
 	} 
-	printf("size:(%d) Fits:(%d)\n", size, fharatersThatFits);
-	output.RemoveChars(0, fharatersThatFits).Trim();
-	return buffer.RemoveChars(fharatersThatFits, size).String();
+	if ((breakAt = buffer.FindFirst('\n', 0)) != B_ERROR) {
+		charatersThatFits = breakAt; 
+	}
+	output.Remove(0, charatersThatFits).Trim();
+	return buffer.Remove(charatersThatFits, size).String();
 }
 	
 int32 
@@ -61,29 +87,67 @@ Drawer::CharactedFittedFor(BString text, BFont *font, float width) const
 	return int32(width / sizePerChar);
 }
 
+const float 
+Drawer::GetFontHeight(BFont &font) const
+{
+	font_height fh;
+	font.GetHeight(&fh);
+	return fh.ascent + fh.descent + fh.leading;
+}
+
 void 
 Drawer::DrawString(BRect frame, const char *text)
 {
-	BFont font(be_plain_font);
-	font_height fh;
-	font.GetHeight(&fh);
-		
-	const float fontHeight = fh.ascent + fh.descent + fh.leading;
-	const float textWidth = frame.InsetBySelf(fInsets.width, fInsets.height).Width();
+	BFont font;
+	fParent->GetFont(&font); 
+	
+	const float fontHeight = GetFontHeight(font);
+	BRect textFrame = frame.InsetBySelf(fInsets.width, fInsets.height);
 
-	fParent->MovePenTo( fInsets.width, frame.LeftTop().y + fontHeight);	
-	fParent->SetLowColor(fParent->ViewColor());	
-	fParent->SetHighColor(0,0,0);
-	fParent->SetDrawingMode( B_OP_COPY );	
+	
+	fParent->SetHighColor(fTextColor);
+	fParent->SetDrawingMode( B_OP_OVER );	
 	
 	BString string(text);
 	
-	int32 lines = 1;
+	int32 lines = 0;
 	const float linePosition = frame.LeftTop().y + fontHeight;
+
+	alignment align(B_ALIGN_LEFT);
 	
-	while( string.CountChars() > 0 ) {
-		fParent->DrawString(GetStringFromWidth(string.String(), font, textWidth, string));
-		fParent->MovePenTo( fInsets.width, linePosition + fontHeight * lines);
-		lines++;
-	}  
+	switch (align) {
+		case B_ALIGN_LEFT: {
+			while( string.CountChars() > 0 ) {
+				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
+				fParent->MovePenTo(fInsets.width, linePosition + fontHeight * lines);
+				fParent->DrawString(textToRender);
+				lines++;
+			}
+			break;			
+		}
+
+		case B_ALIGN_CENTER: {					
+			while( string.CountChars() > 0 ) {
+				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
+				const float width = font.StringWidth(textToRender);
+				fParent->MovePenTo(fInsets.width + (frame.Width() - width) / 2.0, linePosition + fontHeight * lines);	
+				fParent->DrawString(textToRender);
+				lines++;
+			}
+			break;
+		}
+		
+		case B_ALIGN_RIGHT: {					
+			while( string.CountChars() > 0 ) {
+				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
+				const float width = font.StringWidth(textToRender);
+				fParent->MovePenTo(frame.RightTop().x - width, linePosition + fontHeight * lines);	
+				fParent->DrawString(textToRender);
+				lines++;
+			}
+			break;
+		}
+		default:
+			break;
+	}
 }

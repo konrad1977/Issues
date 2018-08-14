@@ -16,6 +16,7 @@ public:
 	~MainWindow();
 	
 private:
+	void RunStringTest();
 	BView *view;
 };
 

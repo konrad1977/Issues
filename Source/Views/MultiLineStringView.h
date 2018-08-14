@@ -17,8 +17,10 @@ public:
 	
 	virtual void FrameResized(float width, float height);
 	virtual void Draw(BRect rect);
-			void SetText(const char *text);
 	
+			void SetText(const char *text);
+			void SetTextColor(rgb_color color);
+			void SetTextColor(uchar red, uchar green, uchar blue, uchar alpha = 255);
 private:
 	char *fText;
 	Drawer *fDrawer;

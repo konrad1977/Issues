@@ -21,7 +21,20 @@ MultiLineStringView::MultiLineStringView(BRect rect)
 
 MultiLineStringView::~MultiLineStringView()
 {
+	free(fText);
+}
 
+void 
+MultiLineStringView::SetTextColor(rgb_color color)
+{
+	fDrawer->SetTextColor(color);
+}
+
+void 
+MultiLineStringView::SetTextColor(uchar red, uchar green, uchar blue, uchar alpha = 255) 
+{
+	rgb_color color = { red, green, blue, alpha };
+	fDrawer->SetTextColor(color);
 }
 
 void

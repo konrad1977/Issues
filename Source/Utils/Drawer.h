@@ -22,12 +22,19 @@ public:
 	
 	void DrawString(BRect frame, const char *text);
 	void SetInsets(BSize insets);
+	void SetFont(BFont *font);
+	void SetTextColor(rgb_color color);
+	
+	void Invalidate();
+	const float GetFontHeight(BFont &font) const;
 	
 private:
 	const char *GetStringFromWidth(const char *input, BFont font, float width, BString &output);
 	int32 CharactedFittedFor(BString text, BFont *font, float width) const;
 	
 	BView 			*fParent;
+	BFont			*fFont;
+	rgb_color		fTextColor;
 	BSize 			fInsets;
 };
 
