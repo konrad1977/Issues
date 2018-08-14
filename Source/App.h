@@ -8,24 +8,14 @@
 #include <SupportDefs.h>
 #include <Application.h>
 
-class GithubClient;
-class SettingsManager;
-class GithubTokenWindow;
+class GithubRepositoryWindow;
 class App: public BApplication {
 public:
 	App(void);		
 	~App();
 	
-	virtual void MessageReceived(BMessage *message);
-			void ParseData(BMessage *message);
-	
 private:	
-			void LoadToken(BString &token);
-			void SaveToken(BMessage *message);
-			void ShowTokenWindow();
-	
-	GithubTokenWindow *fGithubTokenWindow;
-	GithubClient *fGithubClient;
+	GithubRepositoryWindow *fGithubRepositoryWindow;
 };
 
 #endif // _H

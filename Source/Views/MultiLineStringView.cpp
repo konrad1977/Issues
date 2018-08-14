@@ -44,7 +44,7 @@ MultiLineStringView::SetAligntment(alignment align)
 }
 
 void 
-MultiLineStringView::SetTextColor(uchar red, uchar green, uchar blue, uchar alpha = 255) 
+MultiLineStringView::SetTextColor(uchar red, uchar green, uchar blue, uchar alpha) 
 {
 	rgb_color color = { red, green, blue, alpha };
 	fDrawer->SetTextColor(color);

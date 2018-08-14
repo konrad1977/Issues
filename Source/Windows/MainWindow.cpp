@@ -13,7 +13,7 @@
 MainWindow::MainWindow(BRect rect)
 	:BWindow(rect, "Main", B_DOCUMENT_WINDOW, B_QUIT_ON_WINDOW_CLOSE, 0)
 {
-	MultiLineStringView *textView =  new MultiLineStringView(Bounds());	
+	MultiLineStringView *textView = new MultiLineStringView(Bounds());	
 
 	BFont font(be_plain_font);
 	font.SetSize(27.0);
