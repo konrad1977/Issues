@@ -11,19 +11,54 @@
 #include "SettingsManager.h"
 #include "Constants.h"
 
+#include <locale/Catalog.h>
+
+#include <interface/MenuBar.h>
+#include <interface/MenuItem.h>
+#include <interface/StringItem.h>
+#include <interface/GroupLayout.h>
+#include <interface/LayoutBuilder.h>
+#include <interface/ListView.h>
 #include <posix/stdio.h>
+
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "GithubRepositoryWindow"
 
 GithubRepositoryWindow::GithubRepositoryWindow() 
 	:BWindow(BRect(30,30, 300, 400), "Repositories", B_DOCUMENT_WINDOW, 0)
 	,fGithubTokenWindow(NULL)
 	,fGithubClient(NULL)
+	,fRepositoryListView(NULL)
 {
+	SetupViews();
 	CheckForSavedToken();
 }
 
 GithubRepositoryWindow::~GithubRepositoryWindow() 
 {
 	delete fGithubClient;
+}
+
+void
+GithubRepositoryWindow::SetupViews() 
+{
+	fRepositoryListView = new BListView("Stocks", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
+	//fRepositoryListView->SetInvocationMessage(new BMessage(kListInvocationMessage));
+	//fRepositoryListView->SetSelectionMessage( new BMessage(kListSelectMessage));	
+	
+	BGroupLayout *layout = new BGroupLayout(B_VERTICAL);
+	layout->SetSpacing(0);
+	SetLayout(layout);
+	
+	BLayoutBuilder::Menu<>(fMenuBar = new BMenuBar(Bounds(), "Menu"))
+		.AddMenu(B_TRANSLATE("Edit"))
+			.AddItem(new BMenuItem(B_TRANSLATE("About"), NULL, 'R'))
+		.End();
+	
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+		.Add(fMenuBar)
+		.Add(fRepositoryListView);
 }
 
 void 
@@ -63,17 +98,21 @@ GithubRepositoryWindow::SaveToken(BMessage *message)
 void 
 GithubRepositoryWindow::ParseData(BMessage *message)
 {	
-	BMessage symbolMessage;
-	if (message->FindMessage("Projects", &symbolMessage) == B_OK) {	
+	fRepositoryListView->MakeEmpty();
+	
+	BMessage repositoriesMessage;
+	if (message->FindMessage("GithubRepositories", &repositoriesMessage) == B_OK) {	
 		char *name;
 		uint32 type;
 		int32 count;
 					
-		for (int32 i = 0; symbolMessage.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
-			BMessage currentMessage;
-			if (symbolMessage.FindMessage(name, &currentMessage) == B_OK) {
-				GithubProject *project = new GithubProject(currentMessage);
-				printf("%d %s\n", project->id, project->name.String());
+		for (int32 i = 0; repositoriesMessage.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
+			BMessage repositoryMessage;
+			if (repositoriesMessage.FindMessage(name, &repositoryMessage) == B_OK) {
+				repositoryMessage.PrintToStream();
+				GithubProject *project = new GithubProject(repositoryMessage);
+				fRepositoryListView->AddItem( new BStringItem(project->name.String()));
+				//printf("%d %s\n", project->id, project->name.String());
 			}
 		}
 	}

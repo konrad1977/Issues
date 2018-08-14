@@ -5,7 +5,7 @@
 
 
 #include "MultiLineStringView.h"
-#include "Drawer.h"
+#include "MultiLineTextDrawer.h"
 
 #include <posix/string.h>
 #include <posix/stdlib.h>
@@ -13,15 +13,16 @@
 MultiLineStringView::MultiLineStringView(BRect rect)
 	:BView(rect, "MultiLine", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS )
 	,fText(NULL)	
-	,fDrawer(NULL)
+	,fMultiLineTextDrawer(NULL)
 	,previousWidth(0.0)
 {
-	fDrawer = new Drawer(this);
+	fMultiLineTextDrawer = new MultiLineTextDrawer(this);
 }
 
 MultiLineStringView::~MultiLineStringView()
 {
 	free(fText);
+	delete fMultiLineTextDrawer;
 }
 
 void 
@@ -34,26 +35,26 @@ MultiLineStringView::SetFont(BFont *font)
 void 
 MultiLineStringView::SetTextColor(rgb_color color)
 {
-	fDrawer->SetTextColor(color);
+	fMultiLineTextDrawer->SetTextColor(color);
 }
 
 void 
 MultiLineStringView::SetAligntment(alignment align)
 {
-	fDrawer->SetAligntment(align);
+	fMultiLineTextDrawer->SetAligntment(align);
 }
 
 void 
 MultiLineStringView::SetTextColor(uchar red, uchar green, uchar blue, uchar alpha) 
 {
 	rgb_color color = { red, green, blue, alpha };
-	fDrawer->SetTextColor(color);
+	fMultiLineTextDrawer->SetTextColor(color);
 }
 
 void 
 MultiLineStringView::SetInsets(BSize size)
 {
-	fDrawer->SetInsets(size);
+	fMultiLineTextDrawer->SetInsets(size);
 }
 			
 void 
@@ -85,5 +86,5 @@ void
 MultiLineStringView::Draw(BRect rect)
 {
 	BRect r(Bounds());
-	fDrawer->DrawString(r, fText);
+	fMultiLineTextDrawer->DrawString(r, fText);
 }	

@@ -8,15 +8,31 @@
 
 GithubProject::GithubProject(BMessage message) 
 {
-	message.FindString("name", &name);
 	double tempId;
 	message.FindDouble("id", &tempId);
 	id = int32(tempId);
 	
+	message.FindString("name", &name);
+	message.FindString("description", &description);
+	message.FindBool("fork", &fIsFork);
+	message.FindBool("private", &fIsPrivate);
+	message.FindString("url", &url);
 }
 
 GithubProject::~GithubProject()
 {
 
+}
+
+bool
+GithubProject::IsFork() const 
+{
+	return fIsFork;
+}
+
+bool
+GithubProject::IsPrivate() const 
+{
+	return fIsPrivate;
 }
 

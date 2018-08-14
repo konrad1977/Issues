@@ -16,9 +16,17 @@ public:
 	~GithubProject();
 
 	BString name;
+	BString description;
+	BString url;
+	
 	int32 id;
 	
+	bool IsFork() const;
+	bool IsPrivate() const;
+	
 private:
+	bool fIsFork;
+	bool fIsPrivate;
 	
 };
 

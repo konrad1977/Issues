@@ -3,14 +3,14 @@
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
-#include "Drawer.h"
+#include "MultiLineTextDrawer.h"
 #include <String.h>
 
 #include <posix/stdio.h>
 #include <posix/stdlib.h>
 #include <string>
 
-Drawer::Drawer(BView *parent)
+MultiLineTextDrawer::MultiLineTextDrawer(BView *parent)
 	:fParent(parent)
 	,fAlignment(B_ALIGN_LEFT)
 {
@@ -21,26 +21,26 @@ Drawer::Drawer(BView *parent)
 	fParent->SetLowColor(fParent->ViewColor());	
 }
 
-Drawer::~Drawer()
+MultiLineTextDrawer::~MultiLineTextDrawer()
 {
 	
 }
 
 void 
-Drawer::Invalidate() 
+MultiLineTextDrawer::Invalidate() 
 {
 	fParent->Invalidate();
 }
 	
 void 
-Drawer::SetTextColor(rgb_color color)
+MultiLineTextDrawer::SetTextColor(rgb_color color)
 {
 	fTextColor = color;
 	Invalidate();
 }
 
 void
-Drawer::SetInsets(BSize size) 
+MultiLineTextDrawer::SetInsets(BSize size) 
 {
 	if (fInsets != size) {
 		fInsets = size;
@@ -49,7 +49,7 @@ Drawer::SetInsets(BSize size)
 }
 
 void 
-Drawer::SetAligntment(alignment align)
+MultiLineTextDrawer::SetAligntment(alignment align)
 {
 	if (fAlignment != align) {
 		fAlignment = align;
@@ -59,11 +59,11 @@ Drawer::SetAligntment(alignment align)
 
 
 const char *
-Drawer::GetStringFromWidth(const char *input, BFont font, float width, BString &output)
+MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont font, float width, BString &output)
 {
 	BString buffer(input);
 	const size_t size = buffer.Length();
-	int32 charatersThatFits = CharactedFittedFor(buffer, &font, width);
+	uint32 charatersThatFits = CharactedFittedFor(buffer, &font, width);
 	
 	int32 breakAt = B_ERROR;
 
@@ -77,8 +77,8 @@ Drawer::GetStringFromWidth(const char *input, BFont font, float width, BString &
 	return buffer.Remove(charatersThatFits, size).String();
 }
 	
-int32 
-Drawer::CharactedFittedFor(BString text, BFont *font, float width) const
+uint32 
+MultiLineTextDrawer::CharactedFittedFor(BString text, BFont *font, float width) const
 {
 	if (text.CountChars() == 0) {
 		return 0;
@@ -90,7 +90,7 @@ Drawer::CharactedFittedFor(BString text, BFont *font, float width) const
 }
 
 const float 
-Drawer::GetFontHeight(BFont &font) const
+MultiLineTextDrawer::GetFontHeight(BFont &font) const
 {
 	font_height fh;
 	font.GetHeight(&fh);
@@ -98,7 +98,7 @@ Drawer::GetFontHeight(BFont &font) const
 }
 
 void 
-Drawer::DrawString(BRect frame, const char *text)
+MultiLineTextDrawer::DrawString(BRect frame, const char *text)
 {
 	BFont font;
 	fParent->GetFont(&font); 

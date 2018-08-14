@@ -9,7 +9,7 @@
 #include <SupportDefs.h>
 #include <View.h>
 
-class Drawer;
+class MultiLineTextDrawer;
 class MultiLineStringView : public BView {
 public:
 	MultiLineStringView(BRect rect);
@@ -31,7 +31,7 @@ public:
 
 private:
 	char *fText;
-	Drawer *fDrawer;
+	MultiLineTextDrawer *fMultiLineTextDrawer;
 	float previousWidth;
 };
 

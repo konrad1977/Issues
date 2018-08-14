@@ -9,6 +9,9 @@
 #include <SupportDefs.h>
 #include <interface/Window.h>
 
+class BMenuBar;
+class BMenuItem;
+class BListView;
 class GithubClient;
 class GithubTokenWindow;
 class GithubRepositoryWindow : public BWindow {
@@ -20,7 +23,8 @@ public:
 			void ParseData(BMessage *message);
 	
 private:
-
+			void SetupViews();
+			
 			void LoadToken(BString &token);
 			void SaveToken(BMessage *message);
 			void ShowTokenWindow();
@@ -28,6 +32,8 @@ private:
 			
 	GithubTokenWindow 	*fGithubTokenWindow;
 	GithubClient 		*fGithubClient;
+	BListView 			*fRepositoryListView;
+	BMenuBar 			*fMenuBar;
 };
 
 

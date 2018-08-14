@@ -20,7 +20,6 @@ App::App(void)
 	fGithubRepositoryWindow = new GithubRepositoryWindow();
 	fGithubRepositoryWindow->Show();
 	
-	
 	MainWindow *win = new MainWindow(BRect(30,30, 300, 200));
 	win->Show();
 }
