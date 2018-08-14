@@ -21,6 +21,14 @@ public:
 			void SetText(const char *text);
 			void SetTextColor(rgb_color color);
 			void SetTextColor(uchar red, uchar green, uchar blue, uchar alpha = 255);
+
+			void SetFont(BFont *font);
+			
+			void SetInsets(BSize size);
+			void SetInsets(float left, float top, float right, float bottom);
+			
+			void SetAligntment(alignment align);
+
 private:
 	char *fText;
 	Drawer *fDrawer;

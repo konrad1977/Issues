@@ -25,9 +25,22 @@ MultiLineStringView::~MultiLineStringView()
 }
 
 void 
+MultiLineStringView::SetFont(BFont *font)
+{
+	BView::SetFont(font);
+	Invalidate();
+}
+
+void 
 MultiLineStringView::SetTextColor(rgb_color color)
 {
 	fDrawer->SetTextColor(color);
+}
+
+void 
+MultiLineStringView::SetAligntment(alignment align)
+{
+	fDrawer->SetAligntment(align);
 }
 
 void 
@@ -35,6 +48,18 @@ MultiLineStringView::SetTextColor(uchar red, uchar green, uchar blue, uchar alph
 {
 	rgb_color color = { red, green, blue, alpha };
 	fDrawer->SetTextColor(color);
+}
+
+void 
+MultiLineStringView::SetInsets(BSize size)
+{
+	fDrawer->SetInsets(size);
+}
+			
+void 
+MultiLineStringView::SetInsets(float left, float top, float right, float bottom)
+{
+	
 }
 
 void

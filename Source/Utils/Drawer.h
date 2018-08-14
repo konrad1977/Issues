@@ -22,8 +22,8 @@ public:
 	
 	void DrawString(BRect frame, const char *text);
 	void SetInsets(BSize insets);
-	void SetFont(BFont *font);
 	void SetTextColor(rgb_color color);
+	void SetAligntment(alignment align);
 	
 	void Invalidate();
 	const float GetFontHeight(BFont &font) const;
@@ -35,6 +35,7 @@ private:
 	BView 			*fParent;
 	BFont			*fFont;
 	rgb_color		fTextColor;
+	alignment 		fAlignment;
 	BSize 			fInsets;
 };
 

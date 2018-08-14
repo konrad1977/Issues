@@ -12,14 +12,11 @@
 
 Drawer::Drawer(BView *parent)
 	:fParent(parent)
+	,fAlignment(B_ALIGN_LEFT)
 {
 	rgb_color textColor = { 0,0,0 };
 	SetTextColor(textColor);
 	SetInsets(BSize(10,10));
-
-	BFont font(be_plain_font);
-	font.SetSize(13.0);
-	SetFont(&font);
 	
 	fParent->SetLowColor(fParent->ViewColor());	
 }
@@ -34,13 +31,6 @@ Drawer::Invalidate()
 {
 	fParent->Invalidate();
 }
-
-void 
-Drawer::SetFont(BFont *font) 
-{
-	fParent->SetFont(font);
-	Invalidate();
-}
 	
 void 
 Drawer::SetTextColor(rgb_color color)
@@ -52,9 +42,21 @@ Drawer::SetTextColor(rgb_color color)
 void
 Drawer::SetInsets(BSize size) 
 {
-	fInsets = size;
-	Invalidate();
+	if (fInsets != size) {
+		fInsets = size;
+		Invalidate();
+	}
 }
+
+void 
+Drawer::SetAligntment(alignment align)
+{
+	if (fAlignment != align) {
+		fAlignment = align;
+		Invalidate();
+	}
+}
+
 
 const char *
 Drawer::GetStringFromWidth(const char *input, BFont font, float width, BString &output)
@@ -84,7 +86,7 @@ Drawer::CharactedFittedFor(BString text, BFont *font, float width) const
 	
 	const float textWidth = font->StringWidth(text.String());	
 	const float sizePerChar = textWidth / text.CountChars();	
-	return int32(width / sizePerChar);
+	return int32((width - fInsets.width * 2) / sizePerChar);
 }
 
 const float 
@@ -104,6 +106,8 @@ Drawer::DrawString(BRect frame, const char *text)
 	const float fontHeight = GetFontHeight(font);
 	BRect textFrame = frame.InsetBySelf(fInsets.width, fInsets.height);
 
+	fParent->SetHighColor(254, 227, 227);
+	fParent->FillRect(textFrame);
 	
 	fParent->SetHighColor(fTextColor);
 	fParent->SetDrawingMode( B_OP_OVER );	
@@ -113,13 +117,11 @@ Drawer::DrawString(BRect frame, const char *text)
 	int32 lines = 0;
 	const float linePosition = frame.LeftTop().y + fontHeight;
 
-	alignment align(B_ALIGN_LEFT);
-	
-	switch (align) {
+	switch (fAlignment) {
 		case B_ALIGN_LEFT: {
 			while( string.CountChars() > 0 ) {
 				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
-				fParent->MovePenTo(fInsets.width, linePosition + fontHeight * lines);
+				fParent->MovePenTo(textFrame.LeftTop().x, linePosition + fontHeight * lines);
 				fParent->DrawString(textToRender);
 				lines++;
 			}
@@ -130,7 +132,7 @@ Drawer::DrawString(BRect frame, const char *text)
 			while( string.CountChars() > 0 ) {
 				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
 				const float width = font.StringWidth(textToRender);
-				fParent->MovePenTo(fInsets.width + (frame.Width() - width) / 2.0, linePosition + fontHeight * lines);	
+				fParent->MovePenTo(textFrame.LeftTop().x + (frame.Width() - width) / 2.0, linePosition + fontHeight * lines);	
 				fParent->DrawString(textToRender);
 				lines++;
 			}
