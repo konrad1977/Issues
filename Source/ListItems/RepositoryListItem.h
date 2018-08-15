@@ -20,6 +20,8 @@ public:
 	virtual void DrawItem(BView *view, BRect rect, bool complete = false);
 	virtual void Update(BView *view, const BFont *font);	
 	
+	GithubRepository *CurrentRepository() const;
+	
 private:
 			void DrawRepository(BRect frame);
 			

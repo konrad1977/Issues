@@ -17,6 +17,7 @@ public:
 	~GithubClient();
 	
 	void RequestProjects();
+	void RequestIssuesForRepository(int32 id);
 	
 private:
 		void RunRequest(const char *urlStr, NetRequester *requester);

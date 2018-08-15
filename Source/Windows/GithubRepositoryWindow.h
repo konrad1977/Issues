@@ -29,6 +29,8 @@ private:
 			void SaveToken(BMessage *message);
 			void ShowTokenWindow();
 			void CheckForSavedToken();
+			void RequestRepositories();
+			void RequestIssuesForRepository(int32 repositoryId);
 			
 	GithubTokenWindow 	*fGithubTokenWindow;
 	GithubClient 		*fGithubClient;

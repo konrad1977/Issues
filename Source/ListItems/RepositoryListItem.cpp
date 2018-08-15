@@ -24,6 +24,12 @@ RepositoryListItem::~RepositoryListItem()
 	delete fMultiLineTextDrawer;
 }
 
+GithubRepository *
+RepositoryListItem::CurrentRepository() const
+{
+	return fRepository;
+}
+
 void 
 RepositoryListItem::DrawItem(BView *view, BRect rect, bool complete)
 {

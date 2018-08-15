@@ -30,6 +30,14 @@ GithubClient::~GithubClient()
 }
 
 void 
+GithubClient::RequestIssuesForRepository(int32 id)
+{
+	const char *requestUrl = "https://api.github.com/user/repos?affiliation=owner";
+	NetRequester requester(fHandler, "GithubRepositories");
+	RunRequest(requestUrl, &requester);
+}
+
+void 
 GithubClient::RequestProjects()
 {
 	const char *requestUrl = "https://api.github.com/user/repos?affiliation=owner";

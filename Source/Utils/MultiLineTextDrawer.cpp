@@ -70,7 +70,8 @@ MultiLineTextDrawer::FindLineBreak(BString &text, uint32 offset) const {
 	int32 index = B_ERROR;
 	if ((index = text.FindLast(" ", offset)) != B_ERROR) {
 		return index;
-	} else if ((index = text.FindLast("-", offset)) != B_ERROR) {
+	} 
+	else if ((index = text.FindLast("-", offset)) != B_ERROR) {
 		return index+1;
 	}
 	else if ((index = text.FindLast("/", offset)) != B_ERROR) {

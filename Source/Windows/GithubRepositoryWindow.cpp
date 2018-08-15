@@ -42,13 +42,24 @@ GithubRepositoryWindow::~GithubRepositoryWindow()
 	delete fGithubClient;
 }
 
+void 
+GithubRepositoryWindow::RequestRepositories()
+{
+	fGithubClient->RequestProjects();
+}
+			
+void 
+GithubRepositoryWindow::RequestIssuesForRepository(int32 repositoryId)
+{
+	printf("Should request issues for: %d", repositoryId);		
+}
+
 void
 GithubRepositoryWindow::SetupViews() 
 {
 	fRepositoryListView = new BListView("Repositories", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
-	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, false, true);
-	
-	//fRepositoryListView->SetInvocationMessage(new BMessage(kListInvocationMessage));
+	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, 0, false, true);
+	fRepositoryListView->SetInvocationMessage(new BMessage(kRepositoryListInvokedMessage));
 	//fRepositoryListView->SetSelectionMessage( new BMessage(kListSelectMessage));	
 	
 	BGroupLayout *layout = new BGroupLayout(B_VERTICAL);
@@ -113,11 +124,9 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 		for (int32 i = 0; repositoriesMessage.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 			BMessage repositoryMessage;
 			if (repositoriesMessage.FindMessage(name, &repositoryMessage) == B_OK) {
-				repositoryMessage.PrintToStream();
 				GithubRepository *repository = new GithubRepository(repositoryMessage);
 				RepositoryListItem *listItem = new RepositoryListItem(repository);
 				fRepositoryListView->AddItem( listItem );
-				//printf("%d %s\n", project->id, project->name.String());
 			}
 		}
 	}
@@ -136,6 +145,18 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 		
+		case kRepositoryListInvokedMessage: {
+			int32 index = B_ERROR;
+			if (message->FindInt32("index", &index) == B_OK) {
+				RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
+				if (listItem && listItem->CurrentRepository()) {
+					RequestIssuesForRepository(listItem->CurrentRepository()->id);
+				}
+				printf("Found item\n");
+			}
+			break;	
+		}
+		
 		case kGithubTokenSaveMessage: {
 			SaveToken(message);
 			
@@ -144,7 +165,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			
 			delete fGithubClient;
 			fGithubClient = new GithubClient(token.String(), this);
-			fGithubClient->RequestProjects();
+			RequestRepositories();
 			break;
 		}
 		default:

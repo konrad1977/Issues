@@ -12,4 +12,6 @@ const int32 kDataReceivedMessage 	= 'kDRM';
 const int32 kWindowQuitMessage 		= 'kWQM';
 const int32 kGithubTokenSaveMessage = 'kTSM';
 
+const int32 kRepositoryListInvokedMessage = 'kRLM';
+
 #endif // _H
