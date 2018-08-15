@@ -17,13 +17,19 @@ MultiLineTextDrawer::MultiLineTextDrawer(BView *parent)
 	rgb_color textColor = { 0,0,0 };
 	SetTextColor(textColor);
 	SetInsets(BSize(10,10));
-	
 	fParent->SetLowColor(fParent->ViewColor());	
 }
 
 MultiLineTextDrawer::~MultiLineTextDrawer()
 {
 	
+}
+
+void 
+MultiLineTextDrawer::SetTextColor(uchar red, uchar green, uchar blue, uchar alpha)
+{
+	rgb_color color = { red, green, blue, alpha };
+	SetTextColor(color);
 }
 
 void 
@@ -58,6 +64,20 @@ MultiLineTextDrawer::SetAligntment(alignment align)
 	}
 }
 
+const int32
+MultiLineTextDrawer::FindLineBreak(BString &text, uint32 offset) const {
+	
+	int32 index = B_ERROR;
+	if ((index = text.FindLast(" ", offset)) != B_ERROR) {
+		return index;
+	} else if ((index = text.FindLast("-", offset)) != B_ERROR) {
+		return index+1;
+	}
+	else if ((index = text.FindLast("/", offset)) != B_ERROR) {
+		return index+1;
+	}
+	return B_ERROR;
+}
 
 const char *
 MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont font, float width, BString &output)
@@ -68,7 +88,7 @@ MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont font, float wid
 	
 	int32 breakAt = B_ERROR;
 
-	if ( size > charatersThatFits && (breakAt = buffer.FindLast(" ", charatersThatFits)) != B_ERROR) {
+	if ( (size > charatersThatFits) && (breakAt = FindLineBreak(buffer, charatersThatFits)) != B_ERROR) {
 		charatersThatFits = breakAt;
 	} 
 	if ((breakAt = buffer.FindFirst('\n', 0)) != B_ERROR) {

@@ -20,6 +20,7 @@
 #include <interface/GroupLayout.h>
 #include <interface/LayoutBuilder.h>
 #include <interface/ListView.h>
+#include <interface/ScrollView.h>
 #include <posix/stdio.h>
 
 
@@ -44,7 +45,9 @@ GithubRepositoryWindow::~GithubRepositoryWindow()
 void
 GithubRepositoryWindow::SetupViews() 
 {
-	fRepositoryListView = new BListView("Stocks", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
+	fRepositoryListView = new BListView("Repositories", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
+	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, false, true);
+	
 	//fRepositoryListView->SetInvocationMessage(new BMessage(kListInvocationMessage));
 	//fRepositoryListView->SetSelectionMessage( new BMessage(kListSelectMessage));	
 	
@@ -59,7 +62,7 @@ GithubRepositoryWindow::SetupViews()
 	
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.Add(fMenuBar)
-		.Add(fRepositoryListView);
+		.Add(scrollView);
 }
 
 void 

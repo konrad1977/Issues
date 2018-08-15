@@ -22,15 +22,18 @@ public:
 	
 	float DrawString(BRect frame, const char *text);
 	void SetInsets(BSize insets);
+
 	void SetTextColor(rgb_color color);
+	void SetTextColor(uchar red, uchar green, uchar blue, uchar alpha = 255);
+	
 	void SetAligntment(alignment align);
 	void SetFont(BFont *font);
-	
-	const float GetFontHeight(BFont &font) const;
-	
+		
 private:
-	const char *GetStringFromWidth(const char *input, BFont font, float width, BString &output);
-	const uint32 CharactedFittedFor(BString text, BFont *font, float width) const;
+	const int32 	FindLineBreak(BString &text, uint32 offset) const;
+	const float 	GetFontHeight(BFont &font) const;	
+	const char 		*GetStringFromWidth(const char *input, BFont font, float width, BString &output);
+	const uint32 	CharactedFittedFor(BString text, BFont *font, float width) const;
 	
 	BView 			*fParent;
 	BFont			*fFont;

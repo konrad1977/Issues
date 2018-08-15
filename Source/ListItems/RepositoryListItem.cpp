@@ -61,15 +61,25 @@ RepositoryListItem::DrawRepository(BRect rect)
 	BRect frame = rect;
 	BFont font(be_bold_font);
 	font.SetSize(13.0);
+	fMultiLineTextDrawer->SetTextColor( 0, 0, 0);
+
 	fMultiLineTextDrawer->SetFont(&font);
-	fHeight = fMultiLineTextDrawer->DrawString(frame, fRepository->name.String());
+	float height = fMultiLineTextDrawer->DrawString(frame, fRepository->name.String());
+	fHeight = height;
 
 	font = be_plain_font;
-	frame = frame.OffsetBySelf(0, fHeight);
+	font.SetSize(12);
+	frame = frame.OffsetBySelf(0, height);
+	fMultiLineTextDrawer->SetTextColor( 70, 72, 71);
 	fMultiLineTextDrawer->SetFont(&font);
-	fHeight += fMultiLineTextDrawer->DrawString(frame, fRepository->description.Trim().String());
-	fHeight += 10;
+	height = fMultiLineTextDrawer->DrawString(frame, fRepository->description.Trim().String());
+	fHeight += height;
 	
+	frame = frame.OffsetBySelf(0, height);
+	fMultiLineTextDrawer->SetFont(&font);
+	fMultiLineTextDrawer->SetTextColor( 40, 42, 154);
+	height = fMultiLineTextDrawer->DrawString(frame, fRepository->url.String());
+	fHeight += height + 10;
 }
 
 void 
