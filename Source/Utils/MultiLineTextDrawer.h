@@ -24,13 +24,13 @@ public:
 	void SetInsets(BSize insets);
 	void SetTextColor(rgb_color color);
 	void SetAligntment(alignment align);
+	void SetFont(BFont *font);
 	
-	void Invalidate();
 	const float GetFontHeight(BFont &font) const;
 	
 private:
 	const char *GetStringFromWidth(const char *input, BFont font, float width, BString &output);
-	uint32 CharactedFittedFor(BString text, BFont *font, float width) const;
+	const uint32 CharactedFittedFor(BString text, BFont *font, float width) const;
 	
 	BView 			*fParent;
 	BFont			*fFont;

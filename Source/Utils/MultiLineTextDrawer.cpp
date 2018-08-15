@@ -27,16 +27,19 @@ MultiLineTextDrawer::~MultiLineTextDrawer()
 }
 
 void 
-MultiLineTextDrawer::Invalidate() 
-{
-	fParent->Invalidate();
-}
-	
-void 
 MultiLineTextDrawer::SetTextColor(rgb_color color)
 {
-	fTextColor = color;
-	Invalidate();
+	if (fTextColor != color) {
+		fTextColor = color;
+	}
+}
+
+void 
+MultiLineTextDrawer::SetFont(BFont *font)
+{
+	if (fFont != font) {
+		fParent->SetFont(font);
+	}
 }
 
 void
@@ -44,7 +47,6 @@ MultiLineTextDrawer::SetInsets(BSize size)
 {
 	if (fInsets != size) {
 		fInsets = size;
-		Invalidate();
 	}
 }
 
@@ -53,7 +55,6 @@ MultiLineTextDrawer::SetAligntment(alignment align)
 {
 	if (fAlignment != align) {
 		fAlignment = align;
-		Invalidate();
 	}
 }
 
@@ -77,7 +78,7 @@ MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont font, float wid
 	return buffer.Remove(charatersThatFits, size).String();
 }
 	
-uint32 
+const uint32 
 MultiLineTextDrawer::CharactedFittedFor(BString text, BFont *font, float width) const
 {
 	if (text.CountChars() == 0) {

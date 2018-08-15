@@ -52,45 +52,31 @@ RepositoryListItem::DrawItem(BView *view, BRect rect, bool complete)
 	parent->SetDrawingMode(B_OP_OVER);
 	
 	DrawRepository(frame);
-	Update(parent, NULL);
+	parent->FrameResized(rect.Width(), rect.Height());	
 }
 
 void 
 RepositoryListItem::DrawRepository(BRect rect)
 {
 	BRect frame = rect;
+	BFont font(be_bold_font);
+	font.SetSize(13.0);
+	fMultiLineTextDrawer->SetFont(&font);
 	fHeight = fMultiLineTextDrawer->DrawString(frame, fRepository->name.String());
 
+	font = be_plain_font;
 	frame = frame.OffsetBySelf(0, fHeight);
+	fMultiLineTextDrawer->SetFont(&font);
 	fHeight += fMultiLineTextDrawer->DrawString(frame, fRepository->description.Trim().String());
-	fHeight += 100;
+	fHeight += 10;
+	
 }
 
-/*void 
-RepositoryListItem::DrawPortfolioInfo(BRect rect)
-{
-	BRect frame = rect.InsetBySelf(0,5);
-	frame.bottom = frame.top + frame.Height() / 2;
-	
-	BFont font(be_plain_font);
-	font.SetSize(11);
-	rgb_color titleColor = fDrawer->TextColor(IsSelected());
-	rgb_color textColor = tint_color(titleColor, 0.7);
-	DrawItemSettings settings = { frame, &font, &textColor, B_ALIGN_LEFT };
-
-	BString stocks;
-	stocks << "Stocks: " << fPortfolio->CurrentSymbols()->CountItems();
-	DrawText(stocks.String(), settings);	
-	
-	font = be_bold_font;
-	font.SetSize(14);	
-	frame = frame.OffsetBySelf(0, frame.Height());
-	settings = { frame, &font, &titleColor, B_ALIGN_LEFT };
-	DrawText(fPortfolio->Name().String(), settings);
-}
-*/
 void 
 RepositoryListItem::Update(BView *view, const BFont *font)
 {
-	SetHeight(fHeight);	
+	if (fPreviousHeight != fHeight) {
+		fPreviousHeight = fHeight;
+		SetHeight(fHeight);
+	}
 }

@@ -26,6 +26,7 @@ private:
 	GithubRepository		*fRepository;
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
 	float 					fHeight;
+	float					fPreviousHeight;
 };
 
 #endif // _H

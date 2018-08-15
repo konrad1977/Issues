@@ -58,7 +58,7 @@ BTextControl *
 GithubTokenWindow::TextControl() 
 {
 	if (fTokenControl == NULL) {
-		fTokenControl = new BTextControl("Name", B_TRANSLATE("Github token:"), "", NULL);
+		fTokenControl = new BTextControl("Name", B_TRANSLATE("Personal access token:"), "", NULL);
 	}
 	return fTokenControl;
 }
@@ -73,7 +73,7 @@ GithubTokenWindow::InitLayout()
 	createButton->SetTarget(this);
 	
 	BLayoutBuilder::Group<>(this, B_HORIZONTAL)
-		.SetExplicitMinSize(BSize(500, 40))
+		.SetExplicitMinSize(BSize(700, 40))
 		.SetInsets(10,10,10,10)
 		.Add(TextControl())
 		.Add(createButton);
