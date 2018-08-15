@@ -11,6 +11,7 @@
 #include "SettingsManager.h"
 #include "RepositoryListItem.h"
 #include "Constants.h"
+#include "MessageFinder.h"
 
 #include <locale/Catalog.h>
 
@@ -49,9 +50,9 @@ GithubRepositoryWindow::RequestRepositories()
 }
 			
 void 
-GithubRepositoryWindow::RequestIssuesForRepository(int32 repositoryId)
+GithubRepositoryWindow::RequestIssuesForRepository(BString name)
 {
-	printf("Should request issues for: %d", repositoryId);		
+	fGithubClient->RequestIssuesForRepository(name);
 }
 
 void
@@ -113,21 +114,22 @@ GithubRepositoryWindow::SaveToken(BMessage *message)
 void 
 GithubRepositoryWindow::ParseData(BMessage *message)
 {	
+	MessageFinder messageFinder;
+	BMessage msg = messageFinder.FindMessage("nodes", *message);
+
 	fRepositoryListView->MakeEmpty();
 	
 	BMessage repositoriesMessage;
-	if (message->FindMessage("GithubRepositories", &repositoriesMessage) == B_OK) {	
-		char *name;
-		uint32 type;
-		int32 count;
-					
-		for (int32 i = 0; repositoriesMessage.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
-			BMessage repositoryMessage;
-			if (repositoriesMessage.FindMessage(name, &repositoryMessage) == B_OK) {
-				GithubRepository *repository = new GithubRepository(repositoryMessage);
-				RepositoryListItem *listItem = new RepositoryListItem(repository);
-				fRepositoryListView->AddItem( listItem );
-			}
+	char *name;
+	uint32 type;
+	int32 count;
+				
+	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
+		BMessage nodeMsg;
+		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
+			GithubRepository *repository = new GithubRepository(nodeMsg);
+			RepositoryListItem *listItem = new RepositoryListItem(repository);
+			fRepositoryListView->AddItem( listItem );
 		}
 	}
 }
@@ -150,7 +152,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			if (message->FindInt32("index", &index) == B_OK) {
 				RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
 				if (listItem && listItem->CurrentRepository()) {
-					RequestIssuesForRepository(listItem->CurrentRepository()->id);
+					RequestIssuesForRepository(listItem->CurrentRepository()->name);
 				}
 				printf("Found item\n");
 			}

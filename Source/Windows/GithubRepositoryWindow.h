@@ -24,13 +24,13 @@ public:
 	
 private:
 			void SetupViews();
-			
+		
 			void LoadToken(BString &token);
 			void SaveToken(BMessage *message);
 			void ShowTokenWindow();
 			void CheckForSavedToken();
 			void RequestRepositories();
-			void RequestIssuesForRepository(int32 repositoryId);
+			void RequestIssuesForRepository(BString name);
 			
 	GithubTokenWindow 	*fGithubTokenWindow;
 	GithubClient 		*fGithubClient;

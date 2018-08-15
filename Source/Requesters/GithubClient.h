@@ -17,10 +17,11 @@ public:
 	~GithubClient();
 	
 	void RequestProjects();
-	void RequestIssuesForRepository(int32 id);
+	void RequestIssuesForRepository(BString name);
 	
 private:
-		void RunRequest(const char *urlStr, NetRequester *requester);
+		BString CreateQuery(const BString &query) const;
+		void RunRequest(const char *urlStr, NetRequester *requester, BString body);
 	
 	BHttpHeaders 	fRequestHeaders;
 	BString 		fToken;

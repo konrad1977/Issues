@@ -5,13 +5,11 @@
 
 
 #include "GithubRepository.h"
+#include <string>
+#include <HttpAuthentication.h>
 
 GithubRepository::GithubRepository(BMessage message) 
-{
-	double tempId;
-	message.FindDouble("id", &tempId);
-	id = int32(tempId);
-	
+{	
 	message.FindString("name", &name);
 	message.FindString("description", &description);
 	message.FindBool("fork", &fIsFork);
