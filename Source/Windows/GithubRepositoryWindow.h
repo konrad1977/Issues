@@ -24,11 +24,6 @@ public:
 	
 private:
 			void SetupViews();
-		
-			void LoadToken(BString &token);
-			void SaveToken(BMessage *message);
-			void ShowTokenWindow();
-			void CheckForSavedToken();
 			void RequestRepositories();
 			void RequestIssuesForRepository(BString name);
 			

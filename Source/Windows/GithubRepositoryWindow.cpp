@@ -7,6 +7,7 @@
 #include "GithubRepositoryWindow.h"
 #include "GithubRepository.h"
 #include "GithubTokenWindow.h"
+#include "GithubIssuesWindow.h"
 #include "GithubClient.h"
 #include "SettingsManager.h"
 #include "RepositoryListItem.h"
@@ -35,7 +36,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	,fRepositoryListView(NULL)
 {
 	SetupViews();
-	CheckForSavedToken();
+	fGithubClient = new GithubClient(this);
 }
 
 GithubRepositoryWindow::~GithubRepositoryWindow() 
@@ -77,40 +78,6 @@ GithubRepositoryWindow::SetupViews()
 }
 
 void 
-GithubRepositoryWindow::CheckForSavedToken()
-{
-	BString token;
-	LoadToken(token);
-	
-	if (token.Length() == 0) {
-		fGithubTokenWindow = new GithubTokenWindow(this);
-		fGithubTokenWindow->Show();
-	} else {
-		fGithubClient = new GithubClient(token.String(), this);
-		fGithubClient->RequestProjects();
-	}
-}
-
-void 
-GithubRepositoryWindow::LoadToken(BString &token)
-{
-	BMessage message;
-	SettingsManager manager;
-	manager.LoadSettings(message);
-	message.FindString("Token", &token);
-}
-
-void 
-GithubRepositoryWindow::SaveToken(BMessage *message)
-{
-	BString token;
-	if (message->FindString("Token", &token) == B_OK) {
-		SettingsManager manager;
-		manager.SaveSettings(*message);
-	}
-}
-
-void 
 GithubRepositoryWindow::ParseData(BMessage *message)
 {	
 	if (message->HasMessage("GithubRepositories") == false) {
@@ -140,9 +107,20 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 void
 GithubRepositoryWindow::MessageReceived(BMessage *message) {
 	switch (message->what) {
+		case kTokenLoadedMessage: {
+			printf("Token loaded\n");
+			RequestRepositories();
+			break;
+		}
+		
+		case kNoTokenMessage: {
+			fGithubTokenWindow = new GithubTokenWindow(this);
+			fGithubTokenWindow->Show();
+			break;	
+		}
+		
 		case kDataReceivedMessage: {
-			printf("kDataReceivedMessage\n");
-			ParseData(message);
+ 			ParseData(message);
 			break;
 		}
 		case kWindowQuitMessage: {
@@ -155,7 +133,9 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			if (message->FindInt32("index", &index) == B_OK) {
 				RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
 				if (listItem && listItem->CurrentRepository()) {
-					RequestIssuesForRepository(listItem->CurrentRepository()->name);
+					GithubIssuesWindow *window = new GithubIssuesWindow(listItem->CurrentRepository());
+					window->Show();
+					//RequestIssuesForRepository(listItem->CurrentRepository()->name);
 				}
 				printf("Found item\n");
 			}
@@ -163,14 +143,10 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 		}
 		
 		case kGithubTokenSaveMessage: {
-			SaveToken(message);
-			
 			BString token;
-			LoadToken(token);
-			
-			delete fGithubClient;
-			fGithubClient = new GithubClient(token.String(), this);
-			RequestRepositories();
+			if (message->FindString("Token", &token) == B_OK) {
+				fGithubClient->SaveToken(token.String());
+			}
 			break;
 		}
 		default:

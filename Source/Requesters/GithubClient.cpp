@@ -7,27 +7,72 @@
 #include "GithubClient.h"
 #include "NetRequester.h"
 #include "GraphQLBuilder.h"
+#include "SettingsManager.h"
 
+#include "Constants.h"
+#include <Messenger.h>
 #include <Handler.h>
 #include <Locker.h>
 #include <UrlProtocolRoster.h>
 #include <UrlRequest.h>
 #include <HttpRequest.h>
 
-GithubClient::GithubClient(const char *token, BHandler *handler)
+GithubClient::GithubClient(BHandler *handler)
 	:fHandler(handler)
+	,fMessenger(NULL)
 {
-	fToken << "Bearer " << token;
-
-	fRequestHeaders = BHttpHeaders();
-	fRequestHeaders.AddHeader("Authorization", fToken.String());
-	fRequestHeaders.AddHeader("Content-Type", "application/json");
-	fRequestHeaders.AddHeader("Accept", "application/vnd.github.inertia-preview+json");
+	SetTarget(handler);
+	LoadToken();
 }
 
 GithubClient::~GithubClient()
 {
+	delete fMessenger;
+}
 
+void 
+GithubClient::SetTarget(BHandler *handler)
+{
+	delete fMessenger;
+	fMessenger = new BMessenger(handler);
+}
+
+void 
+GithubClient::SaveToken(const char *token)
+{
+	BMessage message;
+	message.AddString("Token", BString(token));
+	SettingsManager manager;
+	manager.SaveSettings(message);
+	LoadToken();
+}
+
+void
+GithubClient::LoadToken() 
+{
+	BMessage message;
+	SettingsManager manager;
+	manager.LoadSettings(message);
+	if (message.FindString("Token", &fToken) == B_OK) {
+		InitHeaders();
+		BMessage msg(kTokenLoadedMessage);
+		fMessenger->SendMessage(&msg);
+	} else {
+		BMessage msg(kNoTokenMessage);
+		fMessenger->SendMessage(&msg);
+	}
+}
+
+void
+GithubClient::InitHeaders() 
+{
+	BString token;
+	token << "Bearer " << fToken;
+
+	fRequestHeaders = BHttpHeaders();
+	fRequestHeaders.AddHeader("Authorization", token.String());
+	fRequestHeaders.AddHeader("Content-Type", "application/json");
+	fRequestHeaders.AddHeader("Accept", "application/vnd.github.inertia-preview+json");
 }
 
 void 
@@ -43,7 +88,7 @@ GithubClient::RequestIssuesForRepository(BString name)
 		.AddNode("repository(name:\\\"%s\\\")", name)
 		.AddNode("issues(first:100)")
 		.AddNode("nodes")
-		.AddNode("title")
+		.AddNode("title body")
 		.Query();
 
 	RunRequest(requestUrl, &requester, query);
