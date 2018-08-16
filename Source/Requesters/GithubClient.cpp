@@ -6,6 +6,7 @@
 
 #include "GithubClient.h"
 #include "NetRequester.h"
+#include "GraphQLBuilder.h"
 
 #include <Handler.h>
 #include <Locker.h>
@@ -29,21 +30,25 @@ GithubClient::~GithubClient()
 
 }
 
-BString 
-GithubClient::CreateQuery(const BString &query) const
-{
-	BString str("{\"query\" : \"query { viewer {");
-	str << query << "}}\"}";
-	return str;
-}
-
 void 
 GithubClient::RequestIssuesForRepository(BString name)
 {
-	BString query(CreateQuery("repositories(first:1) { nodes { name url description id }}"));
+	const char *requestUrl = "https://api.github.com/graphql";
 	
 	NetRequester requester(fHandler, "Issues");
-	RunRequest("https://api.github.com/graphql", &requester, query);
+	BString repository;
+	repository << "repository(name:" << "\\\"" << name << "\\\")";
+	
+	GraphQLBuilder builder;
+	BString query = builder
+		.AddNode("viewer")
+		.AddNode(repository)
+		.AddNode("issues(first:100)")
+		.AddNode("nodes")
+		.AddNode("title")
+		.Query();
+
+	RunRequest(requestUrl, &requester, query);
 }
 
 void 
@@ -51,7 +56,15 @@ GithubClient::RequestProjects()
 {
 	const char *requestUrl = "https://api.github.com/graphql";
 	NetRequester requester(fHandler, "GithubRepositories");
-	RunRequest(requestUrl, &requester, CreateQuery("repositories(first:100) { nodes { name url description id }}"));
+	GraphQLBuilder builder;
+	BString query = builder
+		.AddNode("viewer")
+		.AddNode("repositories(first:100)")
+		.AddNode("nodes")
+		.AddNode("name url description id")
+		.Query();
+
+	RunRequest(requestUrl, &requester, query);
 }
 
 void
