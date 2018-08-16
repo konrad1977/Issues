@@ -36,13 +36,11 @@ GithubClient::RequestIssuesForRepository(BString name)
 	const char *requestUrl = "https://api.github.com/graphql";
 	
 	NetRequester requester(fHandler, "Issues");
-	BString repository;
-	repository << "repository(name:" << "\\\"" << name << "\\\")";
 	
 	GraphQLBuilder builder;
 	BString query = builder
 		.AddNode("viewer")
-		.AddNode(repository)
+		.AddNode("repository(name:\\\"%s\\\")", name)
 		.AddNode("issues(first:100)")
 		.AddNode("nodes")
 		.AddNode("title")

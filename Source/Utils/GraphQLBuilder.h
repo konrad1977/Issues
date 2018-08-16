@@ -15,7 +15,12 @@ public:
 	GraphQLBuilder();
 	~GraphQLBuilder();
 	
+	GraphQLBuilder& AddNode(BString format, BString value);
 	GraphQLBuilder& AddNode(BString node);
+	
+	GraphQLBuilder& AddClosedNode(BString node);
+	GraphQLBuilder& AddClosedNode(BString format, BString value);
+	
 	BString Query();
 								
 private:
