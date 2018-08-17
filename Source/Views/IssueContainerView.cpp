@@ -14,32 +14,75 @@
 #include <interface/LayoutBuilder.h>
 #include <interface/ListView.h>
 #include <interface/ScrollView.h>
+#include <interface/Dragger.h>
+
+#include <app/MessageRunner.h>
 
 #include <posix/stdlib.h>
 #include <posix/string.h>
 
+const float kDraggerSize = 7;
+extern const char *kAppSignature;
+
 IssuesContainerView::IssuesContainerView(const char *repositoryName)
-	:BView("issues", B_SUPPORTS_LAYOUT) 
+	:BView("issues", B_SUPPORTS_LAYOUT ) 
 	,fGithubClient(NULL)
 	,fListView(NULL)
-	,fRepositoryName(NULL)
+	,fScrollView(NULL)
+	,fDragger(NULL)
+	,fAutoUpdateRunner(NULL)
 	,fThreadId(-1)
+	,fIsReplicant(false)
 {
-	SetupViews();
- 	fRepositoryName = strdup(repositoryName);
+	SetupViews(fIsReplicant);
+	fRepositoryName = BString(repositoryName);
 }
+
+IssuesContainerView::IssuesContainerView(BMessage *message)
+	:BView(message) 
+	,fGithubClient(NULL)
+	,fListView(NULL)
+	,fScrollView(NULL)
+	,fDragger(NULL)
+	,fAutoUpdateRunner(NULL)
+	,fThreadId(-1)
+	,fIsReplicant(true)
+{
+	SetupViews(fIsReplicant);	
+	message->FindString("RepositoryName", &fRepositoryName);
+}
+
 
 IssuesContainerView::~IssuesContainerView()
 {
-	free(fRepositoryName);
 	delete fGithubClient;	
+}
+
+status_t	
+IssuesContainerView::Archive(BMessage* into, bool deep = true) const
+{
+	into->AddString("add_on", kAppSignature);
+	into->AddString("RepositoryName", fRepositoryName);
+	return BView::Archive(into, false);
+}
+
+BArchivable*	
+IssuesContainerView::Instantiate(BMessage* archive)
+{
+	return new IssuesContainerView(archive);
+} 
+
+status_t	
+IssuesContainerView::SaveState(BMessage* into, bool deep = true) const
+{
+	return B_OK;
 }
 
 void 
 IssuesContainerView::AttachedToWindow()
 {
-	fGithubClient = new GithubClient(this);
-	SpawnDonwloadThread();
+	StartAutoUpdater();
+	BView::AttachedToWindow();
 }
 
 void
@@ -50,9 +93,35 @@ IssuesContainerView::MessageReceived(BMessage *message)
  			ParseIssueData(message);
 			break;
 		}	
+		
+		case kAutoUpdateMessage: {
+			SpawnDonwloadThread();
+			break;
+		}
 		default:
 			BView::MessageReceived(message);
 	}
+}
+
+void 
+IssuesContainerView::StartAutoUpdater()
+{
+	delete fAutoUpdateRunner;
+	
+	BMessenger view(this);
+	bigtime_t seconds = 10;
+	
+	BMessage autoUpdateMessage(kAutoUpdateMessage);
+	fAutoUpdateRunner = new BMessageRunner(view, &autoUpdateMessage, (bigtime_t) seconds * 1000 * 1000);
+}
+
+GithubClient*
+IssuesContainerView::Client() 
+{
+	if (fGithubClient == NULL) {
+		fGithubClient = new GithubClient(this);
+	}
+	return fGithubClient;
 }
 
 int32
@@ -66,7 +135,7 @@ IssuesContainerView::DownloadFunc(void *cookie)
 void 
 IssuesContainerView::RequestIssues()
 {
-	fGithubClient->RequestIssuesForRepository(fRepositoryName);
+	Client()->RequestIssuesForRepository(fRepositoryName);
 }
 
 void 
@@ -98,7 +167,7 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
 			GithubIssue *issue = new GithubIssue(nodeMsg);
-			IssueListItem *listItem = new IssueListItem(issue);
+			IssueListItem *listItem = new IssueListItem(issue, fIsReplicant);
 			fListView->AddItem( listItem );
 		}
 	}
@@ -106,11 +175,27 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 }
 
 void
-IssuesContainerView::SetupViews()
+IssuesContainerView::SetupViews(bool isReplicant)
 {	
-	fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
-	BScrollView *scrollView = new BScrollView("Scrollview", fListView, B_FOLLOW_ALL, 0, false, true);
+	fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_SUPPORTS_LAYOUT | B_FULL_UPDATE_ON_RESIZE);
+	
+	if (isReplicant == false) {
+		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+		fScrollView = new BScrollView("Scrollview", fListView, B_SUPPORTS_LAYOUT, false, true);
+	} else {
+		SetViewColor(B_TRANSPARENT_COLOR);
+		fListView->SetViewColor(B_TRANSPARENT_COLOR);
+	}
+	
+	BSize draggerSize = BSize(kDraggerSize,kDraggerSize);
 	
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.Add(scrollView);
+		.Add(isReplicant ? fListView : fScrollView)
+		.AddGroup(B_HORIZONTAL)
+			.AddGlue()
+			.SetExplicitMinSize(draggerSize)
+			.SetExplicitMaxSize(draggerSize)
+			.Add(fDragger = new BDragger(this))
+		.End()
+	.End();
 }

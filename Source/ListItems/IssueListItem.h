@@ -13,19 +13,24 @@
 class GithubIssue;
 class IssueListItem : public BListItem {
 public:
-	IssueListItem(GithubIssue *issue);
+	IssueListItem(GithubIssue *issue, bool isReplicant);
 	~IssueListItem();	
 
 	virtual void DrawItem(BView *view, BRect rect, bool complete = false);
 	virtual void Update(BView *view, const BFont *font);	
 		
 private:
+			bool IsDark();
+		rgb_color BackgroundColor(bool isSelected);
+		rgb_color TextColor(bool isSelected);
+		
 			void DrawIssue(BRect frame);
 			
 	GithubIssue				*fIssue;
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
 	float 					fHeight;
 	float					fPreviousHeight;
+	bool					fIsReplicant;
 };
 
 #endif // _H

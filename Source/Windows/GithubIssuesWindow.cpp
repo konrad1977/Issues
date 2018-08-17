@@ -18,12 +18,13 @@
 #include <posix/stdio.h>
 
 GithubIssuesWindow::GithubIssuesWindow(GithubRepository *repository)
-	:BWindow(BRect(30,30,300,300), "Issues", B_DOCUMENT_WINDOW, 0)
+	:BWindow(BRect(30,30,360,400), "Issues", B_FLOATING_WINDOW, 0)
 	,fRepository(repository)
 	,fIssuesContainerView(NULL)
 {
 	SetTitle(fRepository->name.String());
 	SetupViews();
+	CenterOnScreen();
 }
 
 GithubIssuesWindow::~GithubIssuesWindow()

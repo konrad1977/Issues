@@ -8,30 +8,45 @@
 
 #include <SupportDefs.h>
 #include <interface/View.h>
+#include <support/String.h>
 
+class BMessageRunner;
+class BDragger;
 class BListView;
 class GithubClient;
 class IssuesContainerView : public BView {
 public:
 	
 	IssuesContainerView(const char *repositoryName);
+	IssuesContainerView(BMessage *archive);
   	~IssuesContainerView();
-  	
+
+  	static BArchivable*	Instantiate(BMessage* archive);  	
+	virtual status_t	Archive(BMessage* into, bool deep = true) const;
+			status_t	SaveState(BMessage* into, bool deep = true) const;
+
   	virtual void MessageReceived(BMessage *message);
   	virtual void AttachedToWindow();
 						
 private:
-
+	GithubClient *Client();
+			
 	static int32 DownloadFunc(void *cookie);
+			void StartAutoUpdater();
 			void RequestIssues();
 			void SpawnDonwloadThread();		
 			void ParseIssueData(BMessage *message);
-			void SetupViews();	
+			void SetupViews(bool isReplicant);	
 
 	GithubClient 		*fGithubClient; 
 	BListView			*fListView;
-	char 				*fRepositoryName;
+	BScrollView 		*fScrollView;
+	BDragger			*fDragger;
+	BMessageRunner		*fAutoUpdateRunner;
+	
+	BString	 			fRepositoryName;
 	thread_id			fThreadId;
+	bool 				fIsReplicant;
 };
 
 
