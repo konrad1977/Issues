@@ -28,6 +28,7 @@ SRCS = \
 	$(wildcard Source/Views/*.cpp) \
 	$(wildcard Source/ListItems/*.cpp) \
 	$(wildcard Source/Utils/*.cpp) \
+	$(wildcard Source/Clients/*.cpp) \
 	$(wildcard Source/Windows/*.cpp) \
 
 

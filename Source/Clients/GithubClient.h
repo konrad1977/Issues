@@ -17,6 +17,7 @@ public:
 	GithubClient(BHandler *handler);
 	~GithubClient();
 	
+	void RequestCommitHistory();
 	void RequestProjects();
 	void RequestIssuesForRepository(BString name);
 	void SaveToken(const char *token);
@@ -27,12 +28,13 @@ private:
 		void SetTarget(BHandler *handler);
 		
 		BString CreateQuery(const BString &query) const;
-		void RunRequest(const char *urlStr, NetRequester *requester, BString body);
+		void RunRequest(NetRequester *requester, BString body);
 	
 	BHttpHeaders 	fRequestHeaders;
 	BString 		fToken;
 	BHandler 		*fHandler;
 	BMessenger		*fMessenger;
+	char 			*fBaseUrl;
 };
 
 #endif // _H

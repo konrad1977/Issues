@@ -34,6 +34,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	,fGithubTokenWindow(NULL)
 	,fGithubClient(NULL)
 	,fRepositoryListView(NULL)
+	,fDownloadThread(-1)
 {
 	SetupViews();
 	fGithubClient = new GithubClient(this);
@@ -44,18 +45,22 @@ GithubRepositoryWindow::~GithubRepositoryWindow()
 	delete fGithubClient;
 }
 
-void 
-GithubRepositoryWindow::RequestRepositories()
+int32 
+GithubRepositoryWindow::DownloadRepositories(void *cookie)
 {
-	fGithubClient->RequestProjects();
-}
-			
-void 
-GithubRepositoryWindow::RequestIssuesForRepository(BString name)
-{
-	fGithubClient->RequestIssuesForRepository(name);
+	GithubRepositoryWindow *window = static_cast<GithubRepositoryWindow*>(cookie);
+	window->fGithubClient->RequestProjects();
+	return 0;
 }
 
+void 
+GithubRepositoryWindow::SpawnDownloadThread()
+{
+	fDownloadThread = spawn_thread(&DownloadRepositories, "Download Data", B_NORMAL_PRIORITY, this);
+	if (fDownloadThread >= 0)
+		resume_thread(fDownloadThread);
+}
+			
 void
 GithubRepositoryWindow::SetupViews() 
 {
@@ -109,7 +114,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 	switch (message->what) {
 		case kTokenLoadedMessage: {
 			printf("Token loaded\n");
-			RequestRepositories();
+			SpawnDownloadThread();
 			break;
 		}
 		
@@ -135,7 +140,6 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 				if (listItem && listItem->CurrentRepository()) {
 					GithubIssuesWindow *window = new GithubIssuesWindow(listItem->CurrentRepository());
 					window->Show();
-					//RequestIssuesForRepository(listItem->CurrentRepository()->name);
 				}
 				printf("Found item\n");
 			}

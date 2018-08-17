@@ -16,7 +16,8 @@ public:
 	~GithubIssue();
 
 	BString title;
-	BString body;								
+	BString body;	
+								
 private:
 
 };

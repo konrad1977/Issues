@@ -25,12 +25,14 @@ public:
 private:
 			void SetupViews();
 			void RequestRepositories();
-			void RequestIssuesForRepository(BString name);
+			void SpawnDownloadThread();
+	static int32 DownloadRepositories(void *cookie); 
 			
 	GithubTokenWindow 	*fGithubTokenWindow;
 	GithubClient 		*fGithubClient;
 	BListView 			*fRepositoryListView;
 	BMenuBar 			*fMenuBar;
+	thread_id			fDownloadThread;
 };
 
 

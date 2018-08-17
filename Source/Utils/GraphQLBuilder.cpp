@@ -5,11 +5,12 @@
 
 
 #include "GraphQLBuilder.h"
+#include <stdarg.h>
 
 GraphQLBuilder::GraphQLBuilder()
 	:fBraceBalance(0)
 {
-	fBuffer << "{ \"query\" : \"query ";
+	fBuffer << "{\"query\" :\"";
 }
 GraphQLBuilder::~GraphQLBuilder()
 {
@@ -17,9 +18,9 @@ GraphQLBuilder::~GraphQLBuilder()
 }
 
 GraphQLBuilder& 
-GraphQLBuilder::AddNode(BString format, BString value)
-{
-	return AddNode(BString().SetToFormat(format.String(), value.String()));
+GraphQLBuilder::AddNode(BString format, BString args)
+{	
+	return AddNode(BString().SetToFormat(format.String(), args.String()));
 }
 
 GraphQLBuilder& 

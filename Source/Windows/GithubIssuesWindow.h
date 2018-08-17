@@ -8,8 +8,7 @@
 #include <SupportDefs.h>
 #include <interface/Window.h>
 
-class BListView;
-class GithubClient;
+class IssuesContainerView;
 class GithubRepository;
 class GithubIssuesWindow : public BWindow {
 public:
@@ -19,13 +18,10 @@ public:
 	virtual void MessageReceived(BMessage *message);
 	
 private:
-	void ParseIssueData(BMessage *message);
-	void RequestIssues();
-	void SetupViews();
-	
+			void SetupViews();
+			
 	GithubRepository 	*fRepository;
-	GithubClient 		*fGithubClient;
-	BListView			*fListView;
+	IssuesContainerView	*fIssuesContainerView;
 };
 
 #endif // _H

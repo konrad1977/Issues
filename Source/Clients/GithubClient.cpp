@@ -10,6 +10,7 @@
 #include "SettingsManager.h"
 
 #include "Constants.h"
+
 #include <Messenger.h>
 #include <Handler.h>
 #include <Locker.h>
@@ -17,16 +18,22 @@
 #include <UrlRequest.h>
 #include <HttpRequest.h>
 
+#include <posix/string.h>
+#include <posix/stdlib.h>
+
 GithubClient::GithubClient(BHandler *handler)
 	:fHandler(handler)
 	,fMessenger(NULL)
+	,fBaseUrl(NULL)
 {
+	fBaseUrl = strdup("https://api.github.com/graphql");
 	SetTarget(handler);
 	LoadToken();
 }
 
 GithubClient::~GithubClient()
 {
+	free(fBaseUrl);
 	delete fMessenger;
 }
 
@@ -76,10 +83,27 @@ GithubClient::InitHeaders()
 }
 
 void 
-GithubClient::RequestIssuesForRepository(BString name)
+GithubClient::RequestCommitHistory()
 {
-	const char *requestUrl = "https://api.github.com/graphql";
+	NetRequester requester(fHandler, "Commits");
 	
+	GraphQLBuilder builder;
+	BString query = builder
+		.AddNode("repository(name:\\\"%s\\\" owner:\\\"Haiku\\\")", "Haiku")
+		.AddNode("ref(qualifiedName:\\\"%s\\\")", "master")
+		.AddNode("target")
+		.AddNode("... on Commit")
+		.AddNode("history(first:5)")
+		.AddNode("nodes")
+		.AddNode("messageHeadline message")
+		.Query();
+
+	RunRequest(&requester, query);
+}
+
+void 
+GithubClient::RequestIssuesForRepository(BString name)
+{	
 	NetRequester requester(fHandler, "Issues");
 	
 	GraphQLBuilder builder;
@@ -91,13 +115,12 @@ GithubClient::RequestIssuesForRepository(BString name)
 		.AddNode("title body")
 		.Query();
 
-	RunRequest(requestUrl, &requester, query);
+	RunRequest(&requester, query);
 }
 
 void 
 GithubClient::RequestProjects()
 {
-	const char *requestUrl = "https://api.github.com/graphql";
 	NetRequester requester(fHandler, "GithubRepositories");
 	GraphQLBuilder builder;
 	BString query = builder
@@ -107,15 +130,15 @@ GithubClient::RequestProjects()
 		.AddNode("name url description id")
 		.Query();
 
-	RunRequest(requestUrl, &requester, query);
+	RunRequest(&requester, query);
 }
 
 void
-GithubClient::RunRequest(const char *urlStr, NetRequester *requester, BString body) {
+GithubClient::RunRequest(NetRequester *requester, BString body) {
 
 	printf("Body: %s\n", body.String());
 	
-	BUrl url = BUrl(urlStr);	
+	BUrl url = BUrl(fBaseUrl);	
 	BHttpRequest* request = dynamic_cast<BHttpRequest*>(BUrlProtocolRoster::MakeRequest(url, requester));
 	request->SetMethod(B_HTTP_POST);
 	request->SetHeaders(fRequestHeaders);
