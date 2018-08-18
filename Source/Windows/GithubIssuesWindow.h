@@ -14,9 +14,7 @@ class GithubIssuesWindow : public BWindow {
 public:
 	GithubIssuesWindow(GithubRepository *repository);
 	~GithubIssuesWindow();		
-	
-	virtual void MessageReceived(BMessage *message);
-	
+		
 private:
 			void SetupViews();
 			

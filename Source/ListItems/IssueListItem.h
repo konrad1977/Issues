@@ -16,10 +16,11 @@ class IssueListItem : public BListItem {
 public:
 	IssueListItem(GithubIssue *issue, bool isReplicant);
 	~IssueListItem();	
-
-	virtual void DrawItem(BView *view, BRect rect, bool complete = true);
+	
+	virtual void DrawItem(BView *view, BRect rect, bool complete = true);	
 	virtual void Update(BView *view, const BFont *font);	
 		
+	GithubIssue* CurrentIssue() const;
 private:
 			bool IsDark();
 		rgb_color BackgroundColor(bool isSelected);

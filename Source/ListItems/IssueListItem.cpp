@@ -26,6 +26,12 @@ IssueListItem::~IssueListItem()
 	delete fMultiLineTextDrawer;
 }
 
+GithubIssue*
+IssueListItem::CurrentIssue() const 
+{
+	return fIssue;
+}
+
 void 
 IssueListItem::DrawBackground(BListView *parent)
 {

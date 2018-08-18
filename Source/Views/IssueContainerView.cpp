@@ -17,10 +17,12 @@
 #include <interface/Dragger.h>
 
 #include <app/MessageRunner.h>
+#include <app/Roster.h>
 #include <interface/ListItem.h>
 
 #include <posix/stdlib.h>
 #include <posix/string.h>
+#include <posix/stdio.h>
 
 const float kDraggerSize = 7;
 extern const char *kAppSignature;
@@ -96,6 +98,21 @@ IssuesContainerView::MessageReceived(BMessage *message)
  			ParseIssueData(message);
 			break;
 		}	
+			
+		case kIssueListInvokedMessage: {
+			printf("Got message\n");
+			int32 index = B_ERROR;
+			if (message->FindInt32("index", &index) == B_OK) {
+				IssueListItem *listItem = dynamic_cast<IssueListItem*>(fListView->ItemAt(index));
+				if (listItem == NULL) {
+					return;
+				}
+				
+				
+				printf("Selected index: %s\n", listItem->CurrentIssue()->url.String());
+			}
+			break;
+		}
 		
 		case kAutoUpdateMessage: {
 			SpawnDonwloadThread();
@@ -192,7 +209,9 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 void
 IssuesContainerView::SetupViews(bool isReplicant)
 {	
-	fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_SUPPORTS_LAYOUT | B_FULL_UPDATE_ON_RESIZE);
+	fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE | B_NAVIGABLE);
+	fListView->SetSelectionMessage( new BMessage(kIssueListInvokedMessage));	
+	fListView->SetTarget(this);
 	
 	if (isReplicant == false) {
 		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));

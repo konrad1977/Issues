@@ -66,7 +66,7 @@ GithubRepositoryWindow::SetupViews()
 {
 	fRepositoryListView = new BListView("Repositories", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
 	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, 0, false, true);
-	fRepositoryListView->SetInvocationMessage(new BMessage(kRepositoryListInvokedMessage));
+	fRepositoryListView->SetInvocationMessage(new BMessage(kListInvokedMessage));
 	
 	BGroupLayout *layout = new BGroupLayout(B_VERTICAL);
 	layout->SetSpacing(0);
@@ -133,7 +133,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 		
-		case kRepositoryListInvokedMessage: {
+		case kListInvokedMessage: {
 			int32 index = B_ERROR;
 			if (message->FindInt32("index", &index) == B_OK) {
 				RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));

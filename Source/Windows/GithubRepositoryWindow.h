@@ -20,9 +20,10 @@ public:
 	~GithubRepositoryWindow();
 	
 	virtual void MessageReceived(BMessage *message);
-			void ParseData(BMessage *message);
+			
 	
 private:
+			void ParseData(BMessage *message);
 			void SetupViews();
 			void RequestRepositories();
 			void SpawnDownloadThread();

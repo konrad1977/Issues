@@ -17,7 +17,9 @@ public:
 
 	BString title;
 	BString body;	
-								
+	BString url;
+	BString author;
+	
 private:
 
 };

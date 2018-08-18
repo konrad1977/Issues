@@ -29,11 +29,6 @@ GithubIssuesWindow::GithubIssuesWindow(GithubRepository *repository)
 
 GithubIssuesWindow::~GithubIssuesWindow()
 {
-}
-
-void 
-GithubIssuesWindow::MessageReceived(BMessage *message)
-{
 
 }
 

@@ -18,6 +18,7 @@ const int32 kNoTokenMessage			= 'kNTM';
 const int32 kTokenLoadedMessage		= 'kTLM';
 const int32 kAutoUpdateMessage		= 'kAUM';
 
-const int32 kRepositoryListInvokedMessage = 'kRLM';
+const int32 kListInvokedMessage 		= 'kRLM';
+const int32 kIssueListInvokedMessage 	= 'kILM';
 
 #endif // _H
