@@ -8,6 +8,7 @@
 
 #include <SupportDefs.h>
 #include <interface/ListItem.h>
+#include <interface/ListView.h>
 
 #include "MultiLineTextDrawer.h"
 
@@ -24,6 +25,7 @@ public:
 	
 private:
 			void DrawRepository(BRect frame);
+			void DrawBackground(BListView *parent);
 			
 	GithubRepository		*fRepository;
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;

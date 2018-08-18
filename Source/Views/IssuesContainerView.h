@@ -35,6 +35,8 @@ private:
 			void StartAutoUpdater();
 			void RequestIssues();
 			void SpawnDonwloadThread();		
+			void StopDownloadThread();
+			
 			void ParseIssueData(BMessage *message);
 			void SetupViews(bool isReplicant);	
 

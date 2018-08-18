@@ -31,6 +31,26 @@ RepositoryListItem::CurrentRepository() const
 }
 
 void 
+RepositoryListItem::DrawBackground(BListView *parent)
+{
+	const int32 index = parent->IndexOf(this);
+	BRect frame = parent->ItemFrame(index);
+	
+	rgb_color backgroundColor = ui_color(B_LIST_BACKGROUND_COLOR);
+	
+	if (IsSelected()) {
+		parent->SetLowColor(ui_color(B_LIST_SELECTED_BACKGROUND_COLOR));
+	} else if (index % 2 == 0) {
+		parent->SetLowColor(backgroundColor);
+	} else {
+		parent->SetLowColor(tint_color(backgroundColor, 1.05));
+	}
+	
+	parent->SetDrawingMode(B_OP_MIN);
+	parent->FillRect(frame, B_SOLID_LOW);
+}
+
+void 
 RepositoryListItem::DrawItem(BView *view, BRect rect, bool complete)
 {
 	BListView *parent = dynamic_cast<BListView *>(view);
@@ -41,23 +61,11 @@ RepositoryListItem::DrawItem(BView *view, BRect rect, bool complete)
 		fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
 		fMultiLineTextDrawer->SetInsets(BSize(10,0));
 	}
-	
-	rgb_color backgroundColor = ui_color(B_LIST_BACKGROUND_COLOR);
-	
-	if (IsSelected()) {
-		parent->SetHighColor(ui_color(B_LIST_SELECTED_BACKGROUND_COLOR));
-	} else if (index % 2 == 0) {
-		parent->SetHighColor(backgroundColor);
-	} else {
-		parent->SetHighColor(tint_color(backgroundColor, 1.02));
-	}
-	
-	parent->SetDrawingMode(B_OP_COPY);
-	parent->FillRect(frame);
+		
 	parent->SetDrawingMode(B_OP_OVER);
-	
 	DrawRepository(frame);
-	parent->FrameResized(rect.Width(), rect.Height());	
+	parent->FrameResized(frame.Width(), frame.Height());
+	DrawBackground(parent);	
 }
 
 void 
@@ -66,6 +74,7 @@ RepositoryListItem::DrawRepository(BRect rect)
 	BRect frame = rect;
 	BFont font(be_bold_font);
 	font.SetSize(13.0);
+	
 	fMultiLineTextDrawer->SetTextColor( 0, 0, 0);
 
 	fMultiLineTextDrawer->SetFont(&font);

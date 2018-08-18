@@ -20,7 +20,7 @@ public:
 	MultiLineTextDrawer(BView *parent);
 	~MultiLineTextDrawer();
 	
-	float DrawString(BRect frame, const char *text);
+	float DrawString(BRect frame, const char *text, bool disableOutput = false);
 	void SetInsets(BSize insets);
 
 	void SetTextColor(rgb_color color);

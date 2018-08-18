@@ -120,7 +120,7 @@ MultiLineTextDrawer::GetFontHeight(BFont &font) const
 }
 
 float 
-MultiLineTextDrawer::DrawString(BRect frame, const char *text)
+MultiLineTextDrawer::DrawString(BRect frame, const char *text, bool disableOutput)
 {	
 	BFont font;
 	fParent->GetFont(&font); 
@@ -140,8 +140,10 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text)
 		case B_ALIGN_LEFT: {
 			while( string.CountChars() > 0 ) {
 				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
-				fParent->MovePenTo(textFrame.LeftTop().x, linePosition + fontHeight * lines);
-				fParent->DrawString(textToRender);
+				if (disableOutput == false) {
+					fParent->MovePenTo(textFrame.LeftTop().x, linePosition + fontHeight * lines);
+					fParent->DrawString(textToRender);
+				}
 				lines++;
 			}
 			break;			
@@ -151,8 +153,10 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text)
 			while( string.CountChars() > 0 ) {
 				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
 				const float width = font.StringWidth(textToRender);
-				fParent->MovePenTo(textFrame.LeftTop().x + (frame.Width() - width) / 2.0, linePosition + fontHeight * lines);	
-				fParent->DrawString(textToRender);
+				if (disableOutput == false) {
+					fParent->MovePenTo(textFrame.LeftTop().x + (frame.Width() - width) / 2.0, linePosition + fontHeight * lines);	
+					fParent->DrawString(textToRender);
+				}
 				lines++;
 			}
 			break;
@@ -162,8 +166,10 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text)
 			while( string.CountChars() > 0 ) {
 				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
 				const float width = font.StringWidth(textToRender);
-				fParent->MovePenTo(frame.RightTop().x - width, linePosition + fontHeight * lines);	
-				fParent->DrawString(textToRender);
+				if (disableOutput == false) {
+					fParent->MovePenTo(frame.RightTop().x - width, linePosition + fontHeight * lines);	
+					fParent->DrawString(textToRender);
+				}
 				lines++;
 			}
 			break;

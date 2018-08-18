@@ -17,6 +17,7 @@
 #include <interface/Dragger.h>
 
 #include <app/MessageRunner.h>
+#include <interface/ListItem.h>
 
 #include <posix/stdlib.h>
 #include <posix/string.h>
@@ -36,6 +37,7 @@ IssuesContainerView::IssuesContainerView(const char *repositoryName)
 {
 	SetupViews(fIsReplicant);
 	fRepositoryName = BString(repositoryName);
+	SpawnDonwloadThread();
 }
 
 IssuesContainerView::IssuesContainerView(BMessage *message)
@@ -50,6 +52,7 @@ IssuesContainerView::IssuesContainerView(BMessage *message)
 {
 	SetupViews(fIsReplicant);	
 	message->FindString("RepositoryName", &fRepositoryName);
+	SpawnDonwloadThread();
 }
 
 
@@ -59,7 +62,7 @@ IssuesContainerView::~IssuesContainerView()
 }
 
 status_t	
-IssuesContainerView::Archive(BMessage* into, bool deep = true) const
+IssuesContainerView::Archive(BMessage* into, bool deep) const
 {
 	into->AddString("add_on", kAppSignature);
 	into->AddString("RepositoryName", fRepositoryName);
@@ -73,7 +76,7 @@ IssuesContainerView::Instantiate(BMessage* archive)
 } 
 
 status_t	
-IssuesContainerView::SaveState(BMessage* into, bool deep = true) const
+IssuesContainerView::SaveState(BMessage* into, bool deep) const
 {
 	return B_OK;
 }
@@ -141,7 +144,7 @@ IssuesContainerView::RequestIssues()
 void 
 IssuesContainerView::SpawnDonwloadThread()	
 {	
-	wait_for_thread(fThreadId, NULL);
+	StopDownloadThread();
 
 	fThreadId = spawn_thread(&DownloadFunc, "Download Issues", B_NORMAL_PRIORITY, this);
 	if (fThreadId >= 0)
@@ -149,14 +152,26 @@ IssuesContainerView::SpawnDonwloadThread()
 }
 
 void 
+IssuesContainerView::StopDownloadThread()
+{
+	if (fThreadId == -1) {
+		return;
+	}
+	wait_for_thread(fThreadId, NULL);
+	fThreadId = -1;
+}
+
+void 
 IssuesContainerView::ParseIssueData(BMessage *message)
 {
-	if (message->HasMessage("Issues") == false) {
+	if (message->HasMessage("Issues") == false || fListView == NULL) {
 		return;
 	}
 	
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("nodes", *message);
+
+	fListView->MakeEmpty();
 	
 	BMessage repositoriesMessage;
 	char *name;
@@ -190,7 +205,7 @@ IssuesContainerView::SetupViews(bool isReplicant)
 	BSize draggerSize = BSize(kDraggerSize,kDraggerSize);
 	
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.Add(isReplicant ? fListView : fScrollView)
+		.Add(isReplicant ? static_cast<BView*>(fListView) : static_cast<BView*>(fScrollView))
 		.AddGroup(B_HORIZONTAL)
 			.AddGlue()
 			.SetExplicitMinSize(draggerSize)

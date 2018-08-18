@@ -27,6 +27,29 @@ IssueListItem::~IssueListItem()
 }
 
 void 
+IssueListItem::DrawBackground(BListView *parent)
+{
+	const int32 index = parent->IndexOf(this);
+	BRect frame = parent->ItemFrame(index);
+	
+	rgb_color backgroundColor = BackgroundColor(IsSelected());
+	backgroundColor.alpha = 100;
+	
+	if (fIsReplicant || index % 2 == 0) {
+		parent->SetHighColor(backgroundColor);
+	} else {
+		parent->SetHighColor(tint_color(backgroundColor, 1.05));
+	}	
+	
+	parent->SetDrawingMode(fIsReplicant ? B_OP_ALPHA: B_OP_COPY);	
+	if (fIsReplicant) {
+		parent->FillRoundRect(frame.InsetBySelf(2,2), 3, 3);
+	} else {
+		parent->FillRect(frame);
+	}
+}
+
+void 
 IssueListItem::DrawItem(BView *view, BRect rect, bool complete)
 {
 	BListView *parent = dynamic_cast<BListView *>(view);
@@ -40,29 +63,15 @@ IssueListItem::DrawItem(BView *view, BRect rect, bool complete)
 	
 	rgb_color backgroundColor = BackgroundColor(IsSelected());
 	
-	if (fIsReplicant || index % 2 == 0) {
-		parent->SetHighColor(backgroundColor);
-	} else {
-		parent->SetHighColor(tint_color(backgroundColor, 1.05));
-	}
-	
-	parent->SetDrawingMode(fIsReplicant ? B_OP_ALPHA : B_OP_COPY);
-	
-	if (fIsReplicant) {
-		parent->FillRoundRect(frame.InsetBySelf(0,2), 3, 3);
-	} else {
-		parent->FillRect(frame);
-	}
-	
-	parent->SetLowColor(backgroundColor);	
-	parent->SetDrawingMode(B_OP_OVER);
-	
-	DrawIssue(frame);
-	parent->FrameResized(rect.Width(), rect.Height());	
+	parent->SetDrawingMode(B_OP_OVER);	
+	DrawIssue(frame, true);
+	DrawBackground(parent);	
+	DrawIssue(frame, false);
+	parent->FrameResized(frame.Width(), frame.Height());		
 }
 
 void 
-IssueListItem::DrawIssue(BRect rect)
+IssueListItem::DrawIssue(BRect rect, bool disableOutput)
 {
 	BRect frame = rect;
 	BFont font(be_bold_font);
@@ -70,7 +79,7 @@ IssueListItem::DrawIssue(BRect rect)
 	fMultiLineTextDrawer->SetTextColor(TextColor(IsSelected()));
 
 	fMultiLineTextDrawer->SetFont(&font);
-	float height = fMultiLineTextDrawer->DrawString(frame, fIssue->title.String());
+	float height = fMultiLineTextDrawer->DrawString(frame, fIssue->title.String(), disableOutput);
 	fHeight = height;
 
 	font = be_plain_font;
@@ -78,8 +87,9 @@ IssueListItem::DrawIssue(BRect rect)
 	frame = frame.OffsetBySelf(0, height);
 	fMultiLineTextDrawer->SetTextColor( TextColor(IsSelected()));
 	fMultiLineTextDrawer->SetFont(&font);
-	height = fMultiLineTextDrawer->DrawString(frame, fIssue->body.Trim().String());
+	height = fMultiLineTextDrawer->DrawString(frame, fIssue->body.Trim().String(), disableOutput);
 	fHeight += height + 10;
+	SetHeight(fHeight);
 }
 
 rgb_color
