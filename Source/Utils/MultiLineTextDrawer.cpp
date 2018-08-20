@@ -102,13 +102,13 @@ MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont font, float wid
 const uint32 
 MultiLineTextDrawer::CharactedFittedFor(BString text, BFont *font, float width) const
 {
-	if (text.CountChars() == 0) {
+	if (text.CountChars() == 0 ) {
 		return 0;
 	}
 	
 	const float textWidth = font->StringWidth(text.String());	
 	const float sizePerChar = textWidth / text.CountChars();	
-	return int32((width - fInsets.width * 2) / sizePerChar);
+	return int32(width / sizePerChar);
 }
 
 const float 
@@ -116,7 +116,7 @@ MultiLineTextDrawer::GetFontHeight(BFont &font) const
 {
 	font_height fh;
 	font.GetHeight(&fh);
-	return fh.ascent + fh.descent + fh.leading;
+	return ceilf(fh.ascent + fh.descent + fh.leading);
 }
 
 float 

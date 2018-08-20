@@ -15,7 +15,7 @@ IssueListItem::IssueListItem(GithubIssue *issue, bool isReplicant)
 	:BListItem()
 	,fIssue(issue)
 	,fMultiLineTextDrawer(NULL)
-	,fHeight(30)
+	,fHeight(10)
 	,fIsReplicant(isReplicant)
 {
 
@@ -66,15 +66,11 @@ IssueListItem::DrawItem(BView *view, BRect rect, bool complete)
 		fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
 		fMultiLineTextDrawer->SetInsets(BSize(10,0));
 	}
-	
-	rgb_color backgroundColor = BackgroundColor(IsSelected());
-	
+		
 	parent->SetDrawingMode(B_OP_OVER);	
-	DrawIssue(frame, true);
 	DrawBackground(parent);	
-	DrawIssue(frame, false);
-	
-	parent->FrameResized(frame.Width(), frame.Height());		
+	DrawIssue(frame, false);	
+	parent->FrameResized(frame.Width(), frame.Height());			
 }
 
 void 
@@ -84,19 +80,21 @@ IssueListItem::DrawIssue(BRect rect, bool disableOutput)
 	BFont font(be_bold_font);
 	font.SetSize(12.0);
 	fMultiLineTextDrawer->SetTextColor(TextColor(IsSelected()));
-
 	fMultiLineTextDrawer->SetFont(&font);
-	float height = fMultiLineTextDrawer->DrawString(frame, fIssue->title.String(), disableOutput);
-	fHeight = height;
+	
+	fHeight = fMultiLineTextDrawer->DrawString(frame, fIssue->title.String(), disableOutput);
 
 	font = be_plain_font;
 	font.SetSize(12);
-	frame = frame.OffsetBySelf(0, height);
+	frame = frame.OffsetBySelf(0, fHeight);
 	fMultiLineTextDrawer->SetTextColor( TextColor(IsSelected()));
-	fMultiLineTextDrawer->SetFont(&font);
-	height = fMultiLineTextDrawer->DrawString(frame, fIssue->body.Trim().String(), disableOutput);
-	fHeight += height + 10;
-	SetHeight(fHeight);
+
+	if (disableOutput == false) {
+		fMultiLineTextDrawer->SetFont(&font);
+	}
+	
+	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue->body.Trim().String(), disableOutput);
+	fHeight += 10;
 }
 
 rgb_color
@@ -136,7 +134,13 @@ IssueListItem::Update(BView *view, const BFont *font)
 {
 	if (fPreviousHeight != fHeight) {
 		fPreviousHeight = fHeight;
+
+		if (fMultiLineTextDrawer == NULL) {
+			BListView *parent = dynamic_cast<BListView *>(view);
+			fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
+			fMultiLineTextDrawer->SetInsets(BSize(10,0));
+		}	
+		DrawIssue(view->Bounds(), true);
 		SetHeight(fHeight);
-		SetWidth(100);
 	}
 }

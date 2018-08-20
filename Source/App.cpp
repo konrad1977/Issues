@@ -5,11 +5,9 @@
 
 
 #include "App.h"
-#include "MainWindow.h"
 #include "GithubRepositoryWindow.h"
 
 #include <posix/stdio.h>
-
 
 const char *kAppSignature = "application/x-vnd.konradsson.Issues";
 
@@ -19,9 +17,6 @@ App::App(void)
 {		
 	fGithubRepositoryWindow = new GithubRepositoryWindow();
 	fGithubRepositoryWindow->Show();
-	
-//	MainWindow *win = new MainWindow(BRect(30,30, 300, 200));
-//	win->Show();
 }
 
 App::~App() 

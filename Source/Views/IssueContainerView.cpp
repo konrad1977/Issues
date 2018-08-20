@@ -194,18 +194,22 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 	char *name;
 	uint32 type;
 	int32 count;
-				
+	
+	
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
 			GithubIssue *issue = new GithubIssue(nodeMsg);
 			IssueListItem *listItem = new IssueListItem(issue, fIsReplicant);
 			fListView->AddItem( listItem );
-			//BStringItem *item = new BStringItem(issue->title.String());
-			//fListView->AddItem( item );
 		}
 	}
-	fListView->Invalidate();
+	
+	float width;
+	float height;
+	fListView->GetPreferredSize(&width, &height);
+	
+	SetExplicitMaxSize(BSize(800, height + kDraggerSize));
 }
 
 void
@@ -229,10 +233,10 @@ IssuesContainerView::SetupViews(bool isReplicant)
 	
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.AddGroup(B_VERTICAL)
+			.SetExplicitMinSize(BSize(320, 100))
+			.SetExplicitPreferredSize(BSize(320, 320))
 			.Add(isReplicant ? static_cast<BView*>(fListView) : static_cast<BView*>(fScrollView))
 		.End()
-		.SetExplicitMinSize(BSize(300, 300))
-		.SetExplicitMaxSize(BSize(800, B_SIZE_UNLIMITED))
 		.AddGroup(B_HORIZONTAL)
 			.AddGlue()
 			.SetExplicitMinSize(draggerSize)

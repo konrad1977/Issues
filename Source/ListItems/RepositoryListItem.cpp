@@ -45,7 +45,6 @@ RepositoryListItem::DrawBackground(BListView *parent)
 	} else {
 		parent->SetLowColor(tint_color(backgroundColor, 1.05));
 	}
-	
 	parent->SetDrawingMode(B_OP_MIN);
 	parent->FillRect(frame, B_SOLID_LOW);
 }
