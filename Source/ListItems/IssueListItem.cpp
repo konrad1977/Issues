@@ -137,5 +137,6 @@ IssueListItem::Update(BView *view, const BFont *font)
 	if (fPreviousHeight != fHeight) {
 		fPreviousHeight = fHeight;
 		SetHeight(fHeight);
+		SetWidth(100);
 	}
 }

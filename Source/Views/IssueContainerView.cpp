@@ -28,7 +28,7 @@ const float kDraggerSize = 7;
 extern const char *kAppSignature;
 
 IssuesContainerView::IssuesContainerView(const char *repositoryName)
-	:BView("issues", B_SUPPORTS_LAYOUT ) 
+	:BGroupView(B_VERTICAL) 
 	,fGithubClient(NULL)
 	,fListView(NULL)
 	,fScrollView(NULL)
@@ -43,7 +43,7 @@ IssuesContainerView::IssuesContainerView(const char *repositoryName)
 }
 
 IssuesContainerView::IssuesContainerView(BMessage *message)
-	:BView(message) 
+	:BGroupView(message) 
 	,fGithubClient(NULL)
 	,fListView(NULL)
 	,fScrollView(NULL)
@@ -201,6 +201,8 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 			GithubIssue *issue = new GithubIssue(nodeMsg);
 			IssueListItem *listItem = new IssueListItem(issue, fIsReplicant);
 			fListView->AddItem( listItem );
+			//BStringItem *item = new BStringItem(issue->title.String());
+			//fListView->AddItem( item );
 		}
 	}
 	fListView->Invalidate();
@@ -209,27 +211,33 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 void
 IssuesContainerView::SetupViews(bool isReplicant)
 {	
-	fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE | B_NAVIGABLE);
-	fListView->SetSelectionMessage( new BMessage(kIssueListInvokedMessage));	
+	fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
+	fListView->SetSelectionMessage( new BMessage(kIssueListInvokedMessage ));	
 	fListView->SetTarget(this);
 	
 	if (isReplicant == false) {
 		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-		fScrollView = new BScrollView("Scrollview", fListView, B_SUPPORTS_LAYOUT, false, true);
+		fScrollView = new BScrollView("Scrollview", fListView, 0, false, true, B_NO_BORDER);
 	} else {
 		SetViewColor(B_TRANSPARENT_COLOR);
 		fListView->SetViewColor(B_TRANSPARENT_COLOR);
 	}
 	
 	BSize draggerSize = BSize(kDraggerSize,kDraggerSize);
+	fDragger = new BDragger(this);
+	fDragger->SetViewColor(B_TRANSPARENT_COLOR);
 	
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.Add(isReplicant ? static_cast<BView*>(fListView) : static_cast<BView*>(fScrollView))
+		.AddGroup(B_VERTICAL)
+			.Add(isReplicant ? static_cast<BView*>(fListView) : static_cast<BView*>(fScrollView))
+		.End()
+		.SetExplicitMinSize(BSize(300, 300))
+		.SetExplicitMaxSize(BSize(800, B_SIZE_UNLIMITED))
 		.AddGroup(B_HORIZONTAL)
 			.AddGlue()
 			.SetExplicitMinSize(draggerSize)
 			.SetExplicitMaxSize(draggerSize)
-			.Add(fDragger = new BDragger(this))
+			.Add(fDragger)
 		.End()
 	.End();
 }
