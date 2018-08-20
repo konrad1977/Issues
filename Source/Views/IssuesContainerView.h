@@ -7,14 +7,14 @@
 
 
 #include <SupportDefs.h>
-#include <interface/View.h>
+#include <interface/GroupView.h>
 #include <support/String.h>
 
 class BMessageRunner;
 class BDragger;
 class BListView;
 class GithubClient;
-class IssuesContainerView : public BView {
+class IssuesContainerView : public BGroupView {
 public:
 	
 	IssuesContainerView(const char *repositoryName);

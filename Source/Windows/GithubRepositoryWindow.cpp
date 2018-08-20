@@ -23,6 +23,7 @@
 #include <interface/LayoutBuilder.h>
 #include <interface/ListView.h>
 #include <interface/ScrollView.h>
+#include <GroupView.h>
 #include <posix/stdio.h>
 
 
@@ -30,7 +31,7 @@
 #define B_TRANSLATION_CONTEXT "GithubRepositoryWindow"
 
 GithubRepositoryWindow::GithubRepositoryWindow() 
-	:BWindow(BRect(30,30, 300, 400), "Repositories", B_DOCUMENT_WINDOW, B_QUIT_ON_WINDOW_CLOSE)
+	:BWindow(BRect(30,30, 320, 640), "Repositories", B_DOCUMENT_WINDOW, B_QUIT_ON_WINDOW_CLOSE | B_AUTO_UPDATE_SIZE_LIMITS)
 	,fGithubTokenWindow(NULL)
 	,fGithubClient(NULL)
 	,fRepositoryListView(NULL)
@@ -63,7 +64,7 @@ GithubRepositoryWindow::SpawnDownloadThread()
 			
 void
 GithubRepositoryWindow::SetupViews() 
-{
+{	
 	fRepositoryListView = new BListView("Repositories", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
 	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, 0, false, true);
 	fRepositoryListView->SetInvocationMessage(new BMessage(kListInvokedMessage));
@@ -76,7 +77,7 @@ GithubRepositoryWindow::SetupViews()
 		.AddMenu(B_TRANSLATE("Edit"))
 			.AddItem(new BMenuItem(B_TRANSLATE("About"), NULL, 'R'))
 		.End();
-	
+		
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.Add(fMenuBar)
 		.Add(scrollView);
