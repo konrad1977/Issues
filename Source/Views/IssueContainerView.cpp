@@ -208,8 +208,10 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 	float width;
 	float height;
 	fListView->GetPreferredSize(&width, &height);
-	
 	SetExplicitMaxSize(BSize(800, height + kDraggerSize));
+	if (fIsReplicant) {
+		ResizeTo(Bounds().Width(), height);
+	}
 }
 
 void
