@@ -73,6 +73,7 @@ IssueListItem::DrawItem(BView *view, BRect rect, bool complete)
 	DrawIssue(frame, true);
 	DrawBackground(parent);	
 	DrawIssue(frame, false);
+	
 	parent->FrameResized(frame.Width(), frame.Height());		
 }
 
