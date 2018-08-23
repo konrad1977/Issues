@@ -17,22 +17,22 @@ MultiLineTextDrawer::MultiLineTextDrawer(BView *parent)
 	rgb_color textColor = { 0,0,0 };
 	SetTextColor(textColor);
 	SetInsets(BSize(10,10));
-	fParent->SetLowColor(fParent->ViewColor());	
+	fParent->SetLowColor(fParent->ViewColor());
 }
 
 MultiLineTextDrawer::~MultiLineTextDrawer()
 {
-	
+
 }
 
-void 
+void
 MultiLineTextDrawer::SetTextColor(uchar red, uchar green, uchar blue, uchar alpha)
 {
 	rgb_color color = { red, green, blue, alpha };
 	SetTextColor(color);
 }
 
-void 
+void
 MultiLineTextDrawer::SetTextColor(rgb_color color)
 {
 	if (fTextColor != color) {
@@ -40,7 +40,7 @@ MultiLineTextDrawer::SetTextColor(rgb_color color)
 	}
 }
 
-void 
+void
 MultiLineTextDrawer::SetFont(BFont *font)
 {
 	if (fFont != font) {
@@ -49,14 +49,14 @@ MultiLineTextDrawer::SetFont(BFont *font)
 }
 
 void
-MultiLineTextDrawer::SetInsets(BSize size) 
+MultiLineTextDrawer::SetInsets(BSize size)
 {
 	if (fInsets != size) {
 		fInsets = size;
 	}
 }
 
-void 
+void
 MultiLineTextDrawer::SetAligntment(alignment align)
 {
 	if (fAlignment != align) {
@@ -66,11 +66,11 @@ MultiLineTextDrawer::SetAligntment(alignment align)
 
 const int32
 MultiLineTextDrawer::FindLineBreak(BString &text, uint32 offset) const {
-	
+
 	int32 index = B_ERROR;
 	if ((index = text.FindLast(" ", offset)) != B_ERROR) {
 		return index;
-	} 
+	}
 	else if ((index = text.FindLast("-", offset)) != B_ERROR) {
 		return index+1;
 	}
@@ -86,32 +86,32 @@ MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont font, float wid
 	BString buffer(input);
 	const size_t size = buffer.Length();
 	uint32 charatersThatFits = CharactedFittedFor(buffer, &font, width);
-	
+
 	int32 breakAt = B_ERROR;
 
 	if ( (size > charatersThatFits) && (breakAt = FindLineBreak(buffer, charatersThatFits)) != B_ERROR) {
 		charatersThatFits = breakAt;
-	} 
+	}
 	if ((breakAt = buffer.FindFirst('\n', 0)) != B_ERROR) {
-		charatersThatFits = breakAt; 
+		charatersThatFits = breakAt;
 	}
 	output.Remove(0, charatersThatFits).Trim();
 	return buffer.Remove(charatersThatFits, size).String();
 }
-	
-const uint32 
+
+const uint32
 MultiLineTextDrawer::CharactedFittedFor(BString text, BFont *font, float width) const
 {
 	if (text.CountChars() == 0 ) {
 		return 0;
 	}
-	
-	const float textWidth = font->StringWidth(text.String());	
-	const float sizePerChar = textWidth / text.CountChars();	
+
+	const float textWidth = font->StringWidth(text.String());
+	const float sizePerChar = textWidth / text.CountChars();
 	return int32(width / sizePerChar);
 }
 
-const float 
+const float
 MultiLineTextDrawer::GetFontHeight(BFont &font) const
 {
 	font_height fh;
@@ -119,22 +119,23 @@ MultiLineTextDrawer::GetFontHeight(BFont &font) const
 	return ceilf(fh.ascent + fh.descent + fh.leading);
 }
 
-float 
+float
 MultiLineTextDrawer::DrawString(BRect frame, const char *text, bool disableOutput)
-{	
+{
 	BFont font;
-	fParent->GetFont(&font); 
-	
+	fParent->GetFont(&font);
+
 	const float fontHeight = GetFontHeight(font);
 	BRect textFrame = frame.InsetBySelf(fInsets.width, fInsets.height);
-	
-	fParent->SetHighColor(fTextColor);
-	fParent->SetDrawingMode( B_OP_OVER );	
-	
 	BString string(text);
-	
+
 	int32 lines = 0;
 	const float linePosition = frame.LeftTop().y + fontHeight;
+
+	if (disableOutput == false) {
+		fParent->SetHighColor(fTextColor);
+		fParent->SetDrawingMode( B_OP_OVER );
+	}
 
 	switch (fAlignment) {
 		case B_ALIGN_LEFT: {
@@ -146,28 +147,28 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text, bool disableOutpu
 				}
 				lines++;
 			}
-			break;			
+			break;
 		}
 
-		case B_ALIGN_CENTER: {					
+		case B_ALIGN_CENTER: {
 			while( string.CountChars() > 0 ) {
 				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
 				const float width = font.StringWidth(textToRender);
 				if (disableOutput == false) {
-					fParent->MovePenTo(textFrame.LeftTop().x + (frame.Width() - width) / 2.0, linePosition + fontHeight * lines);	
+					fParent->MovePenTo(textFrame.LeftTop().x + (frame.Width() - width) / 2.0, linePosition + fontHeight * lines);
 					fParent->DrawString(textToRender);
 				}
 				lines++;
 			}
 			break;
 		}
-		
-		case B_ALIGN_RIGHT: {					
+
+		case B_ALIGN_RIGHT: {
 			while( string.CountChars() > 0 ) {
 				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
 				const float width = font.StringWidth(textToRender);
 				if (disableOutput == false) {
-					fParent->MovePenTo(frame.RightTop().x - width, linePosition + fontHeight * lines);	
+					fParent->MovePenTo(frame.RightTop().x - width, linePosition + fontHeight * lines);
 					fParent->DrawString(textToRender);
 				}
 				lines++;
