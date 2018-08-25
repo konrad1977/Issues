@@ -11,7 +11,7 @@
 #include <interface/Screen.h>
 #include <posix/stdio.h>
 
-IssueListItem::IssueListItem(GithubIssue *issue, bool isReplicant)
+IssueListItem::IssueListItem(GithubIssue issue, bool isReplicant)
 	:BListItem()
 	,fIssue(issue)
 	,fMultiLineTextDrawer(NULL)
@@ -26,7 +26,7 @@ IssueListItem::~IssueListItem()
 	delete fMultiLineTextDrawer;
 }
 
-GithubIssue*
+GithubIssue
 IssueListItem::CurrentIssue() const
 {
 	return fIssue;
@@ -82,17 +82,16 @@ IssueListItem::DrawIssue(BRect rect, bool disableOutput)
 	fMultiLineTextDrawer->SetTextColor(TextColor(IsSelected()));
 	fMultiLineTextDrawer->SetFont(&font);
 
-	fHeight = fMultiLineTextDrawer->DrawString(frame, fIssue->title.String(), disableOutput);
+	fHeight = fMultiLineTextDrawer->DrawString(frame, fIssue.title.String(), disableOutput);
 
 	font = be_plain_font;
-	frame = frame.OffsetBySelf(0, fHeight);
-	fMultiLineTextDrawer->SetTextColor( TextColor(IsSelected()));
+	frame.OffsetBy(0, fHeight);
 
 	if (disableOutput == false) {
 		fMultiLineTextDrawer->SetFont(&font);
 	}
 
-	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue->body.Trim().String(), disableOutput);
+	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue.body.Trim().String(), disableOutput);
 	fHeight += 10;
 }
 

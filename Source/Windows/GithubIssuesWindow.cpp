@@ -18,7 +18,7 @@
 #include <posix/stdio.h>
 
 GithubIssuesWindow::GithubIssuesWindow(GithubRepository *repository)
-	:BWindow(BRect(0,0,320,100), "Issues", B_TITLED_WINDOW, B_FRAME_EVENTS | B_AUTO_UPDATE_SIZE_LIMITS)
+	:BWindow(BRect(0,0,1,1), "Issues", B_TITLED_WINDOW, B_FRAME_EVENTS | B_AUTO_UPDATE_SIZE_LIMITS)
 	,fRepository(repository)
 	,fIssuesContainerView(NULL)
 {
@@ -36,7 +36,9 @@ void
 GithubIssuesWindow::SetupViews()
 {
 	fIssuesContainerView = new IssuesContainerView(fRepository->name.String());
-	fIssuesContainerView->SetExplicitMinSize(BSize(320, 200));
+	fIssuesContainerView->SetExplicitMinSize(BSize(320, B_SIZE_UNSET));
+	fIssuesContainerView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+	
 
 	SetLayout(new BGroupLayout(B_VERTICAL));
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)

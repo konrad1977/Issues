@@ -7,20 +7,19 @@
 
 #include <SupportDefs.h>
 #include <interface/ListItem.h>
-
+#include "GithubIssue.h"
 #include "MultiLineTextDrawer.h"
 
 class BListView;
-class GithubIssue;
 class IssueListItem : public BListItem {
 public:
-	IssueListItem(GithubIssue *issue, bool isReplicant);
+	IssueListItem(GithubIssue issue, bool isReplicant);
 	~IssueListItem();	
 	
 	virtual void DrawItem(BView *view, BRect rect, bool complete = true);	
 	virtual void Update(BView *view, const BFont *font);	
 			
-	GithubIssue* CurrentIssue() const;
+	GithubIssue CurrentIssue() const;
 	
 private:
 			bool IsDark();
@@ -30,8 +29,8 @@ private:
 			void DrawBackground(BListView *parent);
 			void DrawIssue(BRect frame, bool disableOutput);
 			
-	GithubIssue				*fIssue;
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
+	GithubIssue				fIssue;	
 	float 					fHeight;
 	float					fPreviousHeight;
 	bool					fIsReplicant;

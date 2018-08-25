@@ -22,6 +22,7 @@ public:
 	
 	float DrawString(BRect frame, const char *text, bool disableOutput = false);
 	void SetInsets(BSize insets);
+	const BSize Insets() const;
 
 	void SetTextColor(rgb_color color);
 	void SetTextColor(uchar red, uchar green, uchar blue, uchar alpha = 255);
@@ -32,7 +33,7 @@ public:
 private:
 	const int32 	FindLineBreak(BString &text, uint32 offset) const;
 	const float 	GetFontHeight(BFont &font) const;	
-	const char 		*GetStringFromWidth(const char *input, BFont font, float width, BString &output);
+	const char 		*GetStringFromWidth(const char *input, BFont *font, float width, BString &output);
 	const uint32 	CharactedFittedFor(BString text, BFont *font, float width) const;
 	
 	BView 			*fParent;

@@ -16,7 +16,7 @@ MultiLineTextDrawer::MultiLineTextDrawer(BView *parent)
 {
 	rgb_color textColor = { 0,0,0 };
 	SetTextColor(textColor);
-	SetInsets(BSize(10,10));
+	SetInsets(BSize(0,0));
 	fParent->SetLowColor(fParent->ViewColor());
 }
 
@@ -56,6 +56,12 @@ MultiLineTextDrawer::SetInsets(BSize size)
 	}
 }
 
+const BSize 
+MultiLineTextDrawer::Insets() const
+{
+	return fInsets;
+}
+
 void
 MultiLineTextDrawer::SetAligntment(alignment align)
 {
@@ -81,11 +87,12 @@ MultiLineTextDrawer::FindLineBreak(BString &text, uint32 offset) const {
 }
 
 const char *
-MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont font, float width, BString &output)
+MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont *font, float width, BString &output)
 {
 	BString buffer(input);
+	
 	const size_t size = buffer.Length();
-	uint32 charatersThatFits = CharactedFittedFor(buffer, &font, width);
+	uint32 charatersThatFits = CharactedFittedFor(buffer, font, width);
 
 	int32 breakAt = B_ERROR;
 
@@ -102,7 +109,7 @@ MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont font, float wid
 const uint32
 MultiLineTextDrawer::CharactedFittedFor(BString text, BFont *font, float width) const
 {
-	if (text.CountChars() == 0 ) {
+	if (text.CountChars() == 0) {
 		return 0;
 	}
 
@@ -140,7 +147,7 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text, bool disableOutpu
 	switch (fAlignment) {
 		case B_ALIGN_LEFT: {
 			while( string.CountChars() > 0 ) {
-				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
+				const char *textToRender = GetStringFromWidth(string.String(), &font, textFrame.Width(), string);
 				if (disableOutput == false) {
 					fParent->MovePenTo(textFrame.LeftTop().x, linePosition + fontHeight * lines);
 					fParent->DrawString(textToRender);
@@ -152,7 +159,7 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text, bool disableOutpu
 
 		case B_ALIGN_CENTER: {
 			while( string.CountChars() > 0 ) {
-				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
+				const char *textToRender = GetStringFromWidth(string.String(), &font, textFrame.Width(), string);
 				const float width = font.StringWidth(textToRender);
 				if (disableOutput == false) {
 					fParent->MovePenTo(textFrame.LeftTop().x + (frame.Width() - width) / 2.0, linePosition + fontHeight * lines);
@@ -165,7 +172,7 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text, bool disableOutpu
 
 		case B_ALIGN_RIGHT: {
 			while( string.CountChars() > 0 ) {
-				const char *textToRender = GetStringFromWidth(string.String(), font, textFrame.Width(), string);
+				const char *textToRender = GetStringFromWidth(string.String(), &font, textFrame.Width(), string);
 				const float width = font.StringWidth(textToRender);
 				if (disableOutput == false) {
 					fParent->MovePenTo(frame.RightTop().x - width, linePosition + fontHeight * lines);

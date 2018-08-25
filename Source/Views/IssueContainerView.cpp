@@ -12,13 +12,15 @@
 
 #include <interface/GroupLayout.h>
 #include <interface/LayoutBuilder.h>
+#include <interface/Window.h>
 #include <interface/ListView.h>
+#include <interface/ListItem.h>
 #include <interface/ScrollView.h>
 #include <interface/Dragger.h>
 
 #include <app/MessageRunner.h>
 #include <app/Roster.h>
-#include <interface/ListItem.h>
+
 
 #include <posix/stdlib.h>
 #include <posix/string.h>
@@ -60,6 +62,10 @@ IssuesContainerView::IssuesContainerView(BMessage *message)
 
 IssuesContainerView::~IssuesContainerView()
 {
+	while(fListView->CountItems()) {
+		delete fListView->RemoveItem(int32(0));
+	}
+	delete fListView;
 	delete fGithubClient;
 }
 
@@ -109,7 +115,7 @@ IssuesContainerView::MessageReceived(BMessage *message)
 				}
 
 
-				printf("Selected index: %s\n", listItem->CurrentIssue()->url.String());
+				printf("Selected index: %s\n", listItem->CurrentIssue().url.String());
 			}
 			break;
 		}
@@ -187,9 +193,11 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("nodes", *message);
-
-	fListView->MakeEmpty();
-
+	
+	while(fListView->CountItems()) {
+		delete fListView->RemoveItem(int32(0));
+	}
+	
 	BMessage repositoriesMessage;
 	char *name;
 	uint32 type;
@@ -199,7 +207,7 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
-			GithubIssue *issue = new GithubIssue(nodeMsg);
+			GithubIssue issue(nodeMsg);
 			IssueListItem *listItem = new IssueListItem(issue, fIsReplicant);
 			fListView->AddItem( listItem );
 		}
@@ -209,11 +217,12 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 	float height;
 	fListView->GetPreferredSize(&width, &height);
 	fListView->SetExplicitMinSize(BSize(320, height));
-	fListView->SetExplicitMaxSize(BSize(1020, height));
 
 	if (fIsReplicant) {
 		height += kDraggerSize;
 		ResizeTo(Bounds().Width(), height);
+	} else if (BWindow *window = dynamic_cast<BWindow*>(Parent())) {
+		window->CenterOnScreen();
 	}
 	fListView->Invalidate();
 }
