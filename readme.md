@@ -2,7 +2,7 @@
 ----------------
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Konrad77/Issues/master/Screenshots/screenshots.png" alt="Icon"/>
+  <img src="https://github.com/Konrad77/Issues/blob/master/Screenshots/screenshot1.png" alt="Icon"/>
 </p>
 
 ### How to build
