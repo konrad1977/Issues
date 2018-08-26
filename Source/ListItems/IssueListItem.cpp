@@ -7,23 +7,26 @@
 #include "IssueListItem.h"
 #include "GithubIssue.h"
 #include "Constants.h"
+#include "ListColorManager.h"
 #include <interface/ListView.h>
 #include <interface/Screen.h>
 #include <posix/stdio.h>
 
 IssueListItem::IssueListItem(GithubIssue issue, bool isReplicant)
 	:BListItem()
-	,fIssue(issue)
 	,fMultiLineTextDrawer(NULL)
+	,fListColorManager(NULL)	
+	,fIssue(issue)
 	,fHeight(10)
 	,fIsReplicant(isReplicant)
 {
-
+	fListColorManager = new ListColorManager(this, fIsReplicant);
 }
 
 IssueListItem::~IssueListItem()
 {
 	delete fMultiLineTextDrawer;
+	delete fListColorManager;
 }
 
 GithubIssue
@@ -38,7 +41,7 @@ IssueListItem::DrawBackground(BListView *parent)
 	const int32 index = parent->IndexOf(this);
 	BRect frame = parent->ItemFrame(index);
 
-	rgb_color backgroundColor = BackgroundColor(IsSelected());
+	rgb_color backgroundColor = fListColorManager->BackgroundColor();
 
 	if (fIsReplicant || index % 2 == 0) {
 		parent->SetHighColor(backgroundColor);
@@ -67,8 +70,8 @@ IssueListItem::DrawItem(BView *view, BRect rect, bool complete)
 		fMultiLineTextDrawer->SetInsets(BSize(10,0));
 	}
 
-	parent->SetDrawingMode(B_OP_OVER);
 	DrawBackground(parent);
+	parent->SetDrawingMode(B_OP_OVER);
 	DrawIssue(frame, false);
 	parent->FrameResized(frame.Width(), frame.Height());
 }
@@ -79,7 +82,8 @@ IssueListItem::DrawIssue(BRect rect, bool disableOutput)
 	BRect frame = rect;
 	BFont font(be_bold_font);
 	font.SetSize(12.0);
-	fMultiLineTextDrawer->SetTextColor(TextColor(IsSelected()));
+	
+	fMultiLineTextDrawer->SetTextColor(fListColorManager->TextColor());
 	fMultiLineTextDrawer->SetFont(&font);
 
 	fHeight = fMultiLineTextDrawer->DrawString(frame, fIssue.title.String(), disableOutput);
@@ -93,38 +97,6 @@ IssueListItem::DrawIssue(BRect rect, bool disableOutput)
 
 	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue.body.Trim().String(), disableOutput);
 	fHeight += 10;
-}
-
-rgb_color
-IssueListItem::BackgroundColor(bool isSelected)
-{
-	if (fIsReplicant && isSelected == false) {
-		BScreen screen;
-		rgb_color color = screen.DesktopColor();
-		color.alpha = 200;
-		return color;
-	}
-	return isSelected ? ui_color(B_LIST_SELECTED_BACKGROUND_COLOR) : ui_color(B_LIST_BACKGROUND_COLOR);
-}
-
-rgb_color
-IssueListItem::TextColor(bool isSelected)
-{
-	if (fIsReplicant) {
-		if (IsDark()) {
-			return kLightTextColor;
-		} else {
-			return kDarkTextColor;
-		}
-	}
-	return ui_color( isSelected ? B_LIST_SELECTED_ITEM_TEXT_COLOR : B_LIST_ITEM_TEXT_COLOR);
-}
-
-bool
-IssueListItem::IsDark()
-{
-	rgb_color backgroundColor = BackgroundColor(false);
-	return (backgroundColor.red + backgroundColor.green + backgroundColor.blue) < 128 * 3;
 }
 
 void

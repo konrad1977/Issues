@@ -9,6 +9,7 @@
 #include "IssueListItem.h"
 #include "Constants.h"
 #include "MessageFinder.h"
+#include "IssueTitleItem.h"
 
 #include <interface/GroupLayout.h>
 #include <interface/LayoutBuilder.h>
@@ -221,7 +222,9 @@ IssuesContainerView::HandleParse(BMessage *message)
 	char *name;
 	uint32 type;
 	int32 count;
-
+	
+	IssueTitleItem *titleItem = new IssueTitleItem(fRepositoryName.String(), fIsReplicant);
+	fListView->AddItem(titleItem);
 
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;

@@ -9,6 +9,7 @@
 #include <interface/ListItem.h>
 #include "GithubIssue.h"
 #include "MultiLineTextDrawer.h"
+#include "ListColorManager.h"
 
 class BListView;
 class IssueListItem : public BListItem {
@@ -22,14 +23,11 @@ public:
 	GithubIssue CurrentIssue() const;
 	
 private:
-			bool IsDark();
-		rgb_color BackgroundColor(bool isSelected);
-		rgb_color TextColor(bool isSelected);
-		
 			void DrawBackground(BListView *parent);
 			void DrawIssue(BRect frame, bool disableOutput);
 			
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
+	ListColorManager		*fListColorManager;
 	GithubIssue				fIssue;	
 	float 					fHeight;
 	float					fPreviousHeight;

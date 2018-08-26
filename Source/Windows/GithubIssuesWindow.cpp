@@ -36,7 +36,7 @@ void
 GithubIssuesWindow::SetupViews()
 {
 	fIssuesContainerView = new IssuesContainerView(fRepository->name.String());
-	fIssuesContainerView->SetExplicitMinSize(BSize(320, B_SIZE_UNSET));
+	fIssuesContainerView->SetExplicitMinSize(BSize(380, B_SIZE_UNSET));
 	fIssuesContainerView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	
 
