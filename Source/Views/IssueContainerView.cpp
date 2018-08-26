@@ -31,7 +31,7 @@ const float kDraggerSize = 7;
 extern const char *kAppSignature;
 
 IssuesContainerView::IssuesContainerView(const char *repositoryName)
-	:BGroupView(B_VERTICAL)
+	:BView("Container", B_DRAW_ON_CHILDREN)
 	,fGithubClient(NULL)
 	,fListView(NULL)
 	,fScrollView(NULL)
@@ -46,7 +46,7 @@ IssuesContainerView::IssuesContainerView(const char *repositoryName)
 }
 
 IssuesContainerView::IssuesContainerView(BMessage *message)
-	:BGroupView(message)
+	:BView(message)
 	,fGithubClient(NULL)
 	,fListView(NULL)
 	,fScrollView(NULL)
