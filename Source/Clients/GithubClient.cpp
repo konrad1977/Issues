@@ -110,7 +110,7 @@ GithubClient::RequestIssuesForRepository(BString name)
 	BString query = builder
 		.AddNode("viewer")
 		.AddNode("repository(name:\\\"%s\\\")", name)
-		.AddNode("issues(last:100 orderBy: { field: UPDATED_AT direction: ASC })")
+		.AddNode("issues(last:100 states:OPEN orderBy: { field: UPDATED_AT direction: ASC })")
 		.AddNode("nodes")
 		.AddNode("url title body author { login }")
 		.Query();

@@ -30,6 +30,7 @@ public:
 						
 private:
 	GithubClient *Client();
+	BListView 	 *ListView();
 			
 	static int32 DownloadFunc(void *cookie);
 			void StartAutoUpdater();
@@ -37,7 +38,8 @@ private:
 			void SpawnDonwloadThread();		
 			void StopDownloadThread();
 			
-			void ParseIssueData(BMessage *message);
+			void HandleListInvoke(BMessage *message);
+			void HandleParse(BMessage *message);
 			void SetupViews(bool isReplicant);	
 
 	GithubClient 		*fGithubClient; 

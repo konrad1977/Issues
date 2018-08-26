@@ -93,6 +93,7 @@ void
 IssuesContainerView::AttachedToWindow()
 {
 	StartAutoUpdater();
+	ListView()->SetTarget(this);
 	BView::AttachedToWindow();
 }
 
@@ -101,22 +102,12 @@ IssuesContainerView::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
 		case kDataReceivedMessage: {
- 			ParseIssueData(message);
+ 			HandleParse(message);
 			break;
 		}
 
 		case kIssueListInvokedMessage: {
-			printf("Got message\n");
-			int32 index = B_ERROR;
-			if (message->FindInt32("index", &index) == B_OK) {
-				IssueListItem *listItem = dynamic_cast<IssueListItem*>(fListView->ItemAt(index));
-				if (listItem == NULL) {
-					return;
-				}
-
-
-				printf("Selected index: %s\n", listItem->CurrentIssue().url.String());
-			}
+			HandleListInvoke(message);
 			break;
 		}
 
@@ -148,6 +139,16 @@ IssuesContainerView::Client()
 		fGithubClient = new GithubClient(this);
 	}
 	return fGithubClient;
+}
+
+BListView *
+IssuesContainerView::ListView() 
+{
+	if (fListView == NULL) {
+		fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
+		fListView->SetInvocationMessage( new BMessage(kIssueListInvokedMessage ));
+	}
+	return fListView;
 }
 
 int32
@@ -185,7 +186,25 @@ IssuesContainerView::StopDownloadThread()
 }
 
 void
-IssuesContainerView::ParseIssueData(BMessage *message)
+IssuesContainerView::HandleListInvoke(BMessage *message)
+{
+	int32 index = B_ERROR;
+	if (message->FindInt32("index", &index) == B_OK) {
+		IssueListItem *listItem = dynamic_cast<IssueListItem*>(ListView()->ItemAt(index));
+		
+		if (listItem == NULL) {
+			return;
+		}
+
+		const char *url = listItem->CurrentIssue().url.String();
+		if (strlen(url) > 10 ) {
+			be_roster->Launch("text/html", 1, const_cast<char **>(&url));		
+		}
+	}
+}
+
+void
+IssuesContainerView::HandleParse(BMessage *message)
 {
 	if (message->HasMessage("Issues") == false || fListView == NULL) {
 		return;
@@ -230,16 +249,12 @@ IssuesContainerView::ParseIssueData(BMessage *message)
 void
 IssuesContainerView::SetupViews(bool isReplicant)
 {
-	fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
-	fListView->SetSelectionMessage( new BMessage(kIssueListInvokedMessage ));
-	fListView->SetTarget(this);
-
 	if (isReplicant == false) {
 		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-		fScrollView = new BScrollView("Scrollview", fListView, 0, false, true, B_NO_BORDER);
+		fScrollView = new BScrollView("Scrollview", ListView(), 0, false, true, B_NO_BORDER);
 	} else {
 		SetViewColor(B_TRANSPARENT_COLOR);
-		fListView->SetViewColor(B_TRANSPARENT_COLOR);
+		ListView()->SetViewColor(B_TRANSPARENT_COLOR);
 	}
 
 	BSize draggerSize = BSize(kDraggerSize,kDraggerSize);
@@ -247,7 +262,7 @@ IssuesContainerView::SetupViews(bool isReplicant)
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.AddGroup(B_VERTICAL)
-			.Add(isReplicant ? static_cast<BView*>(fListView) : static_cast<BView*>(fScrollView))
+			.Add(isReplicant ? static_cast<BView*>(ListView()) : static_cast<BView*>(fScrollView))
 		.End()
 		.AddGroup(B_HORIZONTAL)
 			.AddGlue()
