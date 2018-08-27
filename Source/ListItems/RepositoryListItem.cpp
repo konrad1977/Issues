@@ -6,6 +6,7 @@
 
 #include "RepositoryListItem.h"
 #include "GithubRepository.h"
+#include "ListColorManager.h"
 
 #include <interface/ListView.h>
 #include <posix/stdio.h>
@@ -16,11 +17,12 @@ RepositoryListItem::RepositoryListItem(GithubRepository *repository)
 	,fMultiLineTextDrawer(NULL)
 	,fHeight(30)
 {
-
+	fListColorManager = new ListColorManager(this, false);
 }
 	
 RepositoryListItem::~RepositoryListItem()
 {
+	delete fListColorManager;
 	delete fMultiLineTextDrawer;
 }
 
@@ -35,18 +37,17 @@ RepositoryListItem::DrawBackground(BListView *parent)
 {
 	const int32 index = parent->IndexOf(this);
 	BRect frame = parent->ItemFrame(index);
-	
-	rgb_color backgroundColor = ui_color(B_LIST_BACKGROUND_COLOR);
-	
-	if (IsSelected()) {
-		parent->SetLowColor(ui_color(B_LIST_SELECTED_BACKGROUND_COLOR));
-	} else if (index % 2 == 0) {
-		parent->SetLowColor(backgroundColor);
+
+	rgb_color backgroundColor = fListColorManager->BackgroundColor();
+
+	if (index % 2 == 0) {
+		parent->SetHighColor(backgroundColor);
 	} else {
-		parent->SetLowColor(tint_color(backgroundColor, 1.05));
+		parent->SetHighColor(tint_color(backgroundColor, 1.05));
 	}
-	parent->SetDrawingMode(B_OP_MIN);
-	parent->FillRect(frame, B_SOLID_LOW);
+
+	parent->SetDrawingMode(B_OP_COPY);
+	parent->FillRect(frame);
 }
 
 void 
@@ -61,37 +62,38 @@ RepositoryListItem::DrawItem(BView *view, BRect rect, bool complete)
 		fMultiLineTextDrawer->SetInsets(BSize(10,0));
 	}
 		
-	parent->SetDrawingMode(B_OP_OVER);
-	DrawRepository(frame);
-	parent->FrameResized(frame.Width(), frame.Height());
 	DrawBackground(parent);	
+	parent->SetDrawingMode(B_OP_OVER);
+	DrawRepository(frame, true);
+	parent->FrameResized(frame.Width(), frame.Height());
 }
 
 void 
-RepositoryListItem::DrawRepository(BRect rect)
+RepositoryListItem::DrawRepository(BRect rect, bool enableOutput)
 {
 	BRect frame = rect;
 	BFont font(be_bold_font);
-	font.SetSize(13.0);
+	font.SetSize(14.0);
 	
-	fMultiLineTextDrawer->SetTextColor( 0, 0, 0);
-
-	fMultiLineTextDrawer->SetFont(&font);
-	float height = fMultiLineTextDrawer->DrawString(frame, fRepository->name.String());
+	rgb_color textColor = { 0,0,0 };
+	fMultiLineTextDrawer->SetTextColor(textColor);
+	
+	float height = fMultiLineTextDrawer->DrawString(frame, fRepository->name.String(), &font, enableOutput);
 	fHeight = height;
 
 	font = be_plain_font;
-	font.SetSize(12);
+	font.SetSize(13);
 	frame = frame.OffsetBySelf(0, height);
-	fMultiLineTextDrawer->SetTextColor( 70, 72, 71);
-	fMultiLineTextDrawer->SetFont(&font);
-	height = fMultiLineTextDrawer->DrawString(frame, fRepository->description.Trim().String());
+
+	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_LIGHTEN_1_TINT));
+	
+	height = fMultiLineTextDrawer->DrawString(frame, fRepository->description.Trim().String(), &font, enableOutput);
 	fHeight += height;
 	
 	frame = frame.OffsetBySelf(0, height);
-	fMultiLineTextDrawer->SetFont(&font);
 	fMultiLineTextDrawer->SetTextColor( 40, 42, 154);
-	height = fMultiLineTextDrawer->DrawString(frame, fRepository->url.String());
+
+	height = fMultiLineTextDrawer->DrawString(frame, fRepository->url.String(), &font, enableOutput);
 	fHeight += height + 10;
 }
 
@@ -100,6 +102,13 @@ RepositoryListItem::Update(BView *view, const BFont *font)
 {
 	if (fPreviousHeight != fHeight) {
 		fPreviousHeight = fHeight;
+
+		if (fMultiLineTextDrawer == NULL) {
+			BListView *parent = dynamic_cast<BListView *>(view);
+			fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
+			fMultiLineTextDrawer->SetInsets(BSize(10,0));
+		}
+		DrawRepository(view->Bounds(), false);
 		SetHeight(fHeight);
 	}
 }

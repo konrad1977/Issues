@@ -20,7 +20,7 @@ public:
 	MultiLineTextDrawer(BView *parent);
 	~MultiLineTextDrawer();
 	
-	float DrawString(BRect frame, const char *text, bool disableOutput = false);
+	float DrawString(BRect frame, const char *text, BFont *font, bool enableOutput = true);
 	void SetInsets(BSize insets);
 	const BSize Insets() const;
 
@@ -28,16 +28,15 @@ public:
 	void SetTextColor(uchar red, uchar green, uchar blue, uchar alpha = 255);
 	
 	void SetAligntment(alignment align);
-	void SetFont(BFont *font);
 		
 private:
+	
 	const int32 	FindLineBreak(BString &text, uint32 offset) const;
 	const float 	GetFontHeight(BFont &font) const;	
 	const char 		*GetStringFromWidth(const char *input, BFont *font, float width, BString &output);
 	const uint32 	CharactedFittedFor(BString text, BFont *font, float width) const;
 	
 	BView 			*fParent;
-	BFont			*fFont;
 	rgb_color		fTextColor;
 	alignment 		fAlignment;
 	BSize 			fInsets;

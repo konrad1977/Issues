@@ -72,30 +72,27 @@ IssueListItem::DrawItem(BView *view, BRect rect, bool complete)
 
 	DrawBackground(parent);
 	parent->SetDrawingMode(B_OP_OVER);
-	DrawIssue(frame, false);
+	DrawIssue(frame, true);
 	parent->FrameResized(frame.Width(), frame.Height());
 }
 
 void
-IssueListItem::DrawIssue(BRect rect, bool disableOutput)
+IssueListItem::DrawIssue(BRect rect, bool enableOutput)
 {
 	BRect frame = rect;
 	BFont font(be_bold_font);
-	font.SetSize(12.0);
+	font.SetSize(13.0);
 	
-	fMultiLineTextDrawer->SetTextColor(fListColorManager->TextColor());
-	fMultiLineTextDrawer->SetFont(&font);
+	rgb_color textColor = fListColorManager->TextColor();
+	fMultiLineTextDrawer->SetTextColor(textColor);
 
-	fHeight = fMultiLineTextDrawer->DrawString(frame, fIssue.title.String(), disableOutput);
+	fHeight = fMultiLineTextDrawer->DrawString(frame, fIssue.title.String(), &font, enableOutput);
+	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
 
 	font = be_plain_font;
 	frame.OffsetBy(0, fHeight);
-
-	if (disableOutput == false) {
-		fMultiLineTextDrawer->SetFont(&font);
-	}
-
-	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue.body.Trim().String(), disableOutput);
+	
+	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue.body.Trim().String(), &font, enableOutput);
 	fHeight += 10;
 }
 
@@ -110,7 +107,7 @@ IssueListItem::Update(BView *view, const BFont *font)
 			fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
 			fMultiLineTextDrawer->SetInsets(BSize(10,0));
 		}
-		DrawIssue(view->Bounds(), true);
+		DrawIssue(view->Bounds(), false);
 		SetHeight(fHeight);
 	}
 }

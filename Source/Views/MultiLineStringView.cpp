@@ -86,5 +86,7 @@ void
 MultiLineStringView::Draw(BRect rect)
 {
 	BRect r(Bounds());
-	fMultiLineTextDrawer->DrawString(r, fText);
+	BFont font;
+	GetFont(&font);
+	fMultiLineTextDrawer->DrawString(r, fText, &font);
 }	

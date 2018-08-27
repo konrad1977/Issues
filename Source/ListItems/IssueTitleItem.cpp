@@ -70,21 +70,20 @@ IssueTitleItem::DrawItem(BView *view, BRect rect, bool complete)
 
 	DrawBackground(parent);
 	parent->SetDrawingMode(B_OP_OVER);
-	DrawTitle(frame, false);
+	DrawTitle(frame, true);
 	parent->FrameResized(frame.Width(), frame.Height());
 }
 
 void 
-IssueTitleItem::DrawTitle(BRect frame, bool disableOutput)
+IssueTitleItem::DrawTitle(BRect frame, bool enableOutput)
 {
 	BFont font(be_bold_font);
 	font.SetSize(17.0);
 	
 	fDrawer->SetTextColor(fColorManager->TextColor());
-	fDrawer->SetFont(&font);
 	fDrawer->SetAligntment(B_ALIGN_CENTER);
 	
-	fHeight = fDrawer->DrawString(frame, fTitle, disableOutput);
+	fHeight = fDrawer->DrawString(frame, fTitle, &font, enableOutput);
 	fHeight += 10;
 }
 
@@ -100,7 +99,7 @@ IssueTitleItem::Update(BView *view, const BFont *font)
 			fDrawer->SetInsets(BSize(10,0));
 		}
 		
-		DrawTitle(view->Bounds(), true);
+		DrawTitle(view->Bounds(), false);
 		SetHeight(fHeight);
 	}
 }	
