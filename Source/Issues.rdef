@@ -1,6 +1,6 @@
 resource app_flags B_EXCLUSIVE_LAUNCH;
 
-resource app_signature "application/x-vnd.konradsson.Issues";
+resource app_signature "application/x-vnd.konradsson-Issues";
 
 resource app_version {
 	major  = 1,

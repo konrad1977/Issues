@@ -9,7 +9,7 @@
 
 #include <posix/stdio.h>
 
-const char *kAppSignature = "application/x-vnd.konradsson.Issues";
+const char *kAppSignature = "application/x-vnd.konradsson-Issues";
 
 App::App(void)
 	:BApplication(kAppSignature)
