@@ -55,7 +55,7 @@ MultiLineTextDrawer::Insets() const
 }
 
 void
-MultiLineTextDrawer::SetAligntment(alignment align)
+MultiLineTextDrawer::SetAlignment(alignment align)
 {
 	if (fAlignment != align) {
 		fAlignment = align;

@@ -7,28 +7,25 @@
 #include "IssueTitleItem.h"
 #include "ListColorManager.h"
 #include "MultiLineTextDrawer.h"
-
 #include <interface/ListView.h>
 
 #include <posix/stdlib.h>
 #include <posix/string.h>
 
-IssueTitleItem::IssueTitleItem(const char *title, bool isReplicant)
+IssueTitleItem::IssueTitleItem(GithubRepository repository, bool isReplicant)
 	:BListItem()
-	,fTitle(NULL)
+	,fRepository(repository)
 	,fDrawer(NULL)
 	,fColorManager(NULL)
 	,fIsReplicant(isReplicant)
 	,fHeight(10)
 	,fPreviousHeight(0)
 {
-	fTitle = strdup(title);
 	fColorManager = new ListColorManager(this, isReplicant);
 }
 
 IssueTitleItem::~IssueTitleItem()
 {
-	free(fTitle);
 	delete fColorManager;
 	delete fDrawer;
 }
@@ -81,9 +78,9 @@ IssueTitleItem::DrawTitle(BRect frame, bool enableOutput)
 	font.SetSize(17.0);
 	
 	fDrawer->SetTextColor(fColorManager->TextColor());
-	fDrawer->SetAligntment(B_ALIGN_CENTER);
+	fDrawer->SetAlignment(B_ALIGN_CENTER);
 	
-	fHeight = fDrawer->DrawString(frame, fTitle, &font, enableOutput);
+	fHeight = fDrawer->DrawString(frame, fRepository.name.String(), &font, enableOutput);
 	fHeight += 10;
 }
 

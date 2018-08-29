@@ -19,6 +19,7 @@ public:
 	
 	void RequestCommitHistory();
 	void RequestProjects();
+	void RequestRepository(BString name);
 	void RequestIssuesForRepository(BString name);
 	void SaveToken(const char *token);
 	

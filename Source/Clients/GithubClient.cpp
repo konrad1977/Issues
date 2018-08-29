@@ -83,6 +83,21 @@ GithubClient::InitHeaders()
 }
 
 void 
+GithubClient::RequestRepository(BString name)
+{
+	NetRequester requester(fHandler, "Repository");
+	
+	GraphQLBuilder builder;
+	BString query = builder
+		.AddNode("viewer")
+		.AddNode("repository(name:\\\"%s\\\")", name)
+		.AddNode("name url description id")
+		.Query();
+		
+	RunRequest(&requester, query);
+}
+
+void 
 GithubClient::RequestCommitHistory()
 {
 	NetRequester requester(fHandler, "Commits");

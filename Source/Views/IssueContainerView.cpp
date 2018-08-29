@@ -6,6 +6,9 @@
 #include "IssuesContainerView.h"
 #include "GithubClient.h"
 #include "GithubIssue.h"
+#include "GithubRepository.h"
+
+#include "RepositoryTitleView.h"
 #include "IssueListItem.h"
 #include "Constants.h"
 #include "MessageFinder.h"
@@ -33,6 +36,8 @@ extern const char *kAppSignature;
 IssuesContainerView::IssuesContainerView(const char *repositoryName)
 	:BView("Container", B_DRAW_ON_CHILDREN)
 	,fGithubClient(NULL)
+	,fGithubRepository(NULL)
+	,fRepositoryTitleView(NULL)
 	,fListView(NULL)
 	,fScrollView(NULL)
 	,fDragger(NULL)
@@ -40,8 +45,8 @@ IssuesContainerView::IssuesContainerView(const char *repositoryName)
 	,fThreadId(-1)
 	,fIsReplicant(false)
 {
-	SetupViews(fIsReplicant);
 	fRepositoryName = BString(repositoryName);
+	SetupViews(fIsReplicant);
 	SpawnDonwloadThread();
 }
 
@@ -164,6 +169,9 @@ void
 IssuesContainerView::RequestIssues()
 {
 	Client()->RequestIssuesForRepository(fRepositoryName);
+	if (fGithubRepository == NULL) {
+		Client()->RequestRepository(fRepositoryName);
+	}
 }
 
 void
@@ -204,28 +212,21 @@ IssuesContainerView::HandleListInvoke(BMessage *message)
 	}
 }
 
-void
-IssuesContainerView::HandleParse(BMessage *message)
+void 
+IssuesContainerView::AddIssues(BMessage *message)
 {
-	if (message->HasMessage("Issues") == false || fListView == NULL) {
-		return;
-	}
-
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("nodes", *message);
-	
-	while(fListView->CountItems()) {
-		delete fListView->RemoveItem(int32(0));
-	}
-	
 	BMessage repositoriesMessage;
+	
 	char *name;
 	uint32 type;
 	int32 count;
-	
-	IssueTitleItem *titleItem = new IssueTitleItem(fRepositoryName.String(), fIsReplicant);
-	fListView->AddItem(titleItem);
 
+	while(fListView->CountItems()) {
+		delete fListView->RemoveItem(int32(0));
+	}	
+		
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
@@ -234,13 +235,41 @@ IssuesContainerView::HandleParse(BMessage *message)
 			fListView->AddItem( listItem );
 		}
 	}
+}
 
+/*
+void 
+IssuesContainerView::AddRepository(BMessage *message)
+{
+	MessageFinder messageFinder;
+	BMessage msg = messageFinder.FindMessage("repository", *message);
+	
+	delete fGithubRepository;
+	fGithubRepository = new GithubRepository(msg);
+	IssueTitleItem *titleItem = new IssueTitleItem(*fGithubRepository, fIsReplicant);
+	fListView->AddItem(titleItem, 0);
+}
+*/
+
+void
+IssuesContainerView::HandleParse(BMessage *message)
+{
+	if (fListView == NULL || fRepositoryTitleView == NULL) {
+		return;
+	}
+
+	if (message->HasMessage("Issues")) {
+		AddIssues(message);
+	}
+	
 	float width;
 	float height;
 	fListView->GetPreferredSize(&width, &height);
 	fListView->SetExplicitMinSize(BSize(320, height));
+	
 
 	if (fIsReplicant) {
+		height += fRepositoryTitleView->MinSize().height;
 		height += kDraggerSize;
 		ResizeTo(Bounds().Width(), height);
 	} else if (BWindow *window = dynamic_cast<BWindow*>(Parent())) {
@@ -252,6 +281,8 @@ IssuesContainerView::HandleParse(BMessage *message)
 void
 IssuesContainerView::SetupViews(bool isReplicant)
 {
+	fRepositoryTitleView = new RepositoryTitleView();
+	
 	if (isReplicant == false) {
 		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 		fScrollView = new BScrollView("Scrollview", ListView(), 0, false, true, B_NO_BORDER);
@@ -264,7 +295,8 @@ IssuesContainerView::SetupViews(bool isReplicant)
 	fDragger = new BDragger(this);
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.AddGroup(B_VERTICAL)
+		.AddGroup(B_VERTICAL, 0)
+			.Add(fRepositoryTitleView)
 			.Add(isReplicant ? static_cast<BView*>(ListView()) : static_cast<BView*>(fScrollView))
 		.End()
 		.AddGroup(B_HORIZONTAL)

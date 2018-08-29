@@ -27,7 +27,7 @@ public:
 	void SetTextColor(rgb_color color);
 	void SetTextColor(uchar red, uchar green, uchar blue, uchar alpha = 255);
 	
-	void SetAligntment(alignment align);
+	void SetAlignment(alignment align);
 		
 private:
 	

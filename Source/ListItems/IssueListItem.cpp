@@ -86,12 +86,24 @@ IssueListItem::DrawIssue(BRect rect, bool enableOutput)
 	rgb_color textColor = fListColorManager->TextColor();
 	fMultiLineTextDrawer->SetTextColor(textColor);
 
-	fHeight = fMultiLineTextDrawer->DrawString(frame, fIssue.title.String(), &font, enableOutput);
+	float titleHeight = fMultiLineTextDrawer->DrawString(frame, fIssue.title.String(), &font, enableOutput);
+	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
+	
+	fMultiLineTextDrawer->SetAlignment(B_ALIGN_RIGHT);
+	
+	font = be_plain_font;
+	font.SetSize(10);
+
+	float authorHeight = fMultiLineTextDrawer->DrawString(frame, fIssue.author.String(), &font, enableOutput);
 	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
 
+	fHeight = MAX(titleHeight, authorHeight);
+	
 	font = be_plain_font;
+	font.SetSize(12);	
 	frame.OffsetBy(0, fHeight);
 	
+	fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);
 	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue.body.Trim().String(), &font, enableOutput);
 	fHeight += 10;
 }

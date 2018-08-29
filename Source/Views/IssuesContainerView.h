@@ -13,7 +13,9 @@
 class BMessageRunner;
 class BDragger;
 class BListView;
+class GithubRepository;
 class GithubClient;
+class RepositoryTitleView;
 class IssuesContainerView : public BView {
 public:
 	
@@ -40,9 +42,15 @@ private:
 			
 			void HandleListInvoke(BMessage *message);
 			void HandleParse(BMessage *message);
+
+			void AddIssues(BMessage *message);
+			void AddRepository(BMessage *message);
+			
 			void SetupViews(bool isReplicant);	
 
 	GithubClient 		*fGithubClient; 
+	GithubRepository	*fGithubRepository;
+	RepositoryTitleView	*fRepositoryTitleView;
 	BListView			*fListView;
 	BScrollView 		*fScrollView;
 	BDragger			*fDragger;

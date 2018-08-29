@@ -15,7 +15,7 @@ MessageFinder::FindMessage(BString name, BMessage inMessage)
 	
 	for (int32 i = 0; inMessage.GetInfo(B_MESSAGE_TYPE, i, &messageName, &type, &count) == B_OK; i++) {
 		BMessage subMessage;
-		if (inMessage.FindMessage(messageName, &subMessage) ==B_OK) {
+		if (inMessage.FindMessage(messageName, &subMessage) == B_OK) {
 			BString currentName(messageName);
 			return name == messageName ? subMessage : FindMessage(name, subMessage);
 		}

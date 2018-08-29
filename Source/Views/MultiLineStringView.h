@@ -27,7 +27,7 @@ public:
 			void SetInsets(BSize size);
 			void SetInsets(float left, float top, float right, float bottom);
 			
-			void SetAligntment(alignment align);
+			void SetAlignment(alignment align);
 
 private:
 	char *fText;

@@ -39,9 +39,9 @@ MultiLineStringView::SetTextColor(rgb_color color)
 }
 
 void 
-MultiLineStringView::SetAligntment(alignment align)
+MultiLineStringView::SetAlignment(alignment align)
 {
-	fMultiLineTextDrawer->SetAligntment(align);
+	fMultiLineTextDrawer->SetAlignment(align);
 }
 
 void 

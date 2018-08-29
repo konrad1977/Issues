@@ -9,13 +9,14 @@
 #include <SupportDefs.h>
 #include <interface/ListItem.h>
 #include <interface/ListView.h>
+#include "GithubRepository.h"
 
 class MultiLineTextDrawer;
 class ListColorManager;
 class IssueTitleItem : public BListItem {
 public:
 
-	IssueTitleItem(const char *title, bool isreplicant);
+	IssueTitleItem(GithubRepository repository, bool isreplicant);
 	~IssueTitleItem();
 	
 	virtual void DrawItem(BView *view, BRect rect, bool complete = true);	
@@ -26,7 +27,7 @@ private:
 			void DrawBackground(BListView *parent);
 			void DrawTitle(BRect frame, bool disableOutput);
 
-	char 				*fTitle;
+	GithubRepository	fRepository;
 	MultiLineTextDrawer *fDrawer;
 	ListColorManager 	*fColorManager;
 	
