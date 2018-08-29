@@ -75,7 +75,7 @@ RepositoryListItem::DrawRepository(BRect rect, bool enableOutput)
 	BFont font(be_bold_font);
 	font.SetSize(14.0);
 	
-	rgb_color textColor = { 0,0,0 };
+	rgb_color textColor = fListColorManager->TextColor();
 	fMultiLineTextDrawer->SetTextColor(textColor);
 	
 	float height = fMultiLineTextDrawer->DrawString(frame, fRepository->name.String(), &font, enableOutput);
@@ -91,7 +91,7 @@ RepositoryListItem::DrawRepository(BRect rect, bool enableOutput)
 	fHeight += height;
 	
 	frame = frame.OffsetBySelf(0, height);
-	fMultiLineTextDrawer->SetTextColor( 40, 42, 154);
+	fMultiLineTextDrawer->SetTextColor(ui_color(B_LINK_TEXT_COLOR));
 
 	height = fMultiLineTextDrawer->DrawString(frame, fRepository->url.String(), &font, enableOutput);
 	fHeight += height + 10;
