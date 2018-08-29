@@ -7,7 +7,7 @@
 #include "IssueListItem.h"
 #include "GithubIssue.h"
 #include "Constants.h"
-#include "ListColorManager.h"
+#include "ColorManager.h"
 #include <interface/ListView.h>
 #include <interface/Screen.h>
 #include <posix/stdio.h>
@@ -20,7 +20,7 @@ IssueListItem::IssueListItem(GithubIssue issue, bool isReplicant)
 	,fHeight(10)
 	,fIsReplicant(isReplicant)
 {
-	fListColorManager = new ListColorManager(this, fIsReplicant);
+	fListColorManager = new ColorManager(this, fIsReplicant);
 }
 
 IssueListItem::~IssueListItem()

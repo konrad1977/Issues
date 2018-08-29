@@ -2,17 +2,18 @@
  * Copyright 2015 Your Name <your@email.address>
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef LISTCOLORMANAGER_H
-#define LISTCOLORMANAGER_H
+#ifndef COLORMANAGER_H
+#define COLORMANAGER_H
 
 #include <SupportDefs.h>
 #include <InterfaceDefs.h>
 #include <ListItem.h>
 
-class ListColorManager {
+class ColorManager {
 public:
-	ListColorManager(BListItem *listItem, bool isFeplicant);
-	~ListColorManager();
+	ColorManager(BListItem *listItem, bool isFeplicant);
+	ColorManager(bool isFeplicant);
+	~ColorManager();
 
 	bool IsDark();
 

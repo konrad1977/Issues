@@ -12,7 +12,6 @@
 #include "IssueListItem.h"
 #include "Constants.h"
 #include "MessageFinder.h"
-#include "IssueTitleItem.h"
 
 #include <interface/GroupLayout.h>
 #include <interface/LayoutBuilder.h>
@@ -53,6 +52,8 @@ IssuesContainerView::IssuesContainerView(const char *repositoryName)
 IssuesContainerView::IssuesContainerView(BMessage *message)
 	:BView(message)
 	,fGithubClient(NULL)
+	,fGithubRepository(NULL)
+	,fRepositoryTitleView(NULL)
 	,fListView(NULL)
 	,fScrollView(NULL)
 	,fDragger(NULL)
@@ -168,10 +169,10 @@ IssuesContainerView::DownloadFunc(void *cookie)
 void
 IssuesContainerView::RequestIssues()
 {
-	Client()->RequestIssuesForRepository(fRepositoryName);
 	if (fGithubRepository == NULL) {
 		Client()->RequestRepository(fRepositoryName);
 	}
+	Client()->RequestIssuesForRepository(fRepositoryName);
 }
 
 void
@@ -237,7 +238,7 @@ IssuesContainerView::AddIssues(BMessage *message)
 	}
 }
 
-/*
+
 void 
 IssuesContainerView::AddRepository(BMessage *message)
 {
@@ -246,10 +247,9 @@ IssuesContainerView::AddRepository(BMessage *message)
 	
 	delete fGithubRepository;
 	fGithubRepository = new GithubRepository(msg);
-	IssueTitleItem *titleItem = new IssueTitleItem(*fGithubRepository, fIsReplicant);
-	fListView->AddItem(titleItem, 0);
+	fRepositoryTitleView->SetRepository(fGithubRepository);
+	printf("AddRepository \n");
 }
-*/
 
 void
 IssuesContainerView::HandleParse(BMessage *message)
@@ -260,6 +260,8 @@ IssuesContainerView::HandleParse(BMessage *message)
 
 	if (message->HasMessage("Issues")) {
 		AddIssues(message);
+	} else if (message->HasMessage("Repository")) {
+		AddRepository(message);
 	}
 	
 	float width;
@@ -281,7 +283,7 @@ IssuesContainerView::HandleParse(BMessage *message)
 void
 IssuesContainerView::SetupViews(bool isReplicant)
 {
-	fRepositoryTitleView = new RepositoryTitleView();
+	fRepositoryTitleView = new RepositoryTitleView(isReplicant);
 	
 	if (isReplicant == false) {
 		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));

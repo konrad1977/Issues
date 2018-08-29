@@ -9,7 +9,7 @@
 #include <interface/ListItem.h>
 #include "GithubIssue.h"
 #include "MultiLineTextDrawer.h"
-#include "ListColorManager.h"
+#include "ColorManager.h"
 
 class BListView;
 class IssueListItem : public BListItem {
@@ -27,7 +27,7 @@ private:
 			void DrawIssue(BRect frame, bool disableOutput);
 			
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
-	ListColorManager		*fListColorManager;
+	ColorManager		*fListColorManager;
 	GithubIssue				fIssue;	
 	float 					fHeight;
 	float					fPreviousHeight;

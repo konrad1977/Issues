@@ -6,7 +6,7 @@
 
 #include "RepositoryListItem.h"
 #include "GithubRepository.h"
-#include "ListColorManager.h"
+#include "ColorManager.h"
 
 #include <interface/ListView.h>
 #include <posix/stdio.h>
@@ -17,7 +17,7 @@ RepositoryListItem::RepositoryListItem(GithubRepository *repository)
 	,fMultiLineTextDrawer(NULL)
 	,fHeight(30)
 {
-	fListColorManager = new ListColorManager(this, false);
+	fListColorManager = new ColorManager(this, false);
 }
 	
 RepositoryListItem::~RepositoryListItem()

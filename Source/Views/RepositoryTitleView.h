@@ -9,13 +9,18 @@
 #include <SupportDefs.h>
 #include <interface/View.h>
 
-class GithubRepository;
+#include "GithubRepository.h"
+#include "MultiLineTextDrawer.h"
+
+class ColorManager;
 class RepositoryTitleView : public BView {
 public:
-	RepositoryTitleView();
+	RepositoryTitleView(bool isReplicant);
 	~RepositoryTitleView();
+
+	virtual BSize MinSize();
+	virtual BSize MaxSize();
 	
-	virtual	BSize MinSize();
 	virtual void Draw(BRect rect);
 			void SetRepository(GithubRepository *repository);
 	
@@ -23,7 +28,11 @@ private:
 			void DrawBackground();
 			void DrawRepository();
 			
-	GithubRepository *fRepository;
+	GithubRepository 		*fRepository;
+	MultiLineTextDrawer 	*fDrawer;
+	ColorManager			*fColorManager;
+	float 					fHeight;
+	bool 					fIsReplicant;
 };
 
 

@@ -12,7 +12,7 @@
 
 #include "MultiLineTextDrawer.h"
 
-class ListColorManager;
+class ColorManager;
 class GithubRepository;
 class RepositoryListItem : public BListItem {
 public:
@@ -30,7 +30,7 @@ private:
 			
 	GithubRepository		*fRepository;
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
-	ListColorManager		*fListColorManager;
+	ColorManager			*fListColorManager;
 
 	float 					fHeight;
 	float					fPreviousHeight;

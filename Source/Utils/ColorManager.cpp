@@ -4,37 +4,44 @@
  */
 
 
-#include "ListColorManager.h"
+#include "ColorManager.h"
 #include <interface/Screen.h>
 #include "Constants.h"
 
-ListColorManager::ListColorManager(BListItem *listItem, bool isreplicant)
+ColorManager::ColorManager(BListItem *listItem, bool isreplicant)
 	:fListItem(listItem)
 	,fIsReplicant(isreplicant)
 {
 
 }
+
+ColorManager::ColorManager(bool isreplicant)
+	:fListItem(NULL)
+	,fIsReplicant(isreplicant)
+{
+
+}
 	
-ListColorManager::~ListColorManager()
+ColorManager::~ColorManager()
 {
 
 }
 
 bool 		
-ListColorManager::IsSelected() const
+ColorManager::IsSelected() const
 {
-	return fListItem->IsSelected();
+	return fListItem == NULL ? false : fListItem->IsSelected();
 }
 
 bool
-ListColorManager::IsDark()
+ColorManager::IsDark()
 {
 	rgb_color backgroundColor = BackgroundColor();
 	return (backgroundColor.red + backgroundColor.green + backgroundColor.blue) < 128 * 3;
 }
 
 rgb_color
-ListColorManager::BackgroundColor()
+ColorManager::BackgroundColor()
 {
 	if (fIsReplicant && IsSelected() == false) {
 		BScreen screen;
@@ -46,7 +53,7 @@ ListColorManager::BackgroundColor()
 }
 
 rgb_color	
-ListColorManager::TextColor()
+ColorManager::TextColor()
 {
 	if (fIsReplicant) {
 		if (IsDark()) {
