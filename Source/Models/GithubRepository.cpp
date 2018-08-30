@@ -8,13 +8,18 @@
 #include <string>
 #include <HttpAuthentication.h>
 
-GithubRepository::GithubRepository(BMessage message) 
-{	
+GithubRepository::GithubRepository(BMessage message)
+{
 	message.FindString("name", &name);
 	message.FindString("description", &description);
 	message.FindBool("fork", &fIsFork);
 	message.FindBool("private", &fIsPrivate);
 	message.FindString("url", &url);
+
+	BMessage ownerMessage;
+	if (message.FindMessage("owner", &ownerMessage) == B_OK) {
+		ownerMessage.FindString("login", &owner);
+	}
 }
 
 GithubRepository::~GithubRepository()
@@ -23,13 +28,13 @@ GithubRepository::~GithubRepository()
 }
 
 bool
-GithubRepository::IsFork() const 
+GithubRepository::IsFork() const
 {
 	return fIsFork;
 }
 
 bool
-GithubRepository::IsPrivate() const 
+GithubRepository::IsPrivate() const
 {
 	return fIsPrivate;
 }

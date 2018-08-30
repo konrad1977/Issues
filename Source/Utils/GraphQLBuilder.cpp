@@ -14,22 +14,24 @@ GraphQLBuilder::GraphQLBuilder()
 }
 GraphQLBuilder::~GraphQLBuilder()
 {
-	
+
 }
 
-GraphQLBuilder& 
-GraphQLBuilder::AddNode(BString format, BString args)
-{	
-	return AddNode(BString().SetToFormat(format.String(), args.String()));
+GraphQLBuilder&
+GraphQLBuilder::AddNode(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	return AddNode(BString().SetToFormatVarArgs(format, args));
 }
 
-GraphQLBuilder& 
+GraphQLBuilder&
 GraphQLBuilder::AddClosedNode(BString format, BString value)
 {
 	return AddClosedNode(BString().SetToFormat(format.String(), value.String()));
 }
 
-GraphQLBuilder& 
+GraphQLBuilder&
 GraphQLBuilder::AddClosedNode(BString node)
 {
 	fBuffer << " { " << node << " } ";
@@ -46,10 +48,10 @@ GraphQLBuilder::AddNode(BString node)
 
 BString
 GraphQLBuilder::Query()
-{	
+{
 	for (int32 i = 0; i<fBraceBalance; i++) {
-		fBuffer << " } ";	
+		fBuffer << " } ";
 	}
 	fBuffer << "\"}";
-	return fBuffer;	
+	return fBuffer;
 }

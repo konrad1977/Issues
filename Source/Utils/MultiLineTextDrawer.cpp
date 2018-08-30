@@ -48,7 +48,7 @@ MultiLineTextDrawer::SetInsets(BSize size)
 	}
 }
 
-const BSize 
+const BSize
 MultiLineTextDrawer::Insets() const
 {
 	return fInsets;
@@ -82,7 +82,7 @@ const char *
 MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont *font, float width, BString &output)
 {
 	BString buffer(input);
-	
+
 	const size_t size = buffer.Length();
 	uint32 charatersThatFits = CharactedFittedFor(buffer, font, width);
 
@@ -91,9 +91,11 @@ MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont *font, float wi
 	if ( (size > charatersThatFits) && (breakAt = FindLineBreak(buffer, charatersThatFits)) != B_ERROR) {
 		charatersThatFits = breakAt;
 	}
+
 	if ((breakAt = buffer.FindFirst('\n', 0)) != B_ERROR) {
 		charatersThatFits = breakAt;
 	}
+
 	output.Remove(0, charatersThatFits).Trim();
 	return buffer.Remove(charatersThatFits, size).String();
 }
@@ -127,7 +129,7 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text, BFont *font, bool
 
 	int32 lines = 0;
 	const float linePosition = frame.LeftTop().y + fontHeight;
-	
+
 	if (enableOutput == true) {
 		fParent->SetHighColor(fTextColor);
 		fParent->SetDrawingMode( B_OP_OVER );
@@ -135,7 +137,7 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text, BFont *font, bool
 	}
 
 	const float maxWidth = textFrame.Width() + fInsets.width;
-	
+
 	switch (fAlignment) {
 		case B_ALIGN_LEFT: {
 			while( string.CountChars() > 0 ) {

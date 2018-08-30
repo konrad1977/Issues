@@ -37,14 +37,14 @@ GithubClient::~GithubClient()
 	delete fMessenger;
 }
 
-void 
+void
 GithubClient::SetTarget(BHandler *handler)
 {
 	delete fMessenger;
 	fMessenger = new BMessenger(handler);
 }
 
-void 
+void
 GithubClient::SaveToken(const char *token)
 {
 	BMessage message;
@@ -55,7 +55,7 @@ GithubClient::SaveToken(const char *token)
 }
 
 void
-GithubClient::LoadToken() 
+GithubClient::LoadToken()
 {
 	BMessage message;
 	SettingsManager manager;
@@ -71,7 +71,7 @@ GithubClient::LoadToken()
 }
 
 void
-GithubClient::InitHeaders() 
+GithubClient::InitHeaders()
 {
 	BString token;
 	token << "Bearer " << fToken;
@@ -82,26 +82,26 @@ GithubClient::InitHeaders()
 	fRequestHeaders.AddHeader("Accept", "application/vnd.github.inertia-preview+json");
 }
 
-void 
-GithubClient::RequestRepository(BString name)
+void
+GithubClient::RequestRepository(const char *repository, const char *owner)
 {
 	NetRequester requester(fHandler, "Repository");
-	
+
 	GraphQLBuilder builder;
 	BString query = builder
-		.AddNode("viewer")
-		.AddNode("repository(name:\\\"%s\\\")", name)
+		//.AddNode("viewer")
+		.AddNode("repository(name:\\\"%s\\\" owner:\\\"%s\\\")", repository, owner)
 		.AddNode("name url description id")
 		.Query();
-		
+
 	RunRequest(&requester, query);
 }
 
-void 
+void
 GithubClient::RequestCommitHistory()
 {
 	NetRequester requester(fHandler, "Commits");
-	
+
 	GraphQLBuilder builder;
 	BString query = builder
 		.AddNode("repository(name:\\\"%s\\\" owner:\\\"Haiku\\\")", "Haiku")
@@ -116,16 +116,20 @@ GithubClient::RequestCommitHistory()
 	RunRequest(&requester, query);
 }
 
-void 
-GithubClient::RequestIssuesForRepository(BString name)
-{	
+void
+GithubClient::RequestIssuesForRepository(const char *repository, const char *owner)
+{
+	if (repository == NULL || owner == NULL) {
+		return;
+	}
+
 	NetRequester requester(fHandler, "Issues");
-	
+
 	GraphQLBuilder builder;
 	BString query = builder
-		.AddNode("viewer")
-		.AddNode("repository(name:\\\"%s\\\")", name)
-		.AddNode("issues(last:100 states:OPEN orderBy: { field: UPDATED_AT direction: ASC })")
+		//.AddNode("viewer")
+		.AddNode("repository(name:\\\"%s\\\" owner:\\\"%s\\\")", repository, owner)
+		.AddNode("issues(last:10 states:OPEN orderBy: { field: UPDATED_AT direction: ASC })")
 		.AddNode("nodes")
 		.AddNode("url title body author { login }")
 		.Query();
@@ -133,7 +137,7 @@ GithubClient::RequestIssuesForRepository(BString name)
 	RunRequest(&requester, query);
 }
 
-void 
+void
 GithubClient::RequestProjects()
 {
 	NetRequester requester(fHandler, "GithubRepositories");
@@ -142,7 +146,8 @@ GithubClient::RequestProjects()
 		.AddNode("viewer")
 		.AddNode("repositories(first:100)")
 		.AddNode("nodes")
-		.AddNode("name url description id")
+		.AddNode("name url description id owner")
+		.AddNode("login")
 		.Query();
 
 	RunRequest(&requester, query);
@@ -152,16 +157,16 @@ void
 GithubClient::RunRequest(NetRequester *requester, BString body) {
 
 	printf("Body: %s\n", body.String());
-	
-	BUrl url = BUrl(fBaseUrl);	
+
+	BUrl url = BUrl(fBaseUrl);
 	BHttpRequest* request = dynamic_cast<BHttpRequest*>(BUrlProtocolRoster::MakeRequest(url, requester));
 	request->SetMethod(B_HTTP_POST);
 	request->SetHeaders(fRequestHeaders);
 	BMemoryIO *io = new BMemoryIO(body.String(), body.Length());
 	request->AdoptInputData(io, body.Length());
-	
+
 	thread_id thread = request->Run();
 	wait_for_thread(thread, NULL);
 	delete request;
-}		
+}
 

@@ -32,7 +32,7 @@
 const float kDraggerSize = 7;
 extern const char *kAppSignature;
 
-IssuesContainerView::IssuesContainerView(const char *repositoryName)
+IssuesContainerView::IssuesContainerView(BString repository, BString owner)
 	:BView("Issues", B_DRAW_ON_CHILDREN)
 	,fGithubClient(NULL)
 	,fGithubRepository(NULL)
@@ -43,8 +43,9 @@ IssuesContainerView::IssuesContainerView(const char *repositoryName)
 	,fAutoUpdateRunner(NULL)
 	,fThreadId(-1)
 	,fIsReplicant(false)
+	,fRepository(repository)
+	,fOwner(owner)
 {
-	fRepositoryName = BString(repositoryName);
 	SetupViews(fIsReplicant);
 	SpawnDonwloadThread();
 }
@@ -62,7 +63,9 @@ IssuesContainerView::IssuesContainerView(BMessage *message)
 	,fIsReplicant(true)
 {
 	SetupViews(fIsReplicant);
-	message->FindString("RepositoryName", &fRepositoryName);
+	message->FindString("Repository", &fRepository);
+	message->FindString("Owner", &fOwner);
+
 	SpawnDonwloadThread();
 }
 
@@ -80,7 +83,8 @@ status_t
 IssuesContainerView::Archive(BMessage* into, bool deep) const
 {
 	into->AddString("add_on", kAppSignature);
-	into->AddString("RepositoryName", fRepositoryName);
+	into->AddString("Repository", fRepository);
+	into->AddString("Owner", fOwner);
 	return BView::Archive(into, false);
 }
 
@@ -149,7 +153,7 @@ IssuesContainerView::Client()
 }
 
 BListView *
-IssuesContainerView::ListView() 
+IssuesContainerView::ListView()
 {
 	if (fListView == NULL) {
 		fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
@@ -170,9 +174,9 @@ void
 IssuesContainerView::RequestIssues()
 {
 	if (fGithubRepository == NULL) {
-		Client()->RequestRepository(fRepositoryName);
+		Client()->RequestRepository(fRepository.String(), fOwner.String());
 	}
-	Client()->RequestIssuesForRepository(fRepositoryName);
+	Client()->RequestIssuesForRepository(fRepository.String(), fOwner.String());
 }
 
 void
@@ -201,33 +205,33 @@ IssuesContainerView::HandleListInvoke(BMessage *message)
 	int32 index = B_ERROR;
 	if (message->FindInt32("index", &index) == B_OK) {
 		IssueListItem *listItem = dynamic_cast<IssueListItem*>(ListView()->ItemAt(index));
-		
+
 		if (listItem == NULL) {
 			return;
 		}
 
 		const char *url = listItem->CurrentIssue().url.String();
 		if (strlen(url) > 10 ) {
-			be_roster->Launch("text/html", 1, const_cast<char **>(&url));		
+			be_roster->Launch("text/html", 1, const_cast<char **>(&url));
 		}
 	}
 }
 
-void 
+void
 IssuesContainerView::AddIssues(BMessage *message)
 {
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("nodes", *message);
 	BMessage repositoriesMessage;
-	
+
 	char *name;
 	uint32 type;
 	int32 count;
 
 	while(fListView->CountItems()) {
 		delete fListView->RemoveItem(int32(0));
-	}	
-		
+	}
+
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
@@ -239,12 +243,14 @@ IssuesContainerView::AddIssues(BMessage *message)
 }
 
 
-void 
+void
 IssuesContainerView::AddRepository(BMessage *message)
 {
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("repository", *message);
-	
+
+	message->PrintToStream();
+
 	delete fGithubRepository;
 	fGithubRepository = new GithubRepository(msg);
 	fRepositoryTitleView->SetRepository(fGithubRepository);
@@ -263,12 +269,11 @@ IssuesContainerView::HandleParse(BMessage *message)
 	} else if (message->HasMessage("Repository")) {
 		AddRepository(message);
 	}
-	
+
 	float width;
 	float height;
 	fListView->GetPreferredSize(&width, &height);
 	fListView->SetExplicitMinSize(BSize(320, height));
-	
 
 	if (fIsReplicant) {
 		height += fRepositoryTitleView->MinSize().height;
@@ -284,7 +289,7 @@ void
 IssuesContainerView::SetupViews(bool isReplicant)
 {
 	fRepositoryTitleView = new RepositoryTitleView(isReplicant);
-	
+
 	if (isReplicant == false) {
 		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 		fScrollView = new BScrollView("Scrollview", ListView(), 0, false, true, B_NO_BORDER);

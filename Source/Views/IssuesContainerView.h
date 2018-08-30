@@ -18,47 +18,49 @@ class GithubClient;
 class RepositoryTitleView;
 class IssuesContainerView : public BView {
 public:
-	
-	IssuesContainerView(const char *repositoryName);
+
+	IssuesContainerView(BString repository, BString owner);
 	IssuesContainerView(BMessage *archive);
   	~IssuesContainerView();
 
-  	static BArchivable*	Instantiate(BMessage* archive);  	
+  	static BArchivable*	Instantiate(BMessage* archive);
 	virtual status_t	Archive(BMessage* into, bool deep = true) const;
 			status_t	SaveState(BMessage* into, bool deep = true) const;
-			
+
   	virtual void MessageReceived(BMessage *message);
   	virtual void AttachedToWindow();
-						
+
 private:
 	GithubClient *Client();
 	BListView 	 *ListView();
-			
+
 	static int32 DownloadFunc(void *cookie);
 			void StartAutoUpdater();
 			void RequestIssues();
-			void SpawnDonwloadThread();		
+			void SpawnDonwloadThread();
 			void StopDownloadThread();
-			
+
 			void HandleListInvoke(BMessage *message);
 			void HandleParse(BMessage *message);
 
 			void AddIssues(BMessage *message);
 			void AddRepository(BMessage *message);
-			
-			void SetupViews(bool isReplicant);	
 
-	GithubClient 		*fGithubClient; 
+			void SetupViews(bool isReplicant);
+
+	GithubClient 		*fGithubClient;
 	GithubRepository	*fGithubRepository;
 	RepositoryTitleView	*fRepositoryTitleView;
 	BListView			*fListView;
 	BScrollView 		*fScrollView;
 	BDragger			*fDragger;
 	BMessageRunner		*fAutoUpdateRunner;
-	
-	BString	 			fRepositoryName;
+
 	thread_id			fThreadId;
 	bool 				fIsReplicant;
+
+	BString	 			fRepository;
+	BString	 			fOwner;
 };
 
 
