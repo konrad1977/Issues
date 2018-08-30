@@ -15,7 +15,7 @@ RepositoryTitleView::RepositoryTitleView(bool isReplicant)
 	,fColorManager(NULL)
 	,fHeight(10)
 	,fIsReplicant(isReplicant)
-{	
+{
 	fDrawer = new MultiLineTextDrawer(this);
 	fDrawer->SetInsets(BSize(10,0));
 
@@ -26,19 +26,19 @@ RepositoryTitleView::RepositoryTitleView(bool isReplicant)
 	}
 	fColorManager = new ColorManager(fIsReplicant);
 }
-	
+
 RepositoryTitleView::~RepositoryTitleView()
 {
 
 }
 
 BSize
-RepositoryTitleView::MinSize() 
+RepositoryTitleView::MinSize()
 {
 	return BSize(B_SIZE_UNSET, fHeight);
 }
 
-BSize 
+BSize
 RepositoryTitleView::MaxSize()
 {
 	return BSize(B_SIZE_UNLIMITED, fHeight);
@@ -50,7 +50,7 @@ RepositoryTitleView::SetRepository(GithubRepository *repository)
 	fRepository = repository;
 	Invalidate();
 }
-	
+
 void
 RepositoryTitleView::Draw(BRect rect)
 {
@@ -60,30 +60,30 @@ RepositoryTitleView::Draw(BRect rect)
 		rgb_color backgroundColor = fColorManager->BackgroundColor();
 		SetHighColor(backgroundColor);
 		SetDrawingMode(B_OP_ALPHA);
-		FillRoundRect(r.InsetBySelf(2,2), 3, 3);
+		FillRoundRect(r.InsetBySelf(0,1), 3, 3);
 	}
-	
+
 	if (fRepository == NULL) {
 		return;
 	}
-	
+
 	rgb_color textColor = fColorManager->TextColor();
 
 	BFont font(be_bold_font);
-	font.SetSize(16);
+	font.SetSize(13);
 	fDrawer->SetTextColor(textColor);
 
 	const char *title = fRepository->name.ToUpper().String();
 	float strWidth = font.StringWidth(title);
-	
+
 	fHeight = fDrawer->DrawString(r, title, &font);
 	r = r.OffsetBySelf(0, fHeight + 6);
-	
+
 	SetHighColor(255,64,80);
 	SetPenSize(2.0f);
 	SetDrawingMode(B_OP_COPY);
 	StrokeLine(BPoint(r.left + 10, r.top), BPoint(r.left + strWidth + 10, r.top));
 
-	fHeight += 16;	
+	fHeight += 14;
 	InvalidateLayout();
 }

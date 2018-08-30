@@ -15,7 +15,7 @@
 IssueListItem::IssueListItem(GithubIssue issue, bool isReplicant)
 	:BListItem()
 	,fMultiLineTextDrawer(NULL)
-	,fListColorManager(NULL)	
+	,fListColorManager(NULL)
 	,fIssue(issue)
 	,fHeight(10)
 	,fIsReplicant(isReplicant)
@@ -51,7 +51,7 @@ IssueListItem::DrawBackground(BListView *parent)
 
 	if (fIsReplicant) {
 		parent->SetDrawingMode(B_OP_ALPHA);
-		parent->FillRoundRect(frame.InsetBySelf(2,2), 3, 3);
+		parent->FillRoundRect(frame.InsetBySelf(0,1), 3, 3);
 	} else {
 		parent->SetDrawingMode(B_OP_COPY);
 		parent->FillRect(frame);
@@ -82,15 +82,15 @@ IssueListItem::DrawIssue(BRect rect, bool enableOutput)
 	BRect frame = rect;
 	BFont font(be_bold_font);
 	font.SetSize(13.0);
-	
+
 	rgb_color textColor = fListColorManager->TextColor();
 	fMultiLineTextDrawer->SetTextColor(textColor);
 
 	float titleHeight = fMultiLineTextDrawer->DrawString(frame, fIssue.title.String(), &font, enableOutput);
 	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
-	
+
 	fMultiLineTextDrawer->SetAlignment(B_ALIGN_RIGHT);
-	
+
 	font = be_plain_font;
 	font.SetSize(10);
 
@@ -98,11 +98,11 @@ IssueListItem::DrawIssue(BRect rect, bool enableOutput)
 	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
 
 	fHeight = MAX(titleHeight, authorHeight);
-	
+
 	font = be_plain_font;
-	font.SetSize(12);	
+	font.SetSize(12);
 	frame.OffsetBy(0, fHeight);
-	
+
 	fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);
 	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue.body.Trim().String(), &font, enableOutput);
 	fHeight += 10;

@@ -9,6 +9,7 @@
 #include "GithubTokenWindow.h"
 #include "GithubIssuesWindow.h"
 #include "GithubClient.h"
+#include "AddRepositoryWindow.h"
 #include "SettingsManager.h"
 #include "RepositoryListItem.h"
 #include "Constants.h"
@@ -34,6 +35,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	:BWindow(BRect(30,30, 320, 640), "Repositories", B_DOCUMENT_WINDOW, B_FRAME_EVENTS | B_QUIT_ON_WINDOW_CLOSE | B_AUTO_UPDATE_SIZE_LIMITS)
 	,fGithubTokenWindow(NULL)
 	,fGithubClient(NULL)
+	,fAddRepositoryWindow(NULL)
 	,fRepositoryListView(NULL)
 	,fDownloadThread(-1)
 {
@@ -43,6 +45,18 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 
 GithubRepositoryWindow::~GithubRepositoryWindow()
 {
+	if (fGithubTokenWindow) {
+		fGithubTokenWindow->Lock();
+		fGithubTokenWindow->Quit();
+	}
+
+	if (fAddRepositoryWindow) {
+		fAddRepositoryWindow->Lock();
+		fAddRepositoryWindow->Quit();
+	}
+
+	delete fAddRepositoryWindow;
+	delete fGithubTokenWindow;
 	delete fGithubClient;
 }
 
@@ -75,6 +89,8 @@ GithubRepositoryWindow::SetupViews()
 
 	BLayoutBuilder::Menu<>(fMenuBar = new BMenuBar(Bounds(), "Menu"))
 		.AddMenu(B_TRANSLATE("Edit"))
+			.AddItem(new BMenuItem(B_TRANSLATE("Add.."), new BMessage(kShowAddRepository), 'A'))
+			.AddSeparator()
 			.AddItem(new BMenuItem(B_TRANSLATE("About"), NULL, 'R'))
 		.End();
 
@@ -113,6 +129,10 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 void
 GithubRepositoryWindow::MessageReceived(BMessage *message) {
 	switch (message->what) {
+		case kRepositoryAdded: {
+			message->PrintToStream();
+			break;
+		}
 		case kTokenLoadedMessage: {
 			printf("Token loaded\n");
 			SpawnDownloadThread();
@@ -122,6 +142,20 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 		case kNoTokenMessage: {
 			fGithubTokenWindow = new GithubTokenWindow(this);
 			fGithubTokenWindow->Show();
+			break;
+		}
+
+		case kShowAddRepository: {
+			fAddRepositoryWindow = new AddRepositoryWindow();
+			fAddRepositoryWindow->SetTarget(this);
+			fAddRepositoryWindow->Show();
+
+			printf("Show add repository\n");
+			break;
+		}
+
+		case kQuitAddRepository: {
+			fAddRepositoryWindow = NULL;
 			break;
 		}
 
