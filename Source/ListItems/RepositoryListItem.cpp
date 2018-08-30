@@ -39,12 +39,7 @@ RepositoryListItem::DrawBackground(BListView *parent)
 	BRect frame = parent->ItemFrame(index);
 
 	rgb_color backgroundColor = fListColorManager->BackgroundColor();
-
-	if (fRepository->IsPrivate()) {
-		parent->SetHighColor(255,243,244);
-	} else if (fRepository->IsFork()) {
-		parent->SetHighColor(255,250,234);
-	} else if (index % 2 == 0) {
+	if (index % 2 == 0) {
 		parent->SetHighColor(backgroundColor);
 	} else {
 		parent->SetHighColor(tint_color(backgroundColor, 1.05));
@@ -84,6 +79,19 @@ RepositoryListItem::DrawRepository(BRect rect, bool enableOutput)
 	
 	float height = fMultiLineTextDrawer->DrawString(frame, fRepository->name.String(), &font, enableOutput);
 	fHeight = height;
+	
+	if (fRepository->IsPrivate() || fRepository->IsFork()) {
+		fMultiLineTextDrawer->SetAlignment(B_ALIGN_RIGHT);
+		bool isFork = fRepository->IsFork();
+		font.SetSize(13.0f);
+		
+		rgb_color privateColor = { 255, 64, 80 };
+		rgb_color forkColor = { 101, 96, 102};
+		
+		fMultiLineTextDrawer->SetTextColor(isFork ? forkColor : privateColor);
+		fMultiLineTextDrawer->DrawString(frame, isFork ? "Fork" : "Private", &font, enableOutput);
+		fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);
+	}
 
 	font = be_plain_font;
 	font.SetSize(13);
