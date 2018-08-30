@@ -40,7 +40,11 @@ RepositoryListItem::DrawBackground(BListView *parent)
 
 	rgb_color backgroundColor = fListColorManager->BackgroundColor();
 
-	if (index % 2 == 0) {
+	if (fRepository->IsPrivate()) {
+		parent->SetHighColor(255,243,244);
+	} else if (fRepository->IsFork()) {
+		parent->SetHighColor(255,250,234);
+	} else if (index % 2 == 0) {
 		parent->SetHighColor(backgroundColor);
 	} else {
 		parent->SetHighColor(tint_color(backgroundColor, 1.05));

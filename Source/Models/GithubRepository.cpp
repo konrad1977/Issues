@@ -12,8 +12,8 @@ GithubRepository::GithubRepository(BMessage message)
 {
 	message.FindString("name", &name);
 	message.FindString("description", &description);
-	message.FindBool("fork", &fIsFork);
-	message.FindBool("private", &fIsPrivate);
+	message.FindBool("isFork", &fIsFork);
+	message.FindBool("isPrivate", &fIsPrivate);
 	message.FindString("url", &url);
 
 	BMessage ownerMessage;

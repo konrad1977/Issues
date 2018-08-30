@@ -146,7 +146,7 @@ GithubClient::RequestProjects()
 		.AddNode("viewer")
 		.AddNode("repositories(first:100)")
 		.AddNode("nodes")
-		.AddNode("name url description id owner")
+		.AddNode("name url description id isFork isPrivate owner")
 		.AddNode("login")
 		.Query();
 
