@@ -90,9 +90,7 @@ MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont *font, float wi
 
 	if ( (size > charatersThatFits) && (breakAt = FindLineBreak(buffer, charatersThatFits)) != B_ERROR) {
 		charatersThatFits = breakAt;
-	}
-
-	if ((breakAt = buffer.FindFirst('\n', 0)) != B_ERROR) {
+	} else if ((breakAt = buffer.FindFirst('\n', 0)) != B_ERROR) {
 		charatersThatFits = breakAt;
 	}
 
@@ -136,7 +134,7 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text, BFont *font, bool
 		fParent->SetFont(font);
 	}
 
-	const float maxWidth = textFrame.Width() + fInsets.width;
+	const float maxWidth = textFrame.Width();
 
 	switch (fAlignment) {
 		case B_ALIGN_LEFT: {
