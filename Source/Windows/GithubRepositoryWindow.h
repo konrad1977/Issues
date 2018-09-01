@@ -11,7 +11,7 @@
 
 class BMenuBar;
 class BMenuItem;
-class BListView;
+class BOutlineListView;
 class AddRepositoryWindow;
 class GithubClient;
 class GithubTokenWindow;
@@ -28,18 +28,26 @@ private:
 			void SetupViews();
 			void RequestRepositories();
 			void SpawnDownloadThread();
+			
+			void BuildRepositoryList(BList *repositories);
+			void PopuplateListView(const char *title, BList *list);
+			void ClearRepositories();
+			
 	static int SortRepositoriesByName(const void *first, const void *second);
 	static int SortRepositoriesByType(const void *first, const void *second);
 	
 	static int32 DownloadRepositories(void *cookie);
-
+	
 	GithubTokenWindow 	*fGithubTokenWindow;
 	GithubClient 		*fGithubClient;
 	AddRepositoryWindow	*fAddRepositoryWindow;
-	BListView 			*fRepositoryListView;
+	BOutlineListView 	*fRepositoryListView;
 	BMenuBar 			*fMenuBar;
 	thread_id			fDownloadThread;
-	BList				*fRepositoryList;
+	
+	BList 				*fPrivateRepositories;
+	BList				*fForkedRepositories;
+	BList				*fPublicRepositories;
 };
 
 

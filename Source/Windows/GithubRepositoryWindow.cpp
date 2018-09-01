@@ -22,7 +22,7 @@
 #include <interface/StringItem.h>
 #include <interface/GroupLayout.h>
 #include <interface/LayoutBuilder.h>
-#include <interface/ListView.h>
+#include <interface/OutlineListView.h>
 #include <interface/ScrollView.h>
 #include <GroupView.h>
 #include <posix/stdio.h>
@@ -38,10 +38,14 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	,fAddRepositoryWindow(NULL)
 	,fRepositoryListView(NULL)
 	,fDownloadThread(-1)
-	,fRepositoryList(NULL)
+	,fPrivateRepositories(NULL)
+	,fForkedRepositories(NULL)
+	,fPublicRepositories(NULL)
 {
 	SetupViews();
-	fRepositoryList = new BList();
+	fPrivateRepositories = new BList();
+	fForkedRepositories = new BList();
+	fPublicRepositories = new BList();
 	fGithubClient = new GithubClient(this);
 }
 
@@ -57,6 +61,12 @@ GithubRepositoryWindow::~GithubRepositoryWindow()
 		fAddRepositoryWindow->Quit();
 	}
 
+	ClearRepositories();
+	
+	delete fPrivateRepositories;
+	delete fForkedRepositories;
+	delete fPublicRepositories;	
+	
 	delete fAddRepositoryWindow;
 	delete fGithubTokenWindow;
 	delete fGithubClient;
@@ -81,7 +91,7 @@ GithubRepositoryWindow::SpawnDownloadThread()
 void
 GithubRepositoryWindow::SetupViews()
 {
-	fRepositoryListView = new BListView("Repositories", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
+	fRepositoryListView = new BOutlineListView("Repositories", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
 	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, 0, false, true);
 	fRepositoryListView->SetInvocationMessage(new BMessage(kListInvokedMessage));
 
@@ -108,14 +118,11 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 		return;
 	}
 	
-	while (fRepositoryList->CountItems()) {
-		delete fRepositoryList->ItemAt(int32(0));
-	}
+	ClearRepositories();
+	BList *list = new BList();
 
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("nodes", *message);
-
-	fRepositoryListView->MakeEmpty();
 
 	BMessage repositoriesMessage;
 	char *name;
@@ -126,17 +133,34 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
 			GithubRepository *repository = new GithubRepository(nodeMsg);
-			fRepositoryList->AddItem(repository);
+			list->AddItem(repository);
 		}
 	}
 	
-	fRepositoryList->SortItems(SortRepositoriesByType);
+	list->SortItems(SortRepositoriesByName);
+	BuildRepositoryList(list);
+	delete list;
 	
-	int32 items = fRepositoryList->CountItems();
+	PopuplateListView("Public", fPublicRepositories);
+	PopuplateListView("Private", fPrivateRepositories);
+	PopuplateListView("Forked", fForkedRepositories);
+}
+
+void
+GithubRepositoryWindow::PopuplateListView(const char *title, BList *list)
+{
+	if (list == NULL) {
+		return;
+	}
+	
+	const int32 items = list->CountItems();
+	BListItem *superItem = new BStringItem(title);
+	fRepositoryListView->AddItem(superItem);
+	
 	for( int32 index = 0; index < items; index++) {
-		GithubRepository *repo = static_cast<GithubRepository*>(fRepositoryList->ItemAtFast(index));
-		RepositoryListItem *listItem = new RepositoryListItem(repo);
-		fRepositoryListView->AddItem( listItem );	
+		GithubRepository *repo = static_cast<GithubRepository*>(list->ItemAtFast(index));
+		RepositoryListItem *repoItem = new RepositoryListItem(repo);
+		fRepositoryListView->AddUnder(repoItem, superItem);	
 	}
 }
 
@@ -146,6 +170,42 @@ GithubRepositoryWindow::SortRepositoriesByName(const void *first, const void *se
 	GithubRepository *firstRep = *(GithubRepository**)first;
 	GithubRepository *secondRep = *(GithubRepository**)second;
 	return strcasecmp(firstRep->name.String(), secondRep->name.String());
+}
+
+void 
+GithubRepositoryWindow::BuildRepositoryList(BList *repositories)
+{
+	if (repositories == NULL) {
+		return;
+	}
+	
+	const int32 items = repositories->CountItems();
+	for (int32 i = 0; i<items; i++) {
+		GithubRepository *repository = static_cast<GithubRepository*>(repositories->ItemAt(i));
+		if (repository->IsFork()) {
+			fForkedRepositories->AddItem(repository);
+		} else if (repository->IsPrivate()) {
+			fPrivateRepositories->AddItem(repository);
+		} else {
+			fPublicRepositories->AddItem(repository);
+		}
+	}
+}
+
+void
+GithubRepositoryWindow::ClearRepositories() {
+	
+	while (fPrivateRepositories->CountItems()) {
+		delete fPrivateRepositories->RemoveItem(int32(0));
+	}
+
+	while (fForkedRepositories->CountItems()) {
+		delete fForkedRepositories->RemoveItem(int32(0));
+	}
+
+	while (fPublicRepositories->CountItems()) {
+		delete fPublicRepositories->RemoveItem(int32(0));
+	}
 }
 
 int 
