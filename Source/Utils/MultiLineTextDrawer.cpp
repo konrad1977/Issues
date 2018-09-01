@@ -177,5 +177,5 @@ MultiLineTextDrawer::DrawString(BRect frame, const char *text, BFont *font, bool
 		default:
 			break;
 	}
-	return fontHeight * lines;
+	return (fontHeight * lines);
 }

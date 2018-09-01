@@ -51,7 +51,7 @@ IssueListItem::DrawBackground(BListView *parent)
 
 	if (fIsReplicant) {
 		parent->SetDrawingMode(B_OP_ALPHA);
-		parent->FillRoundRect(frame.InsetBySelf(0,1), 3, 3);
+		parent->FillRoundRect(frame.InsetBySelf(0, 1), 3, 3);
 	} else {
 		parent->SetDrawingMode(B_OP_COPY);
 		parent->FillRect(frame);
@@ -67,7 +67,7 @@ IssueListItem::DrawItem(BView *view, BRect rect, bool complete)
 
 	if (fMultiLineTextDrawer == NULL) {
 		fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
-		fMultiLineTextDrawer->SetInsets(BSize(10,0));
+		fMultiLineTextDrawer->SetInsets(BSize(10,5));
 	}
 
 	DrawBackground(parent);
@@ -105,7 +105,7 @@ IssueListItem::DrawIssue(BRect rect, bool enableOutput)
 
 	fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);
 	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue.body.Trim().String(), &font, enableOutput);
-	fHeight += 10;
+	fHeight += 20;
 }
 
 void
@@ -117,7 +117,7 @@ IssueListItem::Update(BView *view, const BFont *font)
 		if (fMultiLineTextDrawer == NULL) {
 			BListView *parent = dynamic_cast<BListView *>(view);
 			fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
-			fMultiLineTextDrawer->SetInsets(BSize(10,0));
+			fMultiLineTextDrawer->SetInsets(BSize(10,5));
 		}
 		DrawIssue(view->Bounds(), false);
 		SetHeight(fHeight);

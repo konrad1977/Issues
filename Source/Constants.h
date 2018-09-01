@@ -8,7 +8,7 @@
 #ifndef MESSAGECONSTANTS_H
 #define MESSAGECONSTANTS_H
 
-const rgb_color kLightTextColor = { 224,220,224 };
+const rgb_color kLightTextColor = { 245,245,245 };
 const rgb_color kDarkTextColor 	= { 40,44,40 	};
 
 const int32 kDataReceivedMessage 	= 'kDRM';
