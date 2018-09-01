@@ -22,6 +22,8 @@ public:
 
 	bool IsFork() const;
 	bool IsPrivate() const;
+	
+	int SortOrder();
 
 private:
 	bool fIsFork;

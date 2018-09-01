@@ -38,8 +38,10 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	,fAddRepositoryWindow(NULL)
 	,fRepositoryListView(NULL)
 	,fDownloadThread(-1)
+	,fRepositoryList(NULL)
 {
 	SetupViews();
+	fRepositoryList = new BList();
 	fGithubClient = new GithubClient(this);
 }
 
@@ -105,6 +107,10 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 	if (message->HasMessage("GithubRepositories") == false) {
 		return;
 	}
+	
+	while (fRepositoryList->CountItems()) {
+		delete fRepositoryList->ItemAt(int32(0));
+	}
 
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("nodes", *message);
@@ -120,10 +126,38 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
 			GithubRepository *repository = new GithubRepository(nodeMsg);
-			RepositoryListItem *listItem = new RepositoryListItem(repository);
-			fRepositoryListView->AddItem( listItem );
+			fRepositoryList->AddItem(repository);
 		}
 	}
+	
+	fRepositoryList->SortItems(SortRepositoriesByType);
+	
+	int32 items = fRepositoryList->CountItems();
+	for( int32 index = 0; index < items; index++) {
+		GithubRepository *repo = static_cast<GithubRepository*>(fRepositoryList->ItemAtFast(index));
+		RepositoryListItem *listItem = new RepositoryListItem(repo);
+		fRepositoryListView->AddItem( listItem );	
+	}
+}
+
+int 
+GithubRepositoryWindow::SortRepositoriesByName(const void *first, const void *second)
+{
+	GithubRepository *firstRep = *(GithubRepository**)first;
+	GithubRepository *secondRep = *(GithubRepository**)second;
+	return strcasecmp(firstRep->name.String(), secondRep->name.String());
+}
+
+int 
+GithubRepositoryWindow::SortRepositoriesByType(const void *first, const void *second)
+{
+	GithubRepository *firstRep = *(GithubRepository**)first;
+	GithubRepository *secondRep = *(GithubRepository**)second;
+
+	if (firstRep->SortOrder() == secondRep->SortOrder()) {
+		return 0;
+	}
+	return firstRep->SortOrder() - secondRep->SortOrder();
 }
 
 void

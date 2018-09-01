@@ -28,6 +28,9 @@ private:
 			void SetupViews();
 			void RequestRepositories();
 			void SpawnDownloadThread();
+	static int SortRepositoriesByName(const void *first, const void *second);
+	static int SortRepositoriesByType(const void *first, const void *second);
+	
 	static int32 DownloadRepositories(void *cookie);
 
 	GithubTokenWindow 	*fGithubTokenWindow;
@@ -36,6 +39,7 @@ private:
 	BListView 			*fRepositoryListView;
 	BMenuBar 			*fMenuBar;
 	thread_id			fDownloadThread;
+	BList				*fRepositoryList;
 };
 
 

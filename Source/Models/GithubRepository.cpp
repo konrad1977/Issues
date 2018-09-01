@@ -39,3 +39,14 @@ GithubRepository::IsPrivate() const
 	return fIsPrivate;
 }
 
+int 
+GithubRepository::SortOrder()
+{
+	if (IsFork()) {
+		return 2;
+	} else if (IsPrivate()) {
+		return 1;
+	}
+	return 0;
+}
+
