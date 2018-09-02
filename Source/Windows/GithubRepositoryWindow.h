@@ -8,6 +8,7 @@
 
 #include <SupportDefs.h>
 #include <interface/Window.h>
+#include "RepositoryTypeItem.h"
 
 class BMenuBar;
 class BMenuItem;
@@ -30,7 +31,7 @@ private:
 			void SpawnDownloadThread();
 			
 			void BuildRepositoryList(BList *repositories);
-			void PopuplateListView(const char *title, BList *list);
+			void PopuplateListView(RepositoryType type, BList *list);
 			void ClearRepositories();
 			
 	static int SortRepositoriesByName(const void *first, const void *second);

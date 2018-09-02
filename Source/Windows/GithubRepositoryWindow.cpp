@@ -140,20 +140,20 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 	BuildRepositoryList(list);
 	delete list;
 	
-	PopuplateListView("Public", fPublicRepositories);
-	PopuplateListView("Private", fPrivateRepositories);
-	PopuplateListView("Forked", fForkedRepositories);
+	PopuplateListView(RepositoryType::PUBLIC, fPublicRepositories);
+	PopuplateListView(RepositoryType::PRIVATE, fPrivateRepositories);
+	PopuplateListView(RepositoryType::FORK, fForkedRepositories);
 }
 
 void
-GithubRepositoryWindow::PopuplateListView(const char *title, BList *list)
+GithubRepositoryWindow::PopuplateListView(RepositoryType type, BList *list)
 {
 	if (list == NULL) {
 		return;
 	}
 	
 	const int32 items = list->CountItems();
-	BListItem *superItem = new BStringItem(title);
+	RepositoryTypeItem *superItem = new RepositoryTypeItem(type);
 	
 	fRepositoryListView->AddItem(superItem);
 	
@@ -263,15 +263,19 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 		}
 
 		case kListInvokedMessage: {
+		
 			int32 index = B_ERROR;
-			if (message->FindInt32("index", &index) == B_OK) {
-				RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
-				if (listItem && listItem->CurrentRepository()) {
-					GithubIssuesWindow *window = new GithubIssuesWindow(listItem->CurrentRepository());
-					window->Show();
-				}
-				printf("Found item\n");
+			if (message->FindInt32("index", &index) != B_OK) {
+				return;
 			}
+			
+			RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
+			if (listItem == NULL || listItem->CurrentRepository() == NULL) {
+				return;
+			}
+				
+			GithubIssuesWindow *window = new GithubIssuesWindow(listItem->CurrentRepository());
+			window->Show();
 			break;
 		}
 
