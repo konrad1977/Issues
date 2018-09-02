@@ -39,10 +39,12 @@ RepositoryListItem::DrawBackground(BListView *parent)
 	BRect frame = parent->ItemFrame(index);
 
 	rgb_color backgroundColor = fListColorManager->BackgroundColor();
+	parent->SetHighColor(backgroundColor);
+
 	if (index % 2 == 0) {
 		parent->SetHighColor(backgroundColor);
 	} else {
-		parent->SetHighColor(tint_color(backgroundColor, 1.05));
+		parent->SetHighColor(tint_color(backgroundColor, 1.02));
 	}
 
 	parent->SetDrawingMode(B_OP_COPY);
@@ -72,29 +74,16 @@ RepositoryListItem::DrawRepository(BRect rect, bool enableOutput)
 {
 	BRect frame = rect;
 	BFont font(be_bold_font);
-	font.SetSize(14.0);
+	font.SetSize(13.0);
 	
 	rgb_color textColor = fListColorManager->TextColor();
 	fMultiLineTextDrawer->SetTextColor(textColor);
 	
 	float height = fMultiLineTextDrawer->DrawString(frame, fRepository->name.String(), &font, enableOutput);
 	fHeight = height;
-	
-	if (fRepository->IsPrivate() || fRepository->IsFork()) {
-		fMultiLineTextDrawer->SetAlignment(B_ALIGN_RIGHT);
-		bool isFork = fRepository->IsFork();
-		font.SetSize(13.0f);
-		
-		rgb_color privateColor = { 255, 64, 80 };
-		rgb_color forkColor = { 101, 96, 102};
-		
-		fMultiLineTextDrawer->SetTextColor(isFork ? forkColor : privateColor);
-		fMultiLineTextDrawer->DrawString(frame, isFork ? "Fork" : "Private", &font, enableOutput);
-		fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);
-	}
 
 	font = be_plain_font;
-	font.SetSize(13);
+	font.SetSize(12.0);
 	frame = frame.OffsetBySelf(0, height);
 
 	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_LIGHTEN_1_TINT));
@@ -104,7 +93,7 @@ RepositoryListItem::DrawRepository(BRect rect, bool enableOutput)
 	
 	frame = frame.OffsetBySelf(0, height);
 	fMultiLineTextDrawer->SetTextColor(ui_color(B_LINK_TEXT_COLOR));
-
+	font.SetSize(12.0f);
 	height = fMultiLineTextDrawer->DrawString(frame, fRepository->url.String(), &font, enableOutput);
 	fHeight += height + 10;
 }

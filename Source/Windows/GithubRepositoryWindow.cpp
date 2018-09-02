@@ -32,7 +32,7 @@
 #define B_TRANSLATION_CONTEXT "GithubRepositoryWindow"
 
 GithubRepositoryWindow::GithubRepositoryWindow()
-	:BWindow(BRect(30,30, 320, 640), "Repositories", B_DOCUMENT_WINDOW, B_FRAME_EVENTS | B_QUIT_ON_WINDOW_CLOSE | B_AUTO_UPDATE_SIZE_LIMITS)
+	:BWindow(BRect(30,30, 1, 1), "Repositories", B_DOCUMENT_WINDOW, B_FRAME_EVENTS | B_QUIT_ON_WINDOW_CLOSE | B_AUTO_UPDATE_SIZE_LIMITS)
 	,fGithubTokenWindow(NULL)
 	,fGithubClient(NULL)
 	,fAddRepositoryWindow(NULL)
@@ -47,6 +47,8 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	fForkedRepositories = new BList();
 	fPublicRepositories = new BList();
 	fGithubClient = new GithubClient(this);
+	
+	CenterOnScreen();
 }
 
 GithubRepositoryWindow::~GithubRepositoryWindow()
@@ -95,10 +97,6 @@ GithubRepositoryWindow::SetupViews()
 	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, 0, false, true);
 	fRepositoryListView->SetInvocationMessage(new BMessage(kListInvokedMessage));
 
-	BGroupLayout *layout = new BGroupLayout(B_VERTICAL);
-	layout->SetSpacing(0);
-	SetLayout(layout);
-
 	BLayoutBuilder::Menu<>(fMenuBar = new BMenuBar(Bounds(), "Menu"))
 		.AddMenu(B_TRANSLATE("Edit"))
 			.AddItem(new BMenuItem(B_TRANSLATE("Add.."), new BMessage(kShowAddRepository), 'A'))
@@ -107,6 +105,7 @@ GithubRepositoryWindow::SetupViews()
 		.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+		.SetExplicitMinSize(BSize(380, 480))
 		.Add(fMenuBar)
 		.Add(scrollView);
 }
@@ -155,6 +154,7 @@ GithubRepositoryWindow::PopuplateListView(const char *title, BList *list)
 	
 	const int32 items = list->CountItems();
 	BListItem *superItem = new BStringItem(title);
+	
 	fRepositoryListView->AddItem(superItem);
 	
 	for( int32 index = 0; index < items; index++) {
@@ -169,7 +169,7 @@ GithubRepositoryWindow::SortRepositoriesByName(const void *first, const void *se
 {
 	GithubRepository *firstRep = *(GithubRepository**)first;
 	GithubRepository *secondRep = *(GithubRepository**)second;
-	return strcasecmp(firstRep->name.String(), secondRep->name.String());
+	return strcasecmp(secondRep->name.String(), firstRep->name.String());
 }
 
 void 
