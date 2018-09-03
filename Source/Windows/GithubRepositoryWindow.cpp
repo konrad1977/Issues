@@ -154,7 +154,7 @@ GithubRepositoryWindow::PopuplateListView(RepositoryType type, BList *list)
 	
 	const int32 items = list->CountItems();
 	RepositoryTypeItem *superItem = new RepositoryTypeItem(type);
-	
+	superItem->SetVisibleItems(list->CountItems(), list->CountItems());
 	fRepositoryListView->AddItem(superItem);
 	
 	for( int32 index = 0; index < items; index++) {

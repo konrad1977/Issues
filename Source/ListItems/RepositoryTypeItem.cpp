@@ -70,7 +70,19 @@ RepositoryTypeItem::DrawItem(BView *view, BRect rect, bool complete)
 	parent->MovePenTo(BPoint(20, frame.LeftBottom().y - horizontalCenter));
 	parent->DrawString(fTitle.String());
 }
-	
+
+void 
+RepositoryTypeItem::SetVisibleItems(uint8 visible, uint8 total)
+{
+	BString visability = BString("(");
+	if (visible == total) {
+		visability << visible << ")";
+	} else {
+		visability << visible << "/" << total << ")";
+	}
+	fTitle << " " << visability;
+}	
+
 void 
 RepositoryTypeItem::Update(BView *view, const BFont *font)
 {	

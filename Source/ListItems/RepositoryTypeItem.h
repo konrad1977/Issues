@@ -21,7 +21,9 @@ class RepositoryTypeItem : public BListItem {
 public:
 	RepositoryTypeItem(RepositoryType type);
 	~RepositoryTypeItem();	
-	
+
+			void SetVisibleItems(uint8 visible, uint8 total);
+			
 	virtual void DrawItem(BView *view, BRect rect, bool complete = true);	
 	virtual void Update(BView *view, const BFont *font);
 	
@@ -33,6 +35,7 @@ private:
 	rgb_color			fIndicatorColor;
 	RepositoryType		fType;
 	BString				fTitle;
+	BString 			fVisability;
 	float 				fHeight;
 	float				fPreviousHeight;
 };
