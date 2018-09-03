@@ -22,7 +22,6 @@ When first launched, you'll be asked to enter your *Personal access token*. See 
 *Issues*' main window will show a list of all your private/forked GitHub projects. Double-clicking an item will open a window of the project with a list of its currently open issues. Double-clicking an issue there will open the ticket in your browser.
 
 ## Planned features
----
 - Github repository filtering
 - Filtering of issues (Open, Closed, more)
 - Show avatar image
