@@ -75,17 +75,17 @@ RepositoryTypeItem::DrawItem(BView *view, BRect rect, bool complete)
 	parent->DrawString(fTitle.String());
 }
 
-void 
+void
 RepositoryTypeItem::SetVisibleItems(uint8 visible, uint8 total)
 {
 	BString visability = BString("(");
 	if (visible == total) {
 		visability << visible << ")";
 	} else {
-		visability << visible << "/" << total << ")";
+		visability << visible << ") hidden: " << total - visible << "";
 	}
 	fTitle << " " << visability;
-}	
+}
 
 void
 RepositoryTypeItem::Update(BView *view, const BFont *font)

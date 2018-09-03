@@ -20,17 +20,17 @@ class BOutlineListView;
 class RepositoryTypeItem : public BListItem {
 public:
 	RepositoryTypeItem(RepositoryType type);
-	~RepositoryTypeItem();	
+	~RepositoryTypeItem();
 
 			void SetVisibleItems(uint8 visible, uint8 total);
-			
-	virtual void DrawItem(BView *view, BRect rect, bool complete = true);	
+
+	virtual void DrawItem(BView *view, BRect rect, bool complete = true);
 	virtual void Update(BView *view, const BFont *font);
-	
+
 private:
 			void DrawBackground(BOutlineListView *parent, BRect frame);
 			float FontHeight(const BFont *font) const;
-			
+
 	ColorManager		*fColorManager;
 	rgb_color			fIndicatorColor;
 	RepositoryType		fType;
