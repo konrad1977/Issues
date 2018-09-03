@@ -47,7 +47,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	fForkedRepositories = new BList();
 	fPublicRepositories = new BList();
 	fGithubClient = new GithubClient(this);
-	
+
 	CenterOnScreen();
 }
 
@@ -64,11 +64,11 @@ GithubRepositoryWindow::~GithubRepositoryWindow()
 	}
 
 	ClearRepositories();
-	
+
 	delete fPrivateRepositories;
 	delete fForkedRepositories;
-	delete fPublicRepositories;	
-	
+	delete fPublicRepositories;
+
 	delete fAddRepositoryWindow;
 	delete fGithubTokenWindow;
 	delete fGithubClient;
@@ -116,7 +116,7 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 	if (message->HasMessage("GithubRepositories") == false) {
 		return;
 	}
-	
+
 	ClearRepositories();
 	BList *list = new BList();
 
@@ -135,14 +135,14 @@ GithubRepositoryWindow::ParseData(BMessage *message)
 			list->AddItem(repository);
 		}
 	}
-	
+
 	list->SortItems(SortRepositoriesByName);
 	BuildRepositoryList(list);
 	delete list;
-	
-	PopuplateListView(RepositoryType::PUBLIC, fPublicRepositories);
-	PopuplateListView(RepositoryType::PRIVATE, fPrivateRepositories);
-	PopuplateListView(RepositoryType::FORK, fForkedRepositories);
+
+	PopuplateListView(PUBLIC, fPublicRepositories);
+	PopuplateListView(PRIVATE, fPrivateRepositories);
+	PopuplateListView(FORK, fForkedRepositories);
 }
 
 void
@@ -151,20 +151,20 @@ GithubRepositoryWindow::PopuplateListView(RepositoryType type, BList *list)
 	if (list == NULL) {
 		return;
 	}
-	
+
 	const int32 items = list->CountItems();
 	RepositoryTypeItem *superItem = new RepositoryTypeItem(type);
-	
+
 	fRepositoryListView->AddItem(superItem);
-	
+
 	for( int32 index = 0; index < items; index++) {
 		GithubRepository *repo = static_cast<GithubRepository*>(list->ItemAtFast(index));
 		RepositoryListItem *repoItem = new RepositoryListItem(repo);
-		fRepositoryListView->AddUnder(repoItem, superItem);	
+		fRepositoryListView->AddUnder(repoItem, superItem);
 	}
 }
 
-int 
+int
 GithubRepositoryWindow::SortRepositoriesByName(const void *first, const void *second)
 {
 	GithubRepository *firstRep = *(GithubRepository**)first;
@@ -172,13 +172,13 @@ GithubRepositoryWindow::SortRepositoriesByName(const void *first, const void *se
 	return strcasecmp(secondRep->name.String(), firstRep->name.String());
 }
 
-void 
+void
 GithubRepositoryWindow::BuildRepositoryList(BList *repositories)
 {
 	if (repositories == NULL) {
 		return;
 	}
-	
+
 	const int32 items = repositories->CountItems();
 	for (int32 i = 0; i<items; i++) {
 		GithubRepository *repository = static_cast<GithubRepository*>(repositories->ItemAt(i));
@@ -194,7 +194,7 @@ GithubRepositoryWindow::BuildRepositoryList(BList *repositories)
 
 void
 GithubRepositoryWindow::ClearRepositories() {
-	
+
 	while (fPrivateRepositories->CountItems()) {
 		delete fPrivateRepositories->RemoveItem(int32(0));
 	}
@@ -208,7 +208,7 @@ GithubRepositoryWindow::ClearRepositories() {
 	}
 }
 
-int 
+int
 GithubRepositoryWindow::SortRepositoriesByType(const void *first, const void *second)
 {
 	GithubRepository *firstRep = *(GithubRepository**)first;
@@ -263,17 +263,17 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 		}
 
 		case kListInvokedMessage: {
-		
+
 			int32 index = B_ERROR;
 			if (message->FindInt32("index", &index) != B_OK) {
 				return;
 			}
-			
+
 			RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
 			if (listItem == NULL || listItem->CurrentRepository() == NULL) {
 				return;
 			}
-				
+
 			GithubIssuesWindow *window = new GithubIssuesWindow(listItem->CurrentRepository());
 			window->Show();
 			break;
