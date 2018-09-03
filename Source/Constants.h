@@ -26,6 +26,8 @@ const int32 kShowAddRepository		= 'kSRm';
 const int32 kQuitAddRepository		= 'kQRm';
 const int32 kRepositoryAdded		= 'kRAm';
 
+const int32 kFilterChangedMessage	= 'kFCm';
+
 const int32 kListInvokedMessage 		= 'kRLM';
 const int32 kIssueListInvokedMessage 	= 'kILM';
 

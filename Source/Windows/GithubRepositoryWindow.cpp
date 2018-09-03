@@ -13,6 +13,7 @@
 #include "SettingsManager.h"
 #include "RepositoryListItem.h"
 #include "Constants.h"
+#include "FilterView.h"
 #include "MessageFinder.h"
 
 #include <locale/Catalog.h>
@@ -41,6 +42,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	,fPrivateRepositories(NULL)
 	,fForkedRepositories(NULL)
 	,fPublicRepositories(NULL)
+	,fFilterView(NULL)
 {
 	SetupViews();
 	fPrivateRepositories = new BList();
@@ -93,6 +95,9 @@ GithubRepositoryWindow::SpawnDownloadThread()
 void
 GithubRepositoryWindow::SetupViews()
 {
+	fFilterView = new FilterView();
+	fFilterView->SetTarget(this);
+	
 	fRepositoryListView = new BOutlineListView("Repositories", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
 	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, 0, false, true);
 	fRepositoryListView->SetInvocationMessage(new BMessage(kListInvokedMessage));
@@ -107,6 +112,7 @@ GithubRepositoryWindow::SetupViews()
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.SetExplicitMinSize(BSize(380, 480))
 		.Add(fMenuBar)
+		.Add(fFilterView)
 		.Add(scrollView);
 }
 
@@ -220,11 +226,21 @@ GithubRepositoryWindow::SortRepositoriesByType(const void *first, const void *se
 	return firstRep->SortOrder() - secondRep->SortOrder();
 }
 
+void 
+GithubRepositoryWindow::HandleFilterMessage(BMessage *message)
+{
+	message->PrintToStream();
+}
+
 void
 GithubRepositoryWindow::MessageReceived(BMessage *message) {
 	switch (message->what) {
 		case kRepositoryAdded: {
 			message->PrintToStream();
+			break;
+		}
+		case kFilterChangedMessage: {
+			HandleFilterMessage(message);
 			break;
 		}
 		case kTokenLoadedMessage: {

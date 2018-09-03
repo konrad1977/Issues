@@ -10,6 +10,7 @@
 #include <interface/Window.h>
 #include "RepositoryTypeItem.h"
 
+class FilterView;
 class BMenuBar;
 class BMenuItem;
 class BOutlineListView;
@@ -26,6 +27,7 @@ public:
 
 private:
 			void ParseData(BMessage *message);
+			void HandleFilterMessage(BMessage *message);
 			void SetupViews();
 			void RequestRepositories();
 			void SpawnDownloadThread();
@@ -49,6 +51,7 @@ private:
 	BList 				*fPrivateRepositories;
 	BList				*fForkedRepositories;
 	BList				*fPublicRepositories;
+	FilterView			*fFilterView;
 };
 
 
