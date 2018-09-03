@@ -4,6 +4,7 @@
  */
 
 #include "RepositoryTypeItem.h"
+#include "Constants.h"
 #include <interface/ListItem.h>
 #include <interface/OutlineListView.h>
 #include <stdio.h>
@@ -15,20 +16,23 @@ RepositoryTypeItem::RepositoryTypeItem(RepositoryType type)
 	,fType(type)
 {
 	fColorManager = new ColorManager(this, false);
-	
+
 	switch (fType) {
-		case FORK:
+		case FORK: {
 			fTitle = BString("Fork");
-			fIndicatorColor = { 193, 188, 194 };
+			fIndicatorColor = kForkColor;
 			break;
-		case PRIVATE:
+		}
+		case PRIVATE: {
 			fTitle = BString("Private");
-			fIndicatorColor = { 255, 64, 80 };
+			fIndicatorColor = kPrivateColor;
 			break;
-		case PUBLIC: 
+		}
+		case PUBLIC: {
 			fTitle = BString("Public");
-			fIndicatorColor = { 38, 201, 158 };
+			fIndicatorColor = kPublicColor;
 			break;
+		}
 		default:
 			break;
 	}
@@ -36,10 +40,10 @@ RepositoryTypeItem::RepositoryTypeItem(RepositoryType type)
 
 RepositoryTypeItem::~RepositoryTypeItem()
 {
+	delete fColorManager;
+}
 
-}	
-	
-float 
+float
 RepositoryTypeItem::FontHeight(const BFont *font) const
 {
 	font_height fh;
@@ -47,24 +51,24 @@ RepositoryTypeItem::FontHeight(const BFont *font) const
 	return ceilf(fh.ascent + fh.descent + fh.leading);
 }
 
-void 
+void
 RepositoryTypeItem::DrawItem(BView *view, BRect rect, bool complete)
 {
 	BOutlineListView *parent = dynamic_cast<BOutlineListView *>(view);
 	const int32 index = parent->IndexOf(this);
 	BRect frame = parent->ItemFrame(index);
-	
+
 	DrawBackground(parent, frame);
 
 	rgb_color textColor = fColorManager->TextColor();
 	parent->SetHighColor(textColor);
-	parent->SetDrawingMode(B_OP_OVER);		
-	
+	parent->SetDrawingMode(B_OP_OVER);
+
 	BFont font;
 	parent->GetFont(&font);
 	font_height fh;
 	font.GetHeight(&fh);
-	
+
 	float fontHeight = fh.ascent + fh.descent + fh.leading;
 	float horizontalCenter = ((frame.Height() - fontHeight) / 2.0) + fh.descent;
 	parent->MovePenTo(BPoint(20, frame.LeftBottom().y - horizontalCenter));
@@ -83,25 +87,25 @@ RepositoryTypeItem::SetVisibleItems(uint8 visible, uint8 total)
 	fTitle << " " << visability;
 }	
 
-void 
+void
 RepositoryTypeItem::Update(BView *view, const BFont *font)
-{	
+{
 	float height = FontHeight(font);
 	SetHeight(height + 20);
 }
-	
-void 
+
+void
 RepositoryTypeItem::DrawBackground(BOutlineListView *parent, BRect frame)
-{	
+{
 	BRect r = frame;
 	r.right = 14;
 	BRegion reg(frame);
 	reg.Exclude(r);
-	
+
 	parent->SetDrawingMode( B_OP_MIN );
 	parent->SetLowColor(fIndicatorColor);
 	parent->FillRect(r, B_SOLID_LOW);
-	
+
 	rgb_color backgroundColor = fColorManager->BackgroundColor();
 	parent->SetHighColor(mix_color(fIndicatorColor, backgroundColor, 168));
 	parent->SetDrawingMode(B_OP_COPY);

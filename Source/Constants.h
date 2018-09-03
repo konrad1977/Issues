@@ -11,6 +11,10 @@
 const rgb_color kLightTextColor = { 245,245,245 };
 const rgb_color kDarkTextColor 	= { 40,44,40 	};
 
+const rgb_color kForkColor 		= { 193, 188, 194 };
+const rgb_color kPrivateColor 	= { 255, 64, 80 };
+const rgb_color kPublicColor 	= { 38, 201, 158 };
+
 const int32 kDataReceivedMessage 	= 'kDRM';
 const int32 kWindowQuitMessage 		= 'kWQM';
 const int32 kGithubTokenSaveMessage = 'kTSM';
