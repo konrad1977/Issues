@@ -17,6 +17,7 @@ public:
 
 	GraphQLBuilder& AddNode(const char *format, ...);
 	GraphQLBuilder& AddNode(BString node);
+	GraphQLBuilder& AddValue(BString node);
 
 	GraphQLBuilder& AddClosedNode(BString node);
 	GraphQLBuilder& AddClosedNode(BString format, BString value);

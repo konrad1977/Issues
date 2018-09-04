@@ -32,6 +32,14 @@ GraphQLBuilder::AddClosedNode(BString format, BString value)
 }
 
 GraphQLBuilder&
+GraphQLBuilder::AddValue(BString node)
+{
+	fBuffer << node << " ";
+	return *this;
+}
+
+
+GraphQLBuilder&
 GraphQLBuilder::AddClosedNode(BString node)
 {
 	fBuffer << " { " << node << " } ";
@@ -42,7 +50,7 @@ GraphQLBuilder&
 GraphQLBuilder::AddNode(BString node)
 {
 	fBraceBalance++;
-	fBuffer << " { " << node;
+	fBuffer << " { " << node << " ";
 	return *this;
 }
 

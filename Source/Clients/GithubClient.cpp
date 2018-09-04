@@ -147,9 +147,16 @@ GithubClient::RequestProjects()
 		.AddNode("viewer")
 		.AddNode("repositories(first:100)")
 		.AddNode("nodes")
-		.AddNode("name url description id isFork isPrivate owner")
-		.AddNode("login")
+			.AddNode("name")
+			.AddValue("id")
+			.AddValue("url")
+			.AddValue("description")
+			.AddValue("isFork")
+			.AddValue("isPrivate")
+			.AddValue("owner { login }")
+			.AddValue("parent { owner { login } }")
 		.Query();
+	printf("Query: %s\n", query.String());
 
 	RunRequest(&requester, query);
 }
