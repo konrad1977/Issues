@@ -47,6 +47,23 @@ GithubRepository::Load(BMessage &message)
 	if (message.FindMessage("owner", &ownerMessage) == B_OK) {
 		ownerMessage.FindString("login", &owner);
 	}
+
+	printf("------------------\n");
+	message.PrintToStream();
+
+	BMessage parentMesssage;
+	if (message.FindMessage("parent", &parentMesssage) == B_OK) {
+		BMessage parentOwnerMsg;
+		if (parentMesssage.FindMessage("owner", &parentOwnerMsg) == B_OK ) {
+			BString parentOwner;
+			parentOwnerMsg.FindString("login", &parentOwner);
+			owner = parentOwner;
+		}
+	}
+
+	printf("Owner %s\n", owner.String());
+	printf("------------------\n");
+	return B_OK;
 }
 
 
