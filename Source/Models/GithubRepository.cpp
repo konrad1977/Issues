@@ -10,11 +10,35 @@
 
 GithubRepository::GithubRepository(BMessage message)
 {
+	Load(message);
+}
+
+GithubRepository::~GithubRepository()
+{
+
+}
+
+status_t
+GithubRepository::Save(BMessage &message)
+{
+	message.AddString("name", name);
+	message.AddString("description", description);
+	message.AddBool("isFork", fIsFork);
+	message.AddBool("isPrivate", fIsPrivate);
+	message.AddString("url", url);
+	message.AddString("id", id);
+	message.AddString("login", owner);
+}
+
+status_t
+GithubRepository::Load(BMessage &message)
+{
 	message.FindString("name", &name);
 	message.FindString("description", &description);
 	message.FindBool("isFork", &fIsFork);
 	message.FindBool("isPrivate", &fIsPrivate);
 	message.FindString("url", &url);
+	message.FindString("id", &id);
 
 	BMessage ownerMessage;
 	if (message.FindMessage("owner", &ownerMessage) == B_OK) {
@@ -22,10 +46,6 @@ GithubRepository::GithubRepository(BMessage message)
 	}
 }
 
-GithubRepository::~GithubRepository()
-{
-
-}
 
 bool
 GithubRepository::IsFork() const
@@ -39,7 +59,7 @@ GithubRepository::IsPrivate() const
 	return fIsPrivate;
 }
 
-int 
+int
 GithubRepository::SortOrder()
 {
 	if (IsFork()) {
