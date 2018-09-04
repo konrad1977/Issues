@@ -26,6 +26,7 @@ AddRepositoryWindow::AddRepositoryWindow()
 	,fMessenger(NULL)
 	,fRepositoryName(NULL)
 	,fRepositoryOwner(NULL)
+	,fAddButton(NULL)
 {
 	SetupViews();
 	CenterOnScreen();
@@ -52,9 +53,10 @@ AddRepositoryWindow::MessageReceived(BMessage *message)
 	switch (message->what) {
 		case kRepositoryAdded: {
 			BMessage msg(kRepositoryAdded);
-			msg.AddString("Name", fRepositoryName->Text());
-			msg.AddString("Owner", fRepositoryOwner->Text());
+			msg.AddString("name", fRepositoryName->Text());
+			msg.AddString("owner", fRepositoryOwner->Text());
 			fMessenger->SendMessage(&msg);
+			fAddButton->SetEnabled(false);
 			break;
 		}
 		default:
@@ -70,12 +72,20 @@ AddRepositoryWindow::SetTarget(BHandler *handler)
 }
 
 void
+AddRepositoryWindow::SetEnabled(bool value)
+{
+	if (fAddButton) {
+		fAddButton->SetEnabled(value);
+	}
+}
+
+void
 AddRepositoryWindow::SetupViews()
 {
 	BGroupLayout *group = new BGroupLayout(B_VERTICAL);
 	SetLayout(group);
 
-	BButton *addRepositoryButton = new BButton("AddRepository", "Add repository", new BMessage(kRepositoryAdded));
+	fAddButton = new BButton("AddRepository", "Add repository", new BMessage(kRepositoryAdded));
 
 	fRepositoryName = new BTextControl("Repository name", B_TRANSLATE("Repository name:"), "", NULL);
 	fRepositoryOwner = new BTextControl("Repository owner", B_TRANSLATE("Repository name:"), "", NULL);
@@ -89,6 +99,6 @@ AddRepositoryWindow::SetupViews()
 		.End()
 		.AddGroup(B_VERTICAL)
 			.AddGlue()
-			.Add(addRepositoryButton)
+			.Add(fAddButton)
 		.End();
 }

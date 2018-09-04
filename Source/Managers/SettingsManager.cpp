@@ -25,30 +25,30 @@
 
 SettingsManager::SettingsManager()
 	:fFileName("IssuesSettings")
-	,fLocker(NULL) 
-{	
+	,fLocker(NULL)
+{
 	fLocker = new BLocker("SettingsLocker");
 }
 
-SettingsManager::~SettingsManager() 
+SettingsManager::~SettingsManager()
 {
 	delete fLocker;
 }
 
-void 
-SettingsManager::StartMonitoring(BHandler *handler) 
+void
+SettingsManager::StartMonitoring(BHandler *handler)
 {
 	BNode node;
 	node.SetTo( SavePath() );
-	
+
 	node_ref ref;
 	node.GetNodeRef( &ref );
-	
+
 	if (node.InitCheck() == B_OK) {
 		watch_node(&ref, B_WATCH_ALL, handler );
 	}
 }
-	
+
 void
 SettingsManager::SaveWithLock(BMessage *message)
 {
@@ -58,24 +58,24 @@ SettingsManager::SaveWithLock(BMessage *message)
 }
 
 const char *
-SettingsManager::SavePath() const 
-{	
+SettingsManager::SavePath() const
+{
 	BPath path;
-	
+
 	if (find_directory(B_USER_SETTINGS_DIRECTORY, &path) != B_OK) {
 		return NULL;
 	}
-	
+
 	path.Append(fFileName);
 	return path.Path();
 }
 
-status_t 
-SettingsManager::SaveSettings(BMessage message) 
-{	
+status_t
+SettingsManager::SaveSettings(BMessage message)
+{
 	BFile file;
 	file.SetTo(SavePath(), B_WRITE_ONLY | B_ERASE_FILE | B_CREATE_FILE);
-	
+
 	if (file.InitCheck() != B_OK) {
 		return B_ERROR;
 	}
@@ -87,15 +87,15 @@ SettingsManager::SaveSettings(BMessage message)
 }
 
 status_t
-SettingsManager::LoadSettings(BMessage &message) 
-{	
+SettingsManager::LoadSettings(BMessage &message)
+{
 	BFile file;
-	
+
 	file.SetTo(SavePath(), B_READ_ONLY);
 	if (file.InitCheck() != B_OK) {
 		return B_ERROR;
 	}
-	
+
 	if (message.Unflatten(&file) != B_OK) {
 		return B_ERROR;
 	}

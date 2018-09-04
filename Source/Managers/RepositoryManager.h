@@ -9,11 +9,13 @@
 #include <SupportDefs.h>
 
 class BList;
+class BMessenger;
+class BHandler;
 class SettingsManager;
 class GithubRepository;
 class RepositoryManager {
 public:
-	RepositoryManager();
+	RepositoryManager(BHandler *handler);
 	~RepositoryManager();
 
 	BList *Repositories() const;
@@ -29,6 +31,7 @@ private:
 
 	SettingsManager *fSettingsManager;
 	BList 			*fList;
+	BMessenger 		*fMessenger;
 };
 
 

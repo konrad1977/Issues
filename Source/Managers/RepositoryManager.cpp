@@ -7,18 +7,25 @@
 #include "RepositoryManager.h"
 #include "SettingsManager.h"
 #include "GithubRepository.h"
+#include "Constants.h"
 
 #include <support/List.h>
+#include <app/Messenger.h>
+#include <app/Handler.h>
 
-RepositoryManager::RepositoryManager()
+RepositoryManager::RepositoryManager(BHandler *handler)
 	:fSettingsManager(NULL)
+	,fMessenger(NULL)
 {
 	fList = new BList();
 	fSettingsManager = new SettingsManager();
+	fMessenger = new BMessenger(handler);
+	LoadRepositories();
 }
 
 RepositoryManager::~RepositoryManager()
 {
+	delete fMessenger;
 	delete fSettingsManager;
 	delete fList;
 }
@@ -33,11 +40,16 @@ void
 RepositoryManager::AddRepository(GithubRepository *repository)
 {
 	if (HasRepository(repository)) {
+		BMessage msg(kRepositoryManagerExists);
+		fMessenger->SendMessage(&msg);
 		return;
 	}
 
 	fList->AddItem(reinterpret_cast<void*>(repository));
 	SaveRepositories();
+
+	BMessage msg(kRepositoryManagerAdd);
+	fMessenger->SendMessage(&msg);
 }
 
 void
@@ -55,6 +67,8 @@ RepositoryManager::RemoveRepository(GithubRepository *repository)
 		if (repository->id == item->id) {
 			fList->RemoveItem(i);
 			SaveRepositories();
+			BMessage msg(kRepositoryManagerRemove);
+			fMessenger->SendMessage(&msg);
 			break;
 		}
 	}
@@ -69,7 +83,7 @@ RepositoryManager::HasRepository(GithubRepository *repository)
 		if (item == NULL) {
 			continue;
 		}
-		if (item->id == repository->id) {
+		if (item->url == repository->url) {
 			return true;
 		}
 	}
@@ -92,12 +106,16 @@ RepositoryManager::LoadRepositories()
 		}
 		index++;
 	}
+	BMessage msg(kRepositoryManagerLoaded);
+	fMessenger->SendMessage(&msg);
 }
 
 void
 RepositoryManager::SaveRepositories()
 {
 	BMessage message;
+	fSettingsManager->LoadSettings(message);
+
 	const int32 items = fList->CountItems();
 	for (int32 i = 0; i<items; i++) {
 		GithubRepository *item = static_cast<GithubRepository*>(fList->ItemAtFast(i));
@@ -113,5 +131,3 @@ RepositoryManager::SaveRepositories()
 
 	fSettingsManager->SaveSettings(message);
 }
-
-

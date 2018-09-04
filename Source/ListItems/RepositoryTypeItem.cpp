@@ -33,6 +33,12 @@ RepositoryTypeItem::RepositoryTypeItem(RepositoryType type)
 			fIndicatorColor = kPublicColor;
 			break;
 		}
+
+		case CUSTOM: {
+			fTitle = BString("Added by user");
+			fIndicatorColor = kCustomColor;
+			break;
+		}
 		default:
 			break;
 	}
