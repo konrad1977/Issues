@@ -47,6 +47,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	,fPrivateTotal(0)
 	,fPublicTotal(0)
 	,fForkedTotal(0)
+	,fCustomTotal(0)
 {
 	SetupViews();
 
@@ -131,6 +132,7 @@ GithubRepositoryWindow::SetCurrentRepositories(BList *list)
 	BList *publicList = MakePublicRepositories(list);
 	BList *privateList = MakePrivateRepositories(list);
 	BList *forkedList = MakeForkedRepositories(list);
+	BList *customList = fRepositoryManager->Repositories();
 
 	if (fPrivateTotal < privateList->CountItems()) {
 		fPrivateTotal = privateList->CountItems();
@@ -144,7 +146,13 @@ GithubRepositoryWindow::SetCurrentRepositories(BList *list)
 		fForkedTotal = forkedList->CountItems();
 	}
 
-	PopuplateListView(CUSTOM, fRepositoryManager->Repositories(), fPublicTotal);
+	if (customList) {
+		if (fCustomTotal < customList->CountItems()) {
+			fCustomTotal = customList->CountItems();
+		}
+	}
+
+	PopuplateListView(CUSTOM, customList, fCustomTotal);
 	PopuplateListView(PUBLIC, publicList, fPublicTotal);
 	PopuplateListView(PRIVATE, privateList, fPrivateTotal);
 	PopuplateListView(FORK, forkedList, fForkedTotal);

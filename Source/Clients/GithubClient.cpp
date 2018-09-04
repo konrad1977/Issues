@@ -91,7 +91,8 @@ GithubClient::RequestRepository(const char *repository, const char *owner)
 	BString query = builder
 		//.AddNode("viewer")
 		.AddNode("repository(name:\\\"%s\\\" owner:\\\"%s\\\")", repository, owner)
-		.AddNode("name url description id")
+		.AddNode("name url description id owner")
+		.AddNode("login")
 		.Query();
 
 	RunRequest(&requester, query);

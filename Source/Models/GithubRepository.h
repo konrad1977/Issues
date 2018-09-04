@@ -29,6 +29,8 @@ public:
 	status_t Save(BMessage &message);
 	status_t Load(BMessage &message);
 
+	void PrintToStream();
+
 private:
 	bool fIsFork;
 	bool fIsPrivate;

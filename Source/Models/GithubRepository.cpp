@@ -27,7 +27,10 @@ GithubRepository::Save(BMessage &message)
 	message.AddBool("isPrivate", fIsPrivate);
 	message.AddString("url", url);
 	message.AddString("id", id);
-	message.AddString("login", owner);
+
+	BMessage ownerMsg;
+	ownerMsg.AddString("login", owner);
+	message.AddMessage("owner", &ownerMsg);
 }
 
 status_t
@@ -68,5 +71,11 @@ GithubRepository::SortOrder()
 		return 1;
 	}
 	return 0;
+}
+
+void
+GithubRepository::PrintToStream()
+{
+
 }
 

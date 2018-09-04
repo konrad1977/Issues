@@ -68,6 +68,7 @@ private:
 	uint8 				fPrivateTotal;
 	uint8 				fPublicTotal;
 	uint8 				fForkedTotal;
+	uint8 				fCustomTotal;
 };
 
 
