@@ -10,6 +10,7 @@
 #include <interface/Window.h>
 #include "RepositoryTypeItem.h"
 
+class FilterView;
 class BMenuBar;
 class BMenuItem;
 class BOutlineListView;
@@ -25,30 +26,42 @@ public:
 
 
 private:
+			void SetCurrentRepositories(BList *list);
+
+			BList *MakeFilter(BString filter);
+
+			BList *MakePrivateRepositories(BList *list) const;
+			BList *MakeForkedRepositories(BList *list) const;
+			BList *MakePublicRepositories(BList *list) const;
+
 			void ParseData(BMessage *message);
+			void HandleFilterMessage(BMessage *message);
 			void SetupViews();
 			void RequestRepositories();
 			void SpawnDownloadThread();
-			
-			void BuildRepositoryList(BList *repositories);
-			void PopuplateListView(RepositoryType type, BList *list);
+
+			void PopuplateListView(RepositoryType type, BList *list, uint8 total);
 			void ClearRepositories();
-			
+
 	static int SortRepositoriesByName(const void *first, const void *second);
 	static int SortRepositoriesByType(const void *first, const void *second);
-	
+
 	static int32 DownloadRepositories(void *cookie);
-	
+
 	GithubTokenWindow 	*fGithubTokenWindow;
 	GithubClient 		*fGithubClient;
 	AddRepositoryWindow	*fAddRepositoryWindow;
 	BOutlineListView 	*fRepositoryListView;
 	BMenuBar 			*fMenuBar;
 	thread_id			fDownloadThread;
-	
-	BList 				*fPrivateRepositories;
-	BList				*fForkedRepositories;
-	BList				*fPublicRepositories;
+
+	BList				*fCurrentRepositories;
+	BList				*fCurrentFilter;
+	FilterView			*fFilterView;
+
+	uint8 				fPrivateTotal;
+	uint8 				fPublicTotal;
+	uint8 				fForkedTotal;
 };
 
 
