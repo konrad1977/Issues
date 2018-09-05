@@ -16,6 +16,7 @@ class BMenuItem;
 class BOutlineListView;
 class AddRepositoryWindow;
 class GithubClient;
+class RepositoryManager;
 class GithubTokenWindow;
 class GithubRepositoryWindow : public BWindow {
 public:
@@ -23,7 +24,6 @@ public:
 	~GithubRepositoryWindow();
 
 	virtual void MessageReceived(BMessage *message);
-
 
 private:
 			void SetCurrentRepositories(BList *list);
@@ -35,6 +35,11 @@ private:
 			BList *MakePublicRepositories(BList *list) const;
 
 			void ParseData(BMessage *message);
+
+			void HandleUserRepositories(BMessage *message);
+			void HandleRepository(BMessage *message);
+
+			void HandleAddRepository(BMessage *message);
 			void HandleFilterMessage(BMessage *message);
 			void SetupViews();
 			void RequestRepositories();
@@ -50,6 +55,7 @@ private:
 
 	GithubTokenWindow 	*fGithubTokenWindow;
 	GithubClient 		*fGithubClient;
+	RepositoryManager	*fRepositoryManager;
 	AddRepositoryWindow	*fAddRepositoryWindow;
 	BOutlineListView 	*fRepositoryListView;
 	BMenuBar 			*fMenuBar;

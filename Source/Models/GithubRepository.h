@@ -19,11 +19,15 @@ public:
 	BString owner;
 	BString description;
 	BString url;
+	BString id;
 
 	bool IsFork() const;
 	bool IsPrivate() const;
-	
+
 	int SortOrder();
+
+	status_t Save(BMessage &message);
+	status_t Load(BMessage &message);
 
 private:
 	bool fIsFork;

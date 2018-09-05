@@ -9,6 +9,7 @@
 #include <SupportDefs.h>
 #include <interface/Window.h>
 
+class BButton;
 class BMessenger;
 class BTextControl;
 class AddRepositoryWindow : public BWindow {
@@ -19,6 +20,7 @@ public:
 	virtual void MessageReceived(BMessage *message);
 	virtual bool QuitRequested();
 			void SetTarget(BHandler *handler);
+			void SetEnabled(bool value);
 
 private:
 			void SetupViews();
@@ -26,6 +28,7 @@ private:
 	BMessenger 		*fMessenger;
 	BTextControl 	*fRepositoryName;
 	BTextControl 	*fRepositoryOwner;
+	BButton			*fAddButton;
 
 };
 

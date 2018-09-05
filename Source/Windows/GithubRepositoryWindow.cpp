@@ -12,6 +12,7 @@
 #include "AddRepositoryWindow.h"
 #include "SettingsManager.h"
 #include "RepositoryListItem.h"
+#include "RepositoryManager.h"
 #include "Constants.h"
 #include "FilterView.h"
 #include "MessageFinder.h"
@@ -36,6 +37,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	:BWindow(BRect(30,30, 1, 1), "Repositories", B_DOCUMENT_WINDOW, B_FRAME_EVENTS | B_QUIT_ON_WINDOW_CLOSE | B_AUTO_UPDATE_SIZE_LIMITS)
 	,fGithubTokenWindow(NULL)
 	,fGithubClient(NULL)
+	,fRepositoryManager(NULL)
 	,fAddRepositoryWindow(NULL)
 	,fRepositoryListView(NULL)
 	,fDownloadThread(-1)
@@ -50,7 +52,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 
 	fCurrentRepositories = new BList();
 	fGithubClient = new GithubClient(this);
-
+	fRepositoryManager = new RepositoryManager(this);
 	CenterOnScreen();
 }
 
@@ -67,7 +69,7 @@ GithubRepositoryWindow::~GithubRepositoryWindow()
 	}
 
 	while (fCurrentRepositories->CountItems()) {
-		delete fCurrentRepositories->RemoveItem(int32(0));
+		delete reinterpret_cast<GithubRepository*>(fCurrentRepositories->RemoveItem(int32(0)));
 	}
 
 	delete fCurrentRepositories;
@@ -142,6 +144,7 @@ GithubRepositoryWindow::SetCurrentRepositories(BList *list)
 		fForkedTotal = forkedList->CountItems();
 	}
 
+	PopuplateListView(CUSTOM, fRepositoryManager->Repositories(), fPublicTotal);
 	PopuplateListView(PUBLIC, publicList, fPublicTotal);
 	PopuplateListView(PRIVATE, privateList, fPrivateTotal);
 	PopuplateListView(FORK, forkedList, fForkedTotal);
@@ -235,40 +238,9 @@ GithubRepositoryWindow::MakePublicRepositories(BList *repositories) const
 }
 
 void
-GithubRepositoryWindow::ParseData(BMessage *message)
-{
-	if (message->HasMessage("GithubRepositories") == false) {
-		return;
-	}
-
-	while (fCurrentRepositories->CountItems()) {
-		delete fCurrentRepositories->RemoveItem(int32(0));
-	}
-
-	MessageFinder messageFinder;
-	BMessage msg = messageFinder.FindMessage("nodes", *message);
-
-	BMessage repositoriesMessage;
-	char *name;
-	uint32 type;
-	int32 count;
-
-	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
-		BMessage nodeMsg;
-		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
-			GithubRepository *repository = new GithubRepository(nodeMsg);
-			fCurrentRepositories->AddItem(repository);
-		}
-	}
-
-	fCurrentRepositories->SortItems(SortRepositoriesByName);
-	SetCurrentRepositories(fCurrentRepositories);
-}
-
-void
 GithubRepositoryWindow::PopuplateListView(RepositoryType type, BList *list, uint8 total)
 {
-	if (list == NULL) {
+	if (list == NULL || list->CountItems() == 0) {
 		return;
 	}
 
@@ -320,10 +292,54 @@ GithubRepositoryWindow::HandleFilterMessage(BMessage *message)
 }
 
 void
+GithubRepositoryWindow::HandleAddRepository(BMessage *message)
+{
+	BString name;
+	if (message->FindString("name", &name) != B_OK) {
+		return;
+	}
+
+	BString owner;
+	if (message->FindString("owner", &owner) != B_OK) {
+		return;
+	}
+
+	fGithubClient->RequestRepository(name.String(), owner.String());
+}
+
+void
 GithubRepositoryWindow::MessageReceived(BMessage *message) {
 	switch (message->what) {
+
+		case kRepositoryManagerAdd: {
+			printf("kRepositoryManagerAdd\n");
+			SetCurrentRepositories(fCurrentRepositories);
+			fAddRepositoryWindow = NULL;
+			break;
+		}
+
+		case kRepositoryManagerExists: {
+			if (fAddRepositoryWindow) {
+				fAddRepositoryWindow->Lock();
+				fAddRepositoryWindow->SetEnabled(true);
+				fAddRepositoryWindow->Unlock();
+			}
+			printf("kRepositoryManagerExists\n");
+			break;
+		}
+
+		case kRepositoryManagerRemove: {
+			printf("kRepositoryManagerRemove\n");
+			break;
+		}
+
+		case kRepositoryManagerLoaded: {
+			printf("kRepositoryManagerLoaded\n");
+			break;
+		}
+
 		case kRepositoryAdded: {
-			message->PrintToStream();
+			HandleAddRepository(message);
 			break;
 		}
 		case kFilterChangedMessage: {
@@ -388,6 +404,52 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 		}
 		default:
 			BWindow::MessageReceived(message);
+	}
+}
+
+void
+GithubRepositoryWindow::HandleUserRepositories(BMessage *message)
+{
+	while (fCurrentRepositories->CountItems()) {
+		delete reinterpret_cast<GithubRepository*>(fCurrentRepositories->RemoveItem(int32(0)));
+	}
+
+	MessageFinder messageFinder;
+	BMessage msg = messageFinder.FindMessage("nodes", *message);
+
+	BMessage repositoriesMessage;
+	char *name;
+	uint32 type;
+	int32 count;
+
+	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
+		BMessage nodeMsg;
+		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
+			GithubRepository *repository = new GithubRepository(nodeMsg);
+			fCurrentRepositories->AddItem(repository);
+		}
+	}
+
+	fCurrentRepositories->SortItems(SortRepositoriesByName);
+	SetCurrentRepositories(fCurrentRepositories);
+}
+
+void
+GithubRepositoryWindow::HandleRepository(BMessage *message)
+{
+	MessageFinder messageFinder;
+	BMessage msg = messageFinder.FindMessage("repository", *message);
+	GithubRepository *repository = new GithubRepository(msg);
+	fRepositoryManager->AddRepository(repository);
+}
+
+void
+GithubRepositoryWindow::ParseData(BMessage *message)
+{
+	if (message->HasMessage("UserRepositories")) {
+		HandleUserRepositories(message);
+	} else if (message->HasMessage("Repository")) {
+		HandleRepository(message);
 	}
 }
 

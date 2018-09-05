@@ -140,7 +140,7 @@ GithubClient::RequestIssuesForRepository(const char *repository, const char *own
 void
 GithubClient::RequestProjects()
 {
-	NetRequester requester(fHandler, "GithubRepositories");
+	NetRequester requester(fHandler, "UserRepositories");
 	GraphQLBuilder builder;
 	BString query = builder
 		.AddNode("viewer")

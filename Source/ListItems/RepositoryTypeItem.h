@@ -13,7 +13,8 @@
 enum RepositoryType {
 	FORK = 0,
 	PUBLIC,
-	PRIVATE
+	PRIVATE,
+	CUSTOM
 };
 
 class BOutlineListView;
