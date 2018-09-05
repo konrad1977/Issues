@@ -273,9 +273,11 @@ IssuesContainerView::HandleParse(BMessage *message)
 	float width;
 	float height;
 	fListView->GetPreferredSize(&width, &height);
-	fListView->SetExplicitMinSize(BSize(320, height));
+	fListView->SetExplicitMinSize(BSize(320, height < 420 ? height : 420));
 
 	if (fIsReplicant) {
+
+
 		height += fRepositoryTitleView->MinSize().height;
 		height += kDraggerSize;
 		ResizeTo(Bounds().Width(), height);

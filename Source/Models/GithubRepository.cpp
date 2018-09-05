@@ -48,9 +48,6 @@ GithubRepository::Load(BMessage &message)
 		ownerMessage.FindString("login", &owner);
 	}
 
-	printf("------------------\n");
-	message.PrintToStream();
-
 	BMessage parentMesssage;
 	if (message.FindMessage("parent", &parentMesssage) == B_OK) {
 		BMessage parentOwnerMsg;
@@ -60,9 +57,6 @@ GithubRepository::Load(BMessage &message)
 			owner = parentOwner;
 		}
 	}
-
-	printf("Owner %s\n", owner.String());
-	printf("------------------\n");
 	return B_OK;
 }
 
@@ -89,10 +83,3 @@ GithubRepository::SortOrder()
 	}
 	return 0;
 }
-
-void
-GithubRepository::PrintToStream()
-{
-
-}
-
