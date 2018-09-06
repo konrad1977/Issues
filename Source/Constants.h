@@ -23,6 +23,7 @@ const int32 kNoTokenMessage			= 'kNTM';
 const int32 kTokenLoadedMessage		= 'kTLM';
 const int32 kAutoUpdateMessage		= 'kAUM';
 
+const int32 kShowIssueForRepository		= 'kSmm';
 const int32 kShowAddRepository			= 'kSRm';
 const int32 kQuitAddRepository			= 'kQRm';
 const int32 kRepositoryAdded			= 'kRAm';

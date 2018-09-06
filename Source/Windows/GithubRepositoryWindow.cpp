@@ -16,9 +16,11 @@
 #include "Constants.h"
 #include "FilterView.h"
 #include "MessageFinder.h"
+#include "ROutlineListView.h"
 
 #include <locale/Catalog.h>
 
+#include <interface/PopUpMenu.h>
 #include <interface/MenuBar.h>
 #include <interface/MenuItem.h>
 #include <interface/StringItem.h>
@@ -44,6 +46,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	,fCurrentRepositories(NULL)
 	,fCurrentFilter(NULL)
 	,fFilterView(NULL)
+	,fListMenu(NULL)
 	,fPrivateTotal(0)
 	,fPublicTotal(0)
 	,fForkedTotal(0)
@@ -74,7 +77,6 @@ GithubRepositoryWindow::~GithubRepositoryWindow()
 	}
 
 	delete fCurrentRepositories;
-
 	delete fAddRepositoryWindow;
 	delete fGithubTokenWindow;
 	delete fGithubClient;
@@ -102,7 +104,9 @@ GithubRepositoryWindow::SetupViews()
 	fFilterView = new FilterView();
 	fFilterView->SetTarget(this);
 
-	fRepositoryListView = new BOutlineListView("Repositories", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL | B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
+	fRepositoryListView = new ROutlineListView("Repositories");
+	fRepositoryListView->SetTarget(this);
+
 	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, 0, false, true);
 	fRepositoryListView->SetInvocationMessage(new BMessage(kListInvokedMessage));
 
@@ -316,9 +320,51 @@ GithubRepositoryWindow::HandleAddRepository(BMessage *message)
 }
 
 void
+GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
+{
+	int32 index;
+	bool pressed;
+	uint32 buttons;
+	BPoint point;
+
+	message->FindInt32("index", &index);
+	message->FindBool("pressed", &pressed);
+	message->FindUInt32("buttons", &buttons);
+	message->FindPoint("point", &point);
+
+	if (pressed && buttons &B_SECONDARY_MOUSE_BUTTON) {
+		RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
+
+		if (listItem == NULL) {
+			return;
+		}
+
+		GithubRepository *repository = listItem->CurrentRepository();
+		if (repository != NULL) {
+
+			BMessage msg(kShowIssueForRepository);
+			msg.AddInt32("index", index);
+
+			if (fListMenu == NULL) {
+				fListMenu = new BPopUpMenu("menu");
+				fListMenu->AddItem(new BMenuItem("Issues", &msg));
+				fListMenu->AddItem(new BMenuItem("Commits", NULL));
+			}
+
+			fListMenu->Go(point, true);
+			fListMenu->SetTargetForItems(this);
+		}
+	}
+}
+
+void
 GithubRepositoryWindow::MessageReceived(BMessage *message) {
 	switch (message->what) {
 
+		case kListViewMouseEvent: {
+			HandleMouseDownEvents(message);
+			break;
+		}
 		case kRepositoryManagerAdd: {
 			printf("kRepositoryManagerAdd\n");
 			SetCurrentRepositories(fCurrentRepositories);
@@ -386,20 +432,13 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 
+		case kShowIssueForRepository:
 		case kListInvokedMessage: {
-
 			int32 index = B_ERROR;
 			if (message->FindInt32("index", &index) != B_OK) {
 				return;
 			}
-
-			RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
-			if (listItem == NULL || listItem->CurrentRepository() == NULL) {
-				return;
-			}
-
-			GithubIssuesWindow *window = new GithubIssuesWindow(listItem->CurrentRepository());
-			window->Show();
+			ShowIssuesWithIndex(index);
 			break;
 		}
 
@@ -413,6 +452,18 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 		default:
 			BWindow::MessageReceived(message);
 	}
+}
+
+void
+GithubRepositoryWindow::ShowIssuesWithIndex(int32 index)
+{
+	RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
+	if (listItem == NULL || listItem->CurrentRepository() == NULL) {
+		return;
+	}
+
+	GithubIssuesWindow *window = new GithubIssuesWindow(listItem->CurrentRepository());
+	window->Show();
 }
 
 void

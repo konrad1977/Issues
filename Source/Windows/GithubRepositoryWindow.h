@@ -10,6 +10,8 @@
 #include <interface/Window.h>
 #include "RepositoryTypeItem.h"
 
+class BPopUpMenu;
+class ROutlineListView;
 class FilterView;
 class BMenuBar;
 class BMenuItem;
@@ -38,6 +40,7 @@ private:
 
 			void HandleUserRepositories(BMessage *message);
 			void HandleRepository(BMessage *message);
+			void HandleMouseDownEvents(BMessage *message);
 
 			void HandleAddRepository(BMessage *message);
 			void HandleFilterMessage(BMessage *message);
@@ -47,6 +50,7 @@ private:
 
 			void PopuplateListView(RepositoryType type, BList *list, uint8 total);
 			void ClearRepositories();
+			void ShowIssuesWithIndex(int32 index);
 
 	static int SortRepositoriesByName(const void *first, const void *second);
 	static int SortRepositoriesByType(const void *first, const void *second);
@@ -57,13 +61,14 @@ private:
 	GithubClient 		*fGithubClient;
 	RepositoryManager	*fRepositoryManager;
 	AddRepositoryWindow	*fAddRepositoryWindow;
-	BOutlineListView 	*fRepositoryListView;
+	ROutlineListView 	*fRepositoryListView;
 	BMenuBar 			*fMenuBar;
 	thread_id			fDownloadThread;
 
 	BList				*fCurrentRepositories;
 	BList				*fCurrentFilter;
 	FilterView			*fFilterView;
+	BPopUpMenu			*fListMenu;
 
 	uint8 				fPrivateTotal;
 	uint8 				fPublicTotal;
