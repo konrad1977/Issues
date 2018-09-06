@@ -23,7 +23,12 @@ const int32 kNoTokenMessage			= 'kNTM';
 const int32 kTokenLoadedMessage		= 'kTLM';
 const int32 kAutoUpdateMessage		= 'kAUM';
 
+const int32 kMenuShowCommitsForRepository	= 'mSCm';
+const int32 kMenuShowIssueForRepository	 	= 'mSmm';
+
+const int32 kShowCommitsForRepository	= 'kSCm';
 const int32 kShowIssueForRepository		= 'kSmm';
+
 const int32 kShowAddRepository			= 'kSRm';
 const int32 kQuitAddRepository			= 'kQRm';
 const int32 kRepositoryAdded			= 'kRAm';
@@ -34,9 +39,12 @@ const int32 kRepositoryManagerRemove	= 'kRRm';
 const int32 kRepositoryManagerLoaded	= 'kRLm';
 
 
+
 const int32 kFilterChangedMessage	= 'kFCm';
 
+const int32 kListSelectionChanged 		= 'klsc';
 const int32 kListInvokedMessage 		= 'kRLM';
 const int32 kIssueListInvokedMessage 	= 'kILM';
+
 
 #endif // _H

@@ -69,11 +69,14 @@ private:
 	BList				*fCurrentFilter;
 	FilterView			*fFilterView;
 	BPopUpMenu			*fListMenu;
+	BMenuItem			*fMenuItemShowIssues;
+	BMenuItem			*fMenuItemShowCommits;
 
 	uint8 				fPrivateTotal;
 	uint8 				fPublicTotal;
 	uint8 				fForkedTotal;
 	uint8 				fCustomTotal;
+	int32				fCurrentSelectedIndex;
 };
 
 

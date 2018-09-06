@@ -47,6 +47,8 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	,fCurrentFilter(NULL)
 	,fFilterView(NULL)
 	,fListMenu(NULL)
+	,fMenuItemShowIssues(NULL)
+	,fMenuItemShowCommits(NULL)
 	,fPrivateTotal(0)
 	,fPublicTotal(0)
 	,fForkedTotal(0)
@@ -105,16 +107,21 @@ GithubRepositoryWindow::SetupViews()
 	fFilterView->SetTarget(this);
 
 	fRepositoryListView = new ROutlineListView("Repositories");
+	fRepositoryListView->SetInvocationMessage(new BMessage(kListInvokedMessage));
+	fRepositoryListView->SetSelectionMessage(new BMessage(kListSelectionChanged));
 	fRepositoryListView->SetTarget(this);
 
 	BScrollView *scrollView = new BScrollView("Scrollview", fRepositoryListView, B_FOLLOW_ALL, 0, false, true);
-	fRepositoryListView->SetInvocationMessage(new BMessage(kListInvokedMessage));
 
 	BLayoutBuilder::Menu<>(fMenuBar = new BMenuBar(Bounds(), "Menu"))
-		.AddMenu(B_TRANSLATE("Edit"))
+		.AddMenu(B_TRANSLATE("File"))
 			.AddItem(new BMenuItem(B_TRANSLATE("Add.."), new BMessage(kShowAddRepository), 'A'))
 			.AddSeparator()
 			.AddItem(new BMenuItem(B_TRANSLATE("About"), NULL, 'R'))
+		.End()
+		.AddMenu(B_TRANSLATE("Edit"))
+			.AddItem(fMenuItemShowIssues = new BMenuItem(B_TRANSLATE("Show issues"), new BMessage(kShowIssueForRepository), 'I'))
+			.AddItem(fMenuItemShowCommits = new BMenuItem(B_TRANSLATE("Show commits"), new BMessage(kShowCommitsForRepository), 'C'))
 		.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
@@ -122,6 +129,9 @@ GithubRepositoryWindow::SetupViews()
 		.Add(fMenuBar)
 		.Add(fFilterView)
 		.Add(scrollView);
+
+	fMenuItemShowIssues->SetEnabled(false);
+	fMenuItemShowCommits->SetEnabled(false);
 }
 
 void
@@ -342,7 +352,7 @@ GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
 		GithubRepository *repository = listItem->CurrentRepository();
 		if (repository != NULL) {
 
-			BMessage msg(kShowIssueForRepository);
+			BMessage msg(kMenuShowIssueForRepository);
 			msg.AddInt32("index", index);
 
 			if (fListMenu == NULL) {
@@ -431,8 +441,32 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			fGithubTokenWindow = NULL;
 			break;
 		}
+		case kShowIssueForRepository: {
+			ShowIssuesWithIndex(fCurrentSelectedIndex);
+			break;
+		}
 
-		case kShowIssueForRepository:
+		case kListSelectionChanged: {
+			int32 index = B_ERROR;
+
+			fMenuItemShowIssues->SetEnabled(false);
+			fMenuItemShowCommits->SetEnabled(false);
+
+			fCurrentSelectedIndex = -1;
+			if (message->FindInt32("index", &index) != B_OK) {
+				return;
+			}
+
+			fCurrentSelectedIndex = index;
+
+			if (dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index))) {
+				fMenuItemShowIssues->SetEnabled(true);
+				fMenuItemShowCommits->SetEnabled(true);
+			}
+			break;
+		}
+
+		case kMenuShowIssueForRepository:
 		case kListInvokedMessage: {
 			int32 index = B_ERROR;
 			if (message->FindInt32("index", &index) != B_OK) {
