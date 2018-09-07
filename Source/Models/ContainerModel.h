@@ -12,7 +12,6 @@
 class ContainerModel {
 public:
 	virtual status_t Archive(BMessage *message) = 0;
-	virtual status_t Unarchive(BMessage *message) = 0;
 
 	virtual void MessageReceived(BMessage *message) = 0;
 	virtual void RequestData() = 0;

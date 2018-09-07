@@ -28,6 +28,16 @@ IssueContainerModel::IssueContainerModel(BString repository, BString owner)
 
 }
 
+IssueContainerModel::IssueContainerModel(BMessage *message)
+	:fGithubClient(NULL)
+	,fGithubRepository(NULL)
+	,fRepositoryTitleView(NULL)
+	,fMessenger(NULL)
+{
+	message->FindString("Repository", &fRepository);
+	message->FindString("Owner", &fOwner);
+}
+
 IssueContainerModel::~IssueContainerModel()
 {
 	delete fGithubClient;
@@ -37,12 +47,9 @@ IssueContainerModel::~IssueContainerModel()
 status_t
 IssueContainerModel::Archive(BMessage *message)
 {
-	return B_ERROR;
-}
-
-status_t
-IssueContainerModel::Unarchive(BMessage *message)
-{
+	message->AddString("Repository", fRepository);
+	message->AddString("Owner", fOwner);
+	message->AddString("type", "issues");
 	return B_ERROR;
 }
 
@@ -54,6 +61,13 @@ IssueContainerModel::HandleParse(BMessage *message)
 	} else if (message->HasMessage("Repository")) {
 		AddRepository(message);
 	}
+
+	if(fMessenger) {
+		BMessage resizeMsg(kContainerRequestResize);
+		fMessenger->SendMessage(&resizeMsg);
+		printf("Send Resize\n");
+	}
+	printf("HandleParse\n");
 }
 
 void
@@ -82,9 +96,6 @@ IssueContainerModel::AddIssues(BMessage *message)
 			list->AddItem( listItem );
 		}
 	}
-
-	BMessage resizeMsg(kContainerRequestResize);
-	fMessenger->SendMessage(&resizeMsg);
 }
 
 void

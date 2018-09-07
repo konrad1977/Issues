@@ -12,6 +12,7 @@
 #include "IssueListItem.h"
 #include "Constants.h"
 #include "MessageFinder.h"
+#include "IssueContainerModel.h"
 
 #include <interface/GroupLayout.h>
 #include <interface/LayoutBuilder.h>
@@ -42,8 +43,6 @@ IssuesContainerView::IssuesContainerView(ContainerModel *model)
 	,fIsReplicant(false)
 	,fContainerModel(model)
 {
-	fContainerModel->SetTarget(this);
-
 	SetupViews(fIsReplicant);
 	SpawnDonwloadThread();
 }
@@ -56,11 +55,16 @@ IssuesContainerView::IssuesContainerView(BMessage *message)
 	,fAutoUpdateRunner(NULL)
 	,fThreadId(-1)
 	,fIsReplicant(true)
+	,fContainerModel(NULL)
 {
-	SetupViews(fIsReplicant);
-	message->FindString("Repository", &fRepository);
-	message->FindString("Owner", &fOwner);
+	BString type;
+	if (message->FindString("type", &type) == B_OK) {
+		if (type == "issues") {
+			fContainerModel = new IssueContainerModel(message);
+		}
+	}
 
+	SetupViews(fIsReplicant);
 	SpawnDonwloadThread();
 }
 
@@ -77,8 +81,7 @@ status_t
 IssuesContainerView::Archive(BMessage* into, bool deep) const
 {
 	into->AddString("add_on", kAppSignature);
-	into->AddString("Repository", fRepository);
-	into->AddString("Owner", fOwner);
+	Model()->Archive(into);
 	return BView::Archive(into, false);
 }
 
@@ -99,6 +102,7 @@ IssuesContainerView::AttachedToWindow()
 {
 	StartAutoUpdater();
 	ListView()->SetTarget(this);
+	Model()->SetTarget(this);
 	BView::AttachedToWindow();
 }
 
@@ -246,6 +250,7 @@ IssuesContainerView::SetupViews(bool isReplicant)
 
 	fContainerModel->SetListView(ListView());
 	fContainerModel->SetIsReplicant(isReplicant);
+	fContainerModel->SetTarget(this);
 
 	BSize draggerSize = BSize(kDraggerSize,kDraggerSize);
 	fDragger = new BDragger(this);

@@ -18,10 +18,10 @@ class IssueContainerModel : public ContainerModel {
 public:
 
 	IssueContainerModel(BString repository, BString owner);
+	IssueContainerModel(BMessage *message);
 	virtual ~IssueContainerModel();
 
 	virtual status_t Archive(BMessage *message);
-	virtual status_t Unarchive(BMessage *message);
 
 	virtual void MessageReceived(BMessage *message);
 	virtual void RequestData();
