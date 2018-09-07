@@ -9,6 +9,7 @@
 #include <SupportDefs.h>
 #include <interface/View.h>
 #include <support/String.h>
+#include "ContainerModel.h"
 
 class BMessageRunner;
 class BDragger;
@@ -19,7 +20,7 @@ class RepositoryTitleView;
 class IssuesContainerView : public BView {
 public:
 
-	IssuesContainerView(BString repository, BString owner);
+	IssuesContainerView(ContainerModel *model);
 	IssuesContainerView(BMessage *archive);
   	~IssuesContainerView();
 
@@ -30,27 +31,26 @@ public:
   	virtual void MessageReceived(BMessage *message);
   	virtual void AttachedToWindow();
 
+	ContainerModel *Model() const { return fContainerModel; }
+
 private:
-	GithubClient *Client();
 	BListView 	 *ListView();
 
 	static int32 DownloadFunc(void *cookie);
 			void StartAutoUpdater();
-			void RequestIssues();
 			void SpawnDonwloadThread();
 			void StopDownloadThread();
 
-			void HandleListInvoke(BMessage *message);
-			void HandleParse(BMessage *message);
+			void Reisize();
 
+			void HandleListInvoke(BMessage *message);
+
+			void HandleParse(BMessage *message);
 			void AddIssues(BMessage *message);
 			void AddRepository(BMessage *message);
 
 			void SetupViews(bool isReplicant);
 
-	GithubClient 		*fGithubClient;
-	GithubRepository	*fGithubRepository;
-	RepositoryTitleView	*fRepositoryTitleView;
 	BListView			*fListView;
 	BScrollView 		*fScrollView;
 	BDragger			*fDragger;
@@ -61,6 +61,7 @@ private:
 
 	BString	 			fRepository;
 	BString	 			fOwner;
+	ContainerModel		*fContainerModel;
 };
 
 

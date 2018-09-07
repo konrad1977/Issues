@@ -8,6 +8,7 @@
 #include "GithubRepository.h"
 #include "Constants.h"
 #include "IssuesContainerView.h"
+#include "IssueContainerModel.h"
 
 #include <interface/MenuBar.h>
 #include <interface/MenuItem.h>
@@ -35,7 +36,8 @@ GithubIssuesWindow::~GithubIssuesWindow()
 void
 GithubIssuesWindow::SetupViews()
 {
-	fIssuesContainerView = new IssuesContainerView(fRepository->name, fRepository->owner);
+	IssueContainerModel *containerModel = new IssueContainerModel(fRepository->name, fRepository->owner);
+	fIssuesContainerView = new IssuesContainerView(containerModel);
 	fIssuesContainerView->SetExplicitMinSize(BSize(380, B_SIZE_UNSET));
 	fIssuesContainerView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 
