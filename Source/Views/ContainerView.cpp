@@ -11,6 +11,7 @@
 #include "Constants.h"
 #include "MessageFinder.h"
 #include "IssueModel.h"
+#include "CommitModel.h"
 #include "CListItem.h"
 
 #include <interface/GroupLayout.h>
@@ -60,6 +61,8 @@ ContainerView::ContainerView(BMessage *message)
 	if (message->FindString("type", &type) == B_OK) {
 		if (type == "issues") {
 			fContainerModel = new IssueModel(message);
+		} else if (type == "commits") {
+			fContainerModel = new CommitModel(message);
 		}
 	}
 

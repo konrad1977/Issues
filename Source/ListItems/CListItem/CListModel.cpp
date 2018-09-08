@@ -15,6 +15,15 @@ CListModel::CListModel(const GithubIssue &issue)
 
 }
 
+CListModel::CListModel(const GithubCommit &commit)
+	:fTitle(commit.title)
+	,fBody(commit.body)
+	,fUrl(commit.url)
+	,fAuthor(commit.author)
+{
+
+}
+
 BString 
 CListModel::Title() const
 {

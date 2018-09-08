@@ -13,12 +13,12 @@
 class BMessenger;
 class GithubRepository;
 class GithubClient;
-class CommitsModel : public ContainerModel {
+class CommitModel : public ContainerModel {
 public:
 
-	CommitsModel(BString repository, BString owner);
-	CommitsModel(BMessage *message);
-	virtual ~CommitsModel();
+	CommitModel(BString repository, BString owner);
+	CommitModel(BMessage *message);
+	virtual ~CommitModel();
 
 	virtual BString Name();	
 	virtual status_t Archive(BMessage *message);

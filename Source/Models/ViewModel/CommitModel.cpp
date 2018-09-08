@@ -4,11 +4,12 @@
  */
 
 
-#include "CommitsModel.h"
+#include "CommitModel.h"
 
 #include "GithubClient.h"
 #include "GithubIssue.h"
 #include "GithubRepository.h"
+#include "GithubCommit.h"
 
 #include "Constants.h"
 #include "CListItem.h"
@@ -19,7 +20,7 @@
 
 #include <stdio.h>
 
-CommitsModel::CommitsModel(BString repository, BString owner)
+CommitModel::CommitModel(BString repository, BString owner)
 	:fGithubClient(NULL)
 	,fGithubRepository(NULL)
 	,fMessenger(NULL)
@@ -29,7 +30,7 @@ CommitsModel::CommitsModel(BString repository, BString owner)
 
 }
 
-CommitsModel::CommitsModel(BMessage *message)
+CommitModel::CommitModel(BMessage *message)
 	:fGithubClient(NULL)
 	,fGithubRepository(NULL)
 	,fMessenger(NULL)
@@ -38,20 +39,20 @@ CommitsModel::CommitsModel(BMessage *message)
 	message->FindString("Owner", &fOwner);
 }
 
-CommitsModel::~CommitsModel()
+CommitModel::~CommitModel()
 {
 	delete fGithubClient;
 	delete fMessenger;
 }
 
 BString 
-CommitsModel::Name() 
+CommitModel::Name() 
 {
 	return fRepository;
 }
 
 status_t
-CommitsModel::Archive(BMessage *message)
+CommitModel::Archive(BMessage *message)
 {
 	message->AddString("Repository", fRepository);
 	message->AddString("Owner", fOwner);
@@ -60,7 +61,7 @@ CommitsModel::Archive(BMessage *message)
 }
 
 void
-CommitsModel::HandleParse(BMessage *message)
+CommitModel::HandleParse(BMessage *message)
 {
 	if (message->HasMessage("Commits") == false) {
 		return;
@@ -75,8 +76,11 @@ CommitsModel::HandleParse(BMessage *message)
 }
 
 void
-CommitsModel::AddCommits(BMessage *message)
+CommitModel::AddCommits(BMessage *message)
 {
+	message->PrintToStream();
+	
+	
 	bool isReplicant = IsReplicant();
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("nodes", *message);
@@ -98,15 +102,15 @@ CommitsModel::AddCommits(BMessage *message)
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
-			GithubIssue issue(nodeMsg);
-			CListItem *listItem = new CListItem(issue, isReplicant);
+			GithubCommit commit(nodeMsg);
+			CListItem *listItem = new CListItem(commit, isReplicant);
 			list->AddItem( listItem );
 		}
 	}
 }
 
 void
-CommitsModel::MessageReceived(BMessage *message)
+CommitModel::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
 		case kDataReceivedMessage: {
@@ -119,7 +123,7 @@ CommitsModel::MessageReceived(BMessage *message)
 }
 
 void
-CommitsModel::SetTarget(BHandler *handler)
+CommitModel::SetTarget(BHandler *handler)
 {
 	delete fMessenger;
 	fMessenger = new BMessenger(handler);
@@ -129,7 +133,7 @@ CommitsModel::SetTarget(BHandler *handler)
 }
 
 void
-CommitsModel::RequestData()
+CommitModel::RequestData()
 {
 	if (fGithubClient == NULL) {
 		return;

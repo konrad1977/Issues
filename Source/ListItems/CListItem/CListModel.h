@@ -8,10 +8,13 @@
 
 #include <SupportDefs.h>
 #include "GithubIssue.h"
+#include "GithubCommit.h"
 
 class CListModel {
 public:
 	CListModel(const GithubIssue &issue);
+	CListModel(const GithubCommit &issue);
+	
 
 	BString Title() const;
 	BString Body() const;

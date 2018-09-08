@@ -111,7 +111,7 @@ GithubClient::RequestCommitsForRepository(const char *repository, const char *ow
 		.AddNode("... on Commit")
 		.AddNode("history(first:5)")
 		.AddNode("nodes")
-		.AddNode("messageHeadline message")
+		.AddNode("messageHeadline message url author { name }")
 		.Query();
 
 	RunRequest(&requester, query);

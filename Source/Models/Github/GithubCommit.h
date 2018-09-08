@@ -2,18 +2,18 @@
  * Copyright 2015 Your Name <your@email.address>
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef _H
-#define _H
+#ifndef GITHUBCOMMIT_H
+#define GITHUBCOMMIT_H
 
 
 #include <SupportDefs.h>
 #include <app/Message.h>
 #include <support/String.h>
 
-class GithubIssue {
+class GithubCommit {
 public:
-	GithubIssue(BMessage message);
-	~GithubIssue();
+	GithubCommit(BMessage message);
+	~GithubCommit();
 
 	BString title;
 	BString body;	

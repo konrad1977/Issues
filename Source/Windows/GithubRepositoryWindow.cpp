@@ -9,7 +9,7 @@
 #include "GithubTokenWindow.h"
 #include "ContainerWindow.h"
 #include "IssueModel.h"
-#include "CommitsModel.h"
+#include "CommitModel.h"
 #include "GithubClient.h"
 #include "AddRepositoryWindow.h"
 #include "SettingsManager.h"
@@ -525,7 +525,7 @@ GithubRepositoryWindow::ShowCommitsWithIndex(int32 index)
 	}
 	
 	GithubRepository *repository = listItem->CurrentRepository();
-	CommitsModel *model = new CommitsModel(repository->name, repository->owner);
+	CommitModel *model = new CommitModel(repository->name, repository->owner);
 	ContainerWindow *window = new ContainerWindow(model);
 	window->Show();
 }

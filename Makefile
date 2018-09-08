@@ -24,7 +24,7 @@ SRCS = \
 	$(wildcard Source/*.cpp) \
 	$(wildcard Source/Requesters/*.cpp) \
 	$(wildcard Source/Managers/*.cpp) \
-	$(wildcard Source/Models/*.cpp) \
+	$(wildcard Source/Models/**/*.cpp) \
 	$(wildcard Source/Views/*.cpp) \
 	$(wildcard Source/ListItems/*.cpp) \
 	$(wildcard Source/ListItems/**/*.cpp) \
