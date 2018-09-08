@@ -2,24 +2,23 @@
  * Copyright 2015 Your Name <your@email.address>
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef GITHUBISSUES_WINDOW_H
-#define GITHUBISSUES_WINDOW_H
+#ifndef CONTAINER_WINDOW_H
+#define CONTAINER_WINDOW_H
 
 #include <SupportDefs.h>
 #include <interface/Window.h>
 
 class ContainerView;
-class GithubRepository;
-class GithubIssuesWindow : public BWindow {
+class ContainerModel;
+class ContainerWindow : public BWindow {
 public:
-	GithubIssuesWindow(GithubRepository *repository);
-	~GithubIssuesWindow();		
-		
+	ContainerWindow(ContainerModel *model);
+	~ContainerWindow();		
 private:
-			void SetupViews();
+			void SetupViews();		
 			
-	GithubRepository 	*fRepository;
 	ContainerView	*fContainerView;
+	ContainerModel	*fContainer;
 };
 
 #endif // _H

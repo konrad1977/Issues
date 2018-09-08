@@ -15,6 +15,7 @@ public:
 
 	virtual void MessageReceived(BMessage *message) = 0;
 	virtual void RequestData() = 0;
+	virtual BString Name() = 0;
 
 	virtual void SetTarget(BHandler *handler) = 0;
 

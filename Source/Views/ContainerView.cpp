@@ -11,7 +11,7 @@
 #include "IssueListItem.h"
 #include "Constants.h"
 #include "MessageFinder.h"
-#include "IssueContainerModel.h"
+#include "IssueModel.h"
 
 #include <interface/GroupLayout.h>
 #include <interface/LayoutBuilder.h>
@@ -59,7 +59,7 @@ ContainerView::ContainerView(BMessage *message)
 	BString type;
 	if (message->FindString("type", &type) == B_OK) {
 		if (type == "issues") {
-			fContainerModel = new IssueContainerModel(message);
+			fContainerModel = new IssueModel(message);
 		}
 	}
 

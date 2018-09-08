@@ -4,7 +4,7 @@
  */
 
 
-#include "IssueContainerModel.h"
+#include "IssueModel.h"
 #include "GithubClient.h"
 #include "GithubIssue.h"
 #include "GithubRepository.h"
@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 
-IssueContainerModel::IssueContainerModel(BString repository, BString owner)
+IssueModel::IssueModel(BString repository, BString owner)
 	:fGithubClient(NULL)
 	,fGithubRepository(NULL)
 	,fRepositoryTitleView(NULL)
@@ -29,7 +29,7 @@ IssueContainerModel::IssueContainerModel(BString repository, BString owner)
 
 }
 
-IssueContainerModel::IssueContainerModel(BMessage *message)
+IssueModel::IssueModel(BMessage *message)
 	:fGithubClient(NULL)
 	,fGithubRepository(NULL)
 	,fRepositoryTitleView(NULL)
@@ -39,14 +39,20 @@ IssueContainerModel::IssueContainerModel(BMessage *message)
 	message->FindString("Owner", &fOwner);
 }
 
-IssueContainerModel::~IssueContainerModel()
+IssueModel::~IssueModel()
 {
 	delete fGithubClient;
 	delete fMessenger;
 }
 
+BString 
+IssueModel::Name() 
+{
+	return fRepository;
+}
+
 status_t
-IssueContainerModel::Archive(BMessage *message)
+IssueModel::Archive(BMessage *message)
 {
 	message->AddString("Repository", fRepository);
 	message->AddString("Owner", fOwner);
@@ -55,7 +61,7 @@ IssueContainerModel::Archive(BMessage *message)
 }
 
 void
-IssueContainerModel::HandleParse(BMessage *message)
+IssueModel::HandleParse(BMessage *message)
 {
 	if (message->HasMessage("Issues") == false) {
 		return;
@@ -70,7 +76,7 @@ IssueContainerModel::HandleParse(BMessage *message)
 }
 
 void
-IssueContainerModel::AddIssues(BMessage *message)
+IssueModel::AddIssues(BMessage *message)
 {
 	bool isReplicant = IsReplicant();
 	MessageFinder messageFinder;
@@ -101,7 +107,7 @@ IssueContainerModel::AddIssues(BMessage *message)
 }
 
 void
-IssueContainerModel::MessageReceived(BMessage *message)
+IssueModel::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
 		case kDataReceivedMessage: {
@@ -114,7 +120,7 @@ IssueContainerModel::MessageReceived(BMessage *message)
 }
 
 void
-IssueContainerModel::SetTarget(BHandler *handler)
+IssueModel::SetTarget(BHandler *handler)
 {
 	delete fMessenger;
 	fMessenger = new BMessenger(handler);
@@ -124,7 +130,7 @@ IssueContainerModel::SetTarget(BHandler *handler)
 }
 
 void
-IssueContainerModel::RequestData()
+IssueModel::RequestData()
 {
 	if (fGithubClient == NULL) {
 		return;

@@ -2,8 +2,8 @@
  * Copyright 2015 Your Name <your@email.address>
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef ISSUE_CONTAINER_MODEL_H
-#define ISSUE_CONTAINER_MODEL_H
+#ifndef ISSUEMODEL_H
+#define ISSUEMODEL_H
 
 
 #include <SupportDefs.h>
@@ -14,13 +14,14 @@ class BMessenger;
 class GithubRepository;
 class GithubClient;
 class RepositoryTitleView;
-class IssueContainerModel : public ContainerModel {
+class IssueModel : public ContainerModel {
 public:
 
-	IssueContainerModel(BString repository, BString owner);
-	IssueContainerModel(BMessage *message);
-	virtual ~IssueContainerModel();
+	IssueModel(BString repository, BString owner);
+	IssueModel(BMessage *message);
+	virtual ~IssueModel();
 
+	virtual BString Name();	
 	virtual status_t Archive(BMessage *message);
 
 	virtual void MessageReceived(BMessage *message);

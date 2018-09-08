@@ -7,7 +7,8 @@
 #include "GithubRepositoryWindow.h"
 #include "GithubRepository.h"
 #include "GithubTokenWindow.h"
-#include "GithubIssuesWindow.h"
+#include "ContainerWindow.h"
+#include "IssueModel.h"
 #include "GithubClient.h"
 #include "AddRepositoryWindow.h"
 #include "SettingsManager.h"
@@ -495,8 +496,10 @@ GithubRepositoryWindow::ShowIssuesWithIndex(int32 index)
 	if (listItem == NULL || listItem->CurrentRepository() == NULL) {
 		return;
 	}
-
-	GithubIssuesWindow *window = new GithubIssuesWindow(listItem->CurrentRepository());
+	
+	GithubRepository *repository = listItem->CurrentRepository();
+	IssueModel *model = new IssueModel(repository->name, repository->owner);
+	ContainerWindow *window = new ContainerWindow(model);
 	window->Show();
 }
 
