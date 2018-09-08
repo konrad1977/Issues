@@ -30,7 +30,6 @@ public:
 private:
 			void HandleParse(BMessage *message);
 			void AddIssues(BMessage *message);
-			void AddRepository(BMessage *message);
 
 	GithubClient 		*fGithubClient;
 	GithubRepository	*fGithubRepository;

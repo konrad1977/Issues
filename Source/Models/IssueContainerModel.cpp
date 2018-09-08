@@ -8,9 +8,10 @@
 #include "GithubClient.h"
 #include "GithubIssue.h"
 #include "GithubRepository.h"
+
 #include "Constants.h"
-#include "RepositoryTitleView.h"
 #include "IssueListItem.h"
+#include "IssueTitleItem.h"
 #include "MessageFinder.h"
 
 #include <app/Messenger.h>
@@ -56,11 +57,11 @@ IssueContainerModel::Archive(BMessage *message)
 void
 IssueContainerModel::HandleParse(BMessage *message)
 {
-	if (message->HasMessage("Issues")) {
-		AddIssues(message);
-	} else if (message->HasMessage("Repository")) {
-		AddRepository(message);
+	if (message->HasMessage("Issues") == false) {
+		return;
 	}
+
+	AddIssues(message);
 
 	if(fMessenger) {
 		BMessage resizeMsg(kContainerRequestResize);
@@ -85,7 +86,10 @@ IssueContainerModel::AddIssues(BMessage *message)
 	while(list->CountItems()) {
 		delete list->RemoveItem(int32(0));
 	}
-
+	
+	IssueTitleItem *titleItem = new IssueTitleItem(fRepository.String(), isReplicant);
+	list->AddItem( titleItem );
+	
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
@@ -94,12 +98,6 @@ IssueContainerModel::AddIssues(BMessage *message)
 			list->AddItem( listItem );
 		}
 	}
-}
-
-void
-IssueContainerModel::AddRepository(BMessage *message)
-{
-	printf("AddRepository\n");
 }
 
 void

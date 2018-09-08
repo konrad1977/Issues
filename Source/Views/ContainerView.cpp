@@ -8,7 +8,6 @@
 #include "GithubIssue.h"
 #include "GithubRepository.h"
 
-#include "RepositoryTitleView.h"
 #include "IssueListItem.h"
 #include "Constants.h"
 #include "MessageFinder.h"
@@ -119,7 +118,6 @@ ContainerView::Reisize()
 	fListView->SetExplicitMinSize(BSize(320, height < 420 ? height : 420));
 
 	if (fIsReplicant) {
-		//height += fRepositoryTitleView->MinSize().height;
 		height += kDraggerSize;
 		ResizeTo(Bounds().Width(), height);
 	} else if (BWindow *window = dynamic_cast<BWindow*>(Parent())) {
@@ -220,25 +218,10 @@ ContainerView::HandleListInvoke(BMessage *message)
 		}
 	}
 }
-/*
-void
-ContainerView::AddRepository(BMessage *message)
-{
-
-	MessageFinder messageFinder;
-	BMessage msg = messageFinder.FindMessage("repository", *message);
-
-	delete fGithubRepository;
-	fGithubRepository = new GithubRepository(msg);
-	fRepositoryTitleView->SetRepository(fGithubRepository);
-}
-*/
 
 void
 ContainerView::SetupViews(bool isReplicant)
 {
-	//fRepositoryTitleView = new RepositoryTitleView(isReplicant);
-
 	if (isReplicant == false) {
 		SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 		fScrollView = new BScrollView("Scrollview", ListView(), 0, false, true, B_NO_BORDER);
@@ -256,7 +239,6 @@ ContainerView::SetupViews(bool isReplicant)
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.AddGroup(B_VERTICAL, 0)
-			//.Add(fRepositoryTitleView)
 			.Add(isReplicant ? static_cast<BView*>(ListView()) : static_cast<BView*>(fScrollView))
 		.End()
 		.AddGroup(B_HORIZONTAL)
