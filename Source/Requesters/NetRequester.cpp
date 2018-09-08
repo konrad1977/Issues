@@ -31,7 +31,6 @@ NetRequester::~NetRequester()
 void
 NetRequester::ResponseStarted(BUrlRequest* caller)
 {
-	//printf("Response started\n");
 }
 
 void

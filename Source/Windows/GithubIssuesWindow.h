@@ -8,7 +8,7 @@
 #include <SupportDefs.h>
 #include <interface/Window.h>
 
-class IssuesContainerView;
+class ContainerView;
 class GithubRepository;
 class GithubIssuesWindow : public BWindow {
 public:
@@ -19,7 +19,7 @@ private:
 			void SetupViews();
 			
 	GithubRepository 	*fRepository;
-	IssuesContainerView	*fIssuesContainerView;
+	ContainerView	*fContainerView;
 };
 
 #endif // _H

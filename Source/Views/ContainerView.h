@@ -2,13 +2,14 @@
  * Copyright 2015 Your Name <your@email.address>
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef ISSUESCONTAINERVIEW_H
-#define ISSUESCONTAINERVIEW_H
+#ifndef CONTAINERVIEW_H
+#define CONTAINERVIEW_H
 
 
 #include <SupportDefs.h>
 #include <interface/View.h>
 #include <support/String.h>
+#include "ContainerModel.h"
 
 class BMessageRunner;
 class BDragger;
@@ -16,12 +17,12 @@ class BListView;
 class GithubRepository;
 class GithubClient;
 class RepositoryTitleView;
-class IssuesContainerView : public BView {
+class ContainerView : public BView {
 public:
 
-	IssuesContainerView(BString repository, BString owner);
-	IssuesContainerView(BMessage *archive);
-  	~IssuesContainerView();
+	ContainerView(ContainerModel *model);
+	ContainerView(BMessage *archive);
+  	~ContainerView();
 
   	static BArchivable*	Instantiate(BMessage* archive);
 	virtual status_t	Archive(BMessage* into, bool deep = true) const;
@@ -30,27 +31,21 @@ public:
   	virtual void MessageReceived(BMessage *message);
   	virtual void AttachedToWindow();
 
+	ContainerModel *Model() const { return fContainerModel; }
+
 private:
-	GithubClient *Client();
 	BListView 	 *ListView();
 
 	static int32 DownloadFunc(void *cookie);
 			void StartAutoUpdater();
-			void RequestIssues();
 			void SpawnDonwloadThread();
 			void StopDownloadThread();
 
+			void Reisize();
+
 			void HandleListInvoke(BMessage *message);
-			void HandleParse(BMessage *message);
-
-			void AddIssues(BMessage *message);
-			void AddRepository(BMessage *message);
-
 			void SetupViews(bool isReplicant);
 
-	GithubClient 		*fGithubClient;
-	GithubRepository	*fGithubRepository;
-	RepositoryTitleView	*fRepositoryTitleView;
 	BListView			*fListView;
 	BScrollView 		*fScrollView;
 	BDragger			*fDragger;
@@ -61,6 +56,7 @@ private:
 
 	BString	 			fRepository;
 	BString	 			fOwner;
+	ContainerModel		*fContainerModel;
 };
 
 

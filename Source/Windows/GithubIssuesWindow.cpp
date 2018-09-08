@@ -7,7 +7,8 @@
 #include "GithubIssuesWindow.h"
 #include "GithubRepository.h"
 #include "Constants.h"
-#include "IssuesContainerView.h"
+#include "ContainerView.h"
+#include "IssueContainerModel.h"
 
 #include <interface/MenuBar.h>
 #include <interface/MenuItem.h>
@@ -20,7 +21,7 @@
 GithubIssuesWindow::GithubIssuesWindow(GithubRepository *repository)
 	:BWindow(BRect(0,0,1,1), "Issues", B_TITLED_WINDOW, B_FRAME_EVENTS | B_AUTO_UPDATE_SIZE_LIMITS)
 	,fRepository(repository)
-	,fIssuesContainerView(NULL)
+	,fContainerView(NULL)
 {
 	SetTitle(fRepository->name.String());
 	SetupViews();
@@ -35,12 +36,13 @@ GithubIssuesWindow::~GithubIssuesWindow()
 void
 GithubIssuesWindow::SetupViews()
 {
-	fIssuesContainerView = new IssuesContainerView(fRepository->name, fRepository->owner);
-	fIssuesContainerView->SetExplicitMinSize(BSize(380, B_SIZE_UNSET));
-	fIssuesContainerView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+	IssueContainerModel *containerModel = new IssueContainerModel(fRepository->name, fRepository->owner);
+	fContainerView = new ContainerView(containerModel);
+	fContainerView->SetExplicitMinSize(BSize(380, B_SIZE_UNSET));
+	fContainerView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 
 	SetLayout(new BGroupLayout(B_VERTICAL));
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.Add(fIssuesContainerView);
+		.Add(fContainerView);
 }
 
