@@ -8,10 +8,10 @@
 #include "GithubIssue.h"
 #include "GithubRepository.h"
 
-#include "IssueListItem.h"
 #include "Constants.h"
 #include "MessageFinder.h"
 #include "IssueModel.h"
+#include "CListItem.h"
 
 #include <interface/GroupLayout.h>
 #include <interface/LayoutBuilder.h>
@@ -206,13 +206,13 @@ ContainerView::HandleListInvoke(BMessage *message)
 {
 	int32 index = B_ERROR;
 	if (message->FindInt32("index", &index) == B_OK) {
-		IssueListItem *listItem = dynamic_cast<IssueListItem*>(ListView()->ItemAt(index));
+		CListItem *listItem = dynamic_cast<CListItem*>(ListView()->ItemAt(index));
 
 		if (listItem == NULL) {
 			return;
 		}
 
-		const char *url = listItem->CurrentIssue().url.String();
+		const char *url = listItem->CurrentModel().Url().String();
 		if (strlen(url) > 10 ) {
 			be_roster->Launch("text/html", 1, const_cast<char **>(&url));
 		}

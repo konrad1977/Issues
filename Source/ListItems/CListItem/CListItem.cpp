@@ -4,39 +4,40 @@
  */
 
 
-#include "IssueListItem.h"
+#include "CListItem.h"
 #include "GithubIssue.h"
 #include "Constants.h"
+
 #include "ColorManager.h"
 #include <interface/ListView.h>
 #include <interface/Screen.h>
 #include <posix/stdio.h>
 
-IssueListItem::IssueListItem(GithubIssue issue, bool isReplicant)
+CListItem::CListItem(CListModel model, bool isReplicant)
 	:BListItem()
 	,fMultiLineTextDrawer(NULL)
 	,fListColorManager(NULL)
-	,fIssue(issue)
+	,fModel(model)
 	,fHeight(10)
 	,fIsReplicant(isReplicant)
 {
 	fListColorManager = new ColorManager(this, fIsReplicant);
 }
 
-IssueListItem::~IssueListItem()
+CListItem::~CListItem()
 {
 	delete fMultiLineTextDrawer;
 	delete fListColorManager;
 }
 
-GithubIssue
-IssueListItem::CurrentIssue() const
+CListModel
+CListItem::CurrentModel() const
 {
-	return fIssue;
+	return fModel;
 }
 
 void
-IssueListItem::DrawBackground(BListView *parent)
+CListItem::DrawBackground(BListView *parent)
 {
 	const int32 index = parent->IndexOf(this);
 	BRect frame = parent->ItemFrame(index);
@@ -59,7 +60,7 @@ IssueListItem::DrawBackground(BListView *parent)
 }
 
 void
-IssueListItem::DrawItem(BView *view, BRect rect, bool complete)
+CListItem::DrawItem(BView *view, BRect rect, bool complete)
 {
 	BListView *parent = dynamic_cast<BListView *>(view);
 	const int32 index = parent->IndexOf(this);
@@ -77,7 +78,7 @@ IssueListItem::DrawItem(BView *view, BRect rect, bool complete)
 }
 
 void
-IssueListItem::DrawIssue(BRect rect, bool enableOutput)
+CListItem::DrawIssue(BRect rect, bool enableOutput)
 {
 	BRect frame = rect;
 	BFont font(be_bold_font);
@@ -86,11 +87,11 @@ IssueListItem::DrawIssue(BRect rect, bool enableOutput)
 	rgb_color textColor = fListColorManager->TextColor();
 	fMultiLineTextDrawer->SetTextColor(textColor);
 
-	const char *author = fIssue.author.String();
+	const char *author = fModel.Author().String();
 	float authorWidth = font.StringWidth(author);
 	BRect titleFrame = frame;
 	titleFrame.right -= authorWidth;
-	float titleHeight = fMultiLineTextDrawer->DrawString(titleFrame, fIssue.title.String(), &font, enableOutput);
+	float titleHeight = fMultiLineTextDrawer->DrawString(titleFrame, fModel.Title().String(), &font, enableOutput);
 
 	font = be_plain_font;
 	font.SetSize(10);
@@ -107,12 +108,12 @@ IssueListItem::DrawIssue(BRect rect, bool enableOutput)
 	frame.OffsetBy(0, fHeight);
 
 	fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);
-	fHeight += fMultiLineTextDrawer->DrawString(frame, fIssue.body.Trim().String(), &font, enableOutput);
+	fHeight += fMultiLineTextDrawer->DrawString(frame, fModel.Body().String(), &font, enableOutput);
 	fHeight += 20;
 }
 
 void
-IssueListItem::Update(BView *view, const BFont *font)
+CListItem::Update(BView *view, const BFont *font)
 {
 	if (fPreviousHeight != fHeight) {
 		fPreviousHeight = fHeight;

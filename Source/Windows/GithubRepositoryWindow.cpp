@@ -9,6 +9,7 @@
 #include "GithubTokenWindow.h"
 #include "ContainerWindow.h"
 #include "IssueModel.h"
+#include "CommitsModel.h"
 #include "GithubClient.h"
 #include "AddRepositoryWindow.h"
 #include "SettingsManager.h"
@@ -353,13 +354,16 @@ GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
 		GithubRepository *repository = listItem->CurrentRepository();
 		if (repository != NULL) {
 
-			BMessage msg(kMenuShowIssueForRepository);
-			msg.AddInt32("index", index);
+			BMessage issueMsg(kMenuShowIssueForRepository);
+			issueMsg.AddInt32("index", index);
+			
+			BMessage commitsMsg(kMenuShowCommitsForRepository);
+			commitsMsg.AddInt32("index", index);
 
 			if (fListMenu == NULL) {
 				fListMenu = new BPopUpMenu("menu");
-				fListMenu->AddItem(new BMenuItem("Issues", &msg));
-				fListMenu->AddItem(new BMenuItem("Commits", NULL));
+				fListMenu->AddItem(new BMenuItem("Issues", &issueMsg));
+				fListMenu->AddItem(new BMenuItem("Commits", &commitsMsg));
 			}
 
 			fListMenu->Go(point, true);
@@ -476,6 +480,15 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			ShowIssuesWithIndex(index);
 			break;
 		}
+		
+		case kMenuShowCommitsForRepository: {
+			int32 index = B_ERROR;
+			if (message->FindInt32("index", &index) != B_OK) {
+				return;
+			}
+			ShowCommitsWithIndex(index);
+			break;
+		}
 
 		case kGithubTokenSaveMessage: {
 			BString token;
@@ -499,6 +512,20 @@ GithubRepositoryWindow::ShowIssuesWithIndex(int32 index)
 	
 	GithubRepository *repository = listItem->CurrentRepository();
 	IssueModel *model = new IssueModel(repository->name, repository->owner);
+	ContainerWindow *window = new ContainerWindow(model);
+	window->Show();
+}
+
+void
+GithubRepositoryWindow::ShowCommitsWithIndex(int32 index)
+{
+	RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
+	if (listItem == NULL || listItem->CurrentRepository() == NULL) {
+		return;
+	}
+	
+	GithubRepository *repository = listItem->CurrentRepository();
+	CommitsModel *model = new CommitsModel(repository->name, repository->owner);
 	ContainerWindow *window = new ContainerWindow(model);
 	window->Show();
 }

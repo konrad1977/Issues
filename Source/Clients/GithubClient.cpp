@@ -98,6 +98,25 @@ GithubClient::RequestRepository(const char *repository, const char *owner)
 	RunRequest(&requester, query);
 }
 
+void 
+GithubClient::RequestCommitsForRepository(const char *repository, const char *owner)
+{
+	NetRequester requester(fHandler, "Commits");
+
+	GraphQLBuilder builder;
+	BString query = builder
+		.AddNode("repository(name:\\\"%s\\\" owner:\\\"%s\\\")", repository, owner)
+		.AddNode("ref(qualifiedName:\\\"%s\\\")", "master")
+		.AddNode("target")
+		.AddNode("... on Commit")
+		.AddNode("history(first:5)")
+		.AddNode("nodes")
+		.AddNode("messageHeadline message")
+		.Query();
+
+	RunRequest(&requester, query);
+}
+
 void
 GithubClient::RequestCommitHistory()
 {

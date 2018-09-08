@@ -21,6 +21,8 @@ public:
 	void RequestProjects();
 	void RequestRepository(const char *repository, const char *owner);
 	void RequestIssuesForRepository(const char *repository, const char *owner);
+	void RequestCommitsForRepository(const char *repository, const char *owner);
+	
 	void SaveToken(const char *token);
 
 private:

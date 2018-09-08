@@ -4,14 +4,14 @@
  */
 
 
-#include "IssueModel.h"
+#include "CommitsModel.h"
+
 #include "GithubClient.h"
 #include "GithubIssue.h"
 #include "GithubRepository.h"
 
 #include "Constants.h"
 #include "CListItem.h"
-#include "CListModel.h"
 #include "IssueTitleItem.h"
 #include "MessageFinder.h"
 
@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 
-IssueModel::IssueModel(BString repository, BString owner)
+CommitsModel::CommitsModel(BString repository, BString owner)
 	:fGithubClient(NULL)
 	,fGithubRepository(NULL)
 	,fMessenger(NULL)
@@ -29,7 +29,7 @@ IssueModel::IssueModel(BString repository, BString owner)
 
 }
 
-IssueModel::IssueModel(BMessage *message)
+CommitsModel::CommitsModel(BMessage *message)
 	:fGithubClient(NULL)
 	,fGithubRepository(NULL)
 	,fMessenger(NULL)
@@ -38,35 +38,35 @@ IssueModel::IssueModel(BMessage *message)
 	message->FindString("Owner", &fOwner);
 }
 
-IssueModel::~IssueModel()
+CommitsModel::~CommitsModel()
 {
 	delete fGithubClient;
 	delete fMessenger;
 }
 
 BString 
-IssueModel::Name() 
+CommitsModel::Name() 
 {
 	return fRepository;
 }
 
 status_t
-IssueModel::Archive(BMessage *message)
+CommitsModel::Archive(BMessage *message)
 {
 	message->AddString("Repository", fRepository);
 	message->AddString("Owner", fOwner);
-	message->AddString("type", "issues");
+	message->AddString("type", "commits");
 	return B_ERROR;
 }
 
 void
-IssueModel::HandleParse(BMessage *message)
+CommitsModel::HandleParse(BMessage *message)
 {
-	if (message->HasMessage("Issues") == false) {
+	if (message->HasMessage("Commits") == false) {
 		return;
 	}
 
-	AddIssues(message);
+	AddCommits(message);
 
 	if(fMessenger) {
 		BMessage resizeMsg(kContainerRequestResize);
@@ -75,7 +75,7 @@ IssueModel::HandleParse(BMessage *message)
 }
 
 void
-IssueModel::AddIssues(BMessage *message)
+CommitsModel::AddCommits(BMessage *message)
 {
 	bool isReplicant = IsReplicant();
 	MessageFinder messageFinder;
@@ -99,15 +99,14 @@ IssueModel::AddIssues(BMessage *message)
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
 			GithubIssue issue(nodeMsg);
-			CListModel model(issue);
-			CListItem *listItem = new CListItem(model, isReplicant);
+			CListItem *listItem = new CListItem(issue, isReplicant);
 			list->AddItem( listItem );
 		}
 	}
 }
 
 void
-IssueModel::MessageReceived(BMessage *message)
+CommitsModel::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
 		case kDataReceivedMessage: {
@@ -120,7 +119,7 @@ IssueModel::MessageReceived(BMessage *message)
 }
 
 void
-IssueModel::SetTarget(BHandler *handler)
+CommitsModel::SetTarget(BHandler *handler)
 {
 	delete fMessenger;
 	fMessenger = new BMessenger(handler);
@@ -130,10 +129,10 @@ IssueModel::SetTarget(BHandler *handler)
 }
 
 void
-IssueModel::RequestData()
+CommitsModel::RequestData()
 {
 	if (fGithubClient == NULL) {
 		return;
 	}
-	fGithubClient->RequestIssuesForRepository(fRepository.String(), fOwner.String());
+	fGithubClient->RequestCommitsForRepository(fRepository.String(), fOwner.String());
 }

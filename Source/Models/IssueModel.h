@@ -13,7 +13,6 @@
 class BMessenger;
 class GithubRepository;
 class GithubClient;
-class RepositoryTitleView;
 class IssueModel : public ContainerModel {
 public:
 
@@ -34,7 +33,6 @@ private:
 
 	GithubClient 		*fGithubClient;
 	GithubRepository	*fGithubRepository;
-	RepositoryTitleView	*fRepositoryTitleView;
 	BMessenger			*fMessenger;
 	BString				fRepository;
 	BString 			fOwner;
