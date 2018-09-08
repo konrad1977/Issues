@@ -128,9 +128,9 @@ GithubClient::RequestIssuesForRepository(const char *repository, const char *own
 
 	GraphQLBuilder builder;
 	BString query = builder
-		//.AddNode("viewer")
 		.AddNode("repository(name:\\\"%s\\\" owner:\\\"%s\\\")", repository, owner)
-		.AddNode("issues(first:10 states:OPEN orderBy: { field: CREATED_AT direction: DESC })")
+		.AddNode("name")
+		.AddValue("issues(first:10 states:OPEN orderBy: { field: CREATED_AT direction: DESC })")
 		.AddNode("nodes")
 		.AddNode("url title body author { login }")
 		.Query();
@@ -156,15 +156,13 @@ GithubClient::RequestProjects()
 			.AddValue("owner { login }")
 			.AddValue("parent { owner { login } }")
 		.Query();
-	printf("Query: %s\n", query.String());
-
 	RunRequest(&requester, query);
 }
 
 void
 GithubClient::RunRequest(NetRequester *requester, BString body) {
 
-	printf("Body: %s\n", body.String());
+	printf("query: %s\n", body.String());
 
 	BUrl url = BUrl(fBaseUrl);
 	BHttpRequest* request = dynamic_cast<BHttpRequest*>(BUrlProtocolRoster::MakeRequest(url, requester));

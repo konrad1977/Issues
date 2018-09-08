@@ -65,9 +65,7 @@ IssueContainerModel::HandleParse(BMessage *message)
 	if(fMessenger) {
 		BMessage resizeMsg(kContainerRequestResize);
 		fMessenger->SendMessage(&resizeMsg);
-		printf("Send Resize\n");
 	}
-	printf("HandleParse\n");
 }
 
 void

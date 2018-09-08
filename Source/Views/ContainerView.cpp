@@ -3,7 +3,7 @@
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
-#include "IssuesContainerView.h"
+#include "ContainerView.h"
 #include "GithubClient.h"
 #include "GithubIssue.h"
 #include "GithubRepository.h"
@@ -33,7 +33,7 @@
 const float kDraggerSize = 7;
 extern const char *kAppSignature;
 
-IssuesContainerView::IssuesContainerView(ContainerModel *model)
+ContainerView::ContainerView(ContainerModel *model)
 	:BView("Issues", B_DRAW_ON_CHILDREN)
 	,fListView(NULL)
 	,fScrollView(NULL)
@@ -47,7 +47,7 @@ IssuesContainerView::IssuesContainerView(ContainerModel *model)
 	SpawnDonwloadThread();
 }
 
-IssuesContainerView::IssuesContainerView(BMessage *message)
+ContainerView::ContainerView(BMessage *message)
 	:BView(message)
 	,fListView(NULL)
 	,fScrollView(NULL)
@@ -69,7 +69,7 @@ IssuesContainerView::IssuesContainerView(BMessage *message)
 }
 
 
-IssuesContainerView::~IssuesContainerView()
+ContainerView::~ContainerView()
 {
 	while(fListView->CountItems()) {
 		delete fListView->RemoveItem(int32(0));
@@ -78,7 +78,7 @@ IssuesContainerView::~IssuesContainerView()
 }
 
 status_t
-IssuesContainerView::Archive(BMessage* into, bool deep) const
+ContainerView::Archive(BMessage* into, bool deep) const
 {
 	into->AddString("add_on", kAppSignature);
 	Model()->Archive(into);
@@ -86,19 +86,19 @@ IssuesContainerView::Archive(BMessage* into, bool deep) const
 }
 
 BArchivable*
-IssuesContainerView::Instantiate(BMessage* archive)
+ContainerView::Instantiate(BMessage* archive)
 {
-	return new IssuesContainerView(archive);
+	return new ContainerView(archive);
 }
 
 status_t
-IssuesContainerView::SaveState(BMessage* into, bool deep) const
+ContainerView::SaveState(BMessage* into, bool deep) const
 {
 	return B_OK;
 }
 
 void
-IssuesContainerView::AttachedToWindow()
+ContainerView::AttachedToWindow()
 {
 	StartAutoUpdater();
 	ListView()->SetTarget(this);
@@ -107,7 +107,7 @@ IssuesContainerView::AttachedToWindow()
 }
 
 void
-IssuesContainerView::Reisize()
+ContainerView::Reisize()
 {
 	if (fListView == NULL ) {
 		return;
@@ -129,14 +129,13 @@ IssuesContainerView::Reisize()
 }
 
 void
-IssuesContainerView::MessageReceived(BMessage *message)
+ContainerView::MessageReceived(BMessage *message)
 {
 	Model()->MessageReceived(message);
 
 	switch (message->what) {
 		case kContainerRequestResize: {
 			Reisize();
-			printf("Resize\n");
 			break;
 		}
 
@@ -155,7 +154,7 @@ IssuesContainerView::MessageReceived(BMessage *message)
 }
 
 void
-IssuesContainerView::StartAutoUpdater()
+ContainerView::StartAutoUpdater()
 {
 	delete fAutoUpdateRunner;
 
@@ -167,7 +166,7 @@ IssuesContainerView::StartAutoUpdater()
 }
 
 BListView *
-IssuesContainerView::ListView()
+ContainerView::ListView()
 {
 	if (fListView == NULL) {
 		fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
@@ -177,15 +176,15 @@ IssuesContainerView::ListView()
 }
 
 int32
-IssuesContainerView::DownloadFunc(void *cookie)
+ContainerView::DownloadFunc(void *cookie)
 {
-	IssuesContainerView *view = static_cast<IssuesContainerView*>(cookie);
+	ContainerView *view = static_cast<ContainerView*>(cookie);
 	view->Model()->RequestData();
 	return 0;
 }
 
 void
-IssuesContainerView::SpawnDonwloadThread()
+ContainerView::SpawnDonwloadThread()
 {
 	StopDownloadThread();
 
@@ -195,7 +194,7 @@ IssuesContainerView::SpawnDonwloadThread()
 }
 
 void
-IssuesContainerView::StopDownloadThread()
+ContainerView::StopDownloadThread()
 {
 	if (fThreadId == -1) {
 		return;
@@ -205,7 +204,7 @@ IssuesContainerView::StopDownloadThread()
 }
 
 void
-IssuesContainerView::HandleListInvoke(BMessage *message)
+ContainerView::HandleListInvoke(BMessage *message)
 {
 	int32 index = B_ERROR;
 	if (message->FindInt32("index", &index) == B_OK) {
@@ -221,22 +220,22 @@ IssuesContainerView::HandleListInvoke(BMessage *message)
 		}
 	}
 }
-
+/*
 void
-IssuesContainerView::AddRepository(BMessage *message)
+ContainerView::AddRepository(BMessage *message)
 {
-	/*
+
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("repository", *message);
 
 	delete fGithubRepository;
 	fGithubRepository = new GithubRepository(msg);
 	fRepositoryTitleView->SetRepository(fGithubRepository);
-	*/
 }
+*/
 
 void
-IssuesContainerView::SetupViews(bool isReplicant)
+ContainerView::SetupViews(bool isReplicant)
 {
 	//fRepositoryTitleView = new RepositoryTitleView(isReplicant);
 

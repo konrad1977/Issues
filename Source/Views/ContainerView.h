@@ -2,8 +2,8 @@
  * Copyright 2015 Your Name <your@email.address>
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef ISSUESCONTAINERVIEW_H
-#define ISSUESCONTAINERVIEW_H
+#ifndef CONTAINERVIEW_H
+#define CONTAINERVIEW_H
 
 
 #include <SupportDefs.h>
@@ -17,12 +17,12 @@ class BListView;
 class GithubRepository;
 class GithubClient;
 class RepositoryTitleView;
-class IssuesContainerView : public BView {
+class ContainerView : public BView {
 public:
 
-	IssuesContainerView(ContainerModel *model);
-	IssuesContainerView(BMessage *archive);
-  	~IssuesContainerView();
+	ContainerView(ContainerModel *model);
+	ContainerView(BMessage *archive);
+  	~ContainerView();
 
   	static BArchivable*	Instantiate(BMessage* archive);
 	virtual status_t	Archive(BMessage* into, bool deep = true) const;
@@ -44,11 +44,6 @@ private:
 			void Reisize();
 
 			void HandleListInvoke(BMessage *message);
-
-			void HandleParse(BMessage *message);
-			void AddIssues(BMessage *message);
-			void AddRepository(BMessage *message);
-
 			void SetupViews(bool isReplicant);
 
 	BListView			*fListView;
