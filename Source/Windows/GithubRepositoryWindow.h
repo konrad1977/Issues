@@ -71,6 +71,9 @@ private:
 	BList				*fCurrentFilter;
 	FilterView			*fFilterView;
 	BPopUpMenu			*fListMenu;
+	BMenuItem 			*fPopupIssueItem;
+	BMenuItem 			*fPopupCommitItem;
+
 
 	BMenuItem			*fMenuItemShowIssues;
 	BMenuItem			*fMenuItemShowCommits;

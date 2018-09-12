@@ -49,6 +49,8 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	,fCurrentFilter(NULL)
 	,fFilterView(NULL)
 	,fListMenu(NULL)
+	,fPopupIssueItem(NULL)
+	,fPopupCommitItem(NULL)
 	,fMenuItemShowIssues(NULL)
 	,fMenuItemShowCommits(NULL)
 	,fPrivateTotal(0)
@@ -62,12 +64,6 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	fGithubClient = new GithubClient(this);
 	fRepositoryManager = new RepositoryManager(this);
 	CenterOnScreen();
-
-/*
-	fListMenu = new BPopUpMenu("menu");
-	fListMenu->AddItem(new BMenuItem("Issues", &issueMsg));
-	fListMenu->AddItem(new BMenuItem("Commits", &commitsMsg));
-	*/
 }
 
 GithubRepositoryWindow::~GithubRepositoryWindow()
@@ -366,14 +362,16 @@ GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
 			BMessage commitsMsg(kMenuShowCommitsForRepository);
 			commitsMsg.AddInt32("index", index);
 
-			delete fListMenu;
-
-			fListMenu = new BPopUpMenu("menu");
-			fListMenu->AddItem(new BMenuItem("Issues", &issueMsg));
-			fListMenu->AddItem(new BMenuItem("Commits", &commitsMsg));
-
+			if (fListMenu == NULL) {
+				fListMenu = new BPopUpMenu("menu", false, false);
+				fListMenu->AddItem(fPopupIssueItem = new BMenuItem("Issues", &issueMsg));
+				fListMenu->AddItem(fPopupCommitItem = new BMenuItem("Commits", &commitsMsg));
+				fListMenu->SetTargetForItems(this);
+			} else {
+				fPopupIssueItem->SetMessage(&issueMsg);
+				fPopupCommitItem->SetMessage(&commitsMsg);
+			}
 			fListMenu->Go(point, true);
-			fListMenu->SetTargetForItems(this);
 		}
 	}
 }
