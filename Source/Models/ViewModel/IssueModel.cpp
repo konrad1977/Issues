@@ -44,8 +44,8 @@ IssueModel::~IssueModel()
 	delete fMessenger;
 }
 
-BString 
-IssueModel::Name() 
+BString
+IssueModel::Name()
 {
 	return fRepository;
 }
@@ -91,10 +91,14 @@ IssueModel::AddIssues(BMessage *message)
 	while(list->CountItems()) {
 		delete list->RemoveItem(int32(0));
 	}
-	
-	IssueTitleItem *titleItem = new IssueTitleItem(fRepository.String(), isReplicant);
+
+	TitleSettings settings;
+	settings.title = fRepository;
+	settings.subTitle = "Issues";
+
+	IssueTitleItem *titleItem = new IssueTitleItem(settings, isReplicant);
 	list->AddItem( titleItem );
-	
+
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {

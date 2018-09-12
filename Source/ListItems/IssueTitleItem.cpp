@@ -10,27 +10,25 @@
 #include <interface/ListView.h>
 #include <stdlib.h>
 
-IssueTitleItem::IssueTitleItem(const char *title, bool isReplicant)
+IssueTitleItem::IssueTitleItem(const TitleSettings &titleSettings, bool isReplicant)
 	:BListItem()
 	,fDrawer(NULL)
 	,fColorManager(NULL)
-	,fTitle(NULL)	
+	,fTitleSettings(titleSettings)
 	,fHeight(-1)
 	,fPreviousHeight(0)
 	,fIsReplicant(isReplicant)
 {
-	fTitle = strdup(title);
 	fColorManager = new ColorManager(fIsReplicant);
 }
 
 IssueTitleItem::~IssueTitleItem()
 {
-	free(fTitle);
 	delete fDrawer;
 	delete fColorManager;
 }
 
-void 
+void
 IssueTitleItem::DrawBackground(BListView *parent)
 {
 	const int32 index = parent->IndexOf(this);
@@ -56,24 +54,25 @@ IssueTitleItem::DrawBackground(BListView *parent)
 void
 IssueTitleItem::DrawRepository(BListView *parent, BRect frame, bool disableOutput)
 {
+
+	BRect r(frame);
+	BFont font(be_plain_font);
+	font.SetSize(10);
+
+	const char *title = fTitleSettings.title.String();
+	const char *subTitle = fTitleSettings.subTitle.ToUpper().String();
+
+	fDrawer->SetTextColor(234,86,136);
+	fHeight = fDrawer->DrawString(r, subTitle, &font, disableOutput);
+	r = r.OffsetBySelf(0.0f, fHeight);
+
+	font = be_bold_font;
+	font.SetSize(17.0f);
+
 	rgb_color textColor = fColorManager->TextColor();
-
-	BRect r(frame);	
-	BFont font(be_bold_font);
-	font.SetSize(16);
 	fDrawer->SetTextColor(textColor);
-
-	float strWidth = font.StringWidth(fTitle);
-
-	fHeight = fDrawer->DrawString(r, fTitle, &font, disableOutput);
-	r = r.OffsetBySelf(0, fHeight + 10);
-
-	parent->SetHighColor(255,64,80);
-	parent->SetPenSize(2.0f);
-	parent->SetDrawingMode(B_OP_COPY);
-	parent->StrokeLine(BPoint(r.left + 10, r.top), BPoint(r.left + strWidth + 10, r.top));
-	
-	fHeight += 24;
+	fHeight += fDrawer->DrawString(r, title, &font, disableOutput);
+	fHeight += 14;
 }
 
 void
@@ -89,7 +88,7 @@ IssueTitleItem::DrawItem(BView *view, BRect rect, bool complete)
 	}
 	DrawBackground(parent);
 	DrawRepository(parent, frame, true);
-}	
+}
 
 void
 IssueTitleItem::Update(BView *view, const BFont *font)
@@ -101,7 +100,7 @@ IssueTitleItem::Update(BView *view, const BFont *font)
 
 		if (fDrawer == NULL && parent != NULL) {
 			fDrawer = new MultiLineTextDrawer(parent);
-			fDrawer->SetInsets(BSize(10,5));	
+			fDrawer->SetInsets(BSize(10,5));
 			DrawRepository(parent, view->Bounds(), false);
 		}
 		SetHeight(fHeight);
