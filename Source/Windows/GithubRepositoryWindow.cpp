@@ -354,25 +354,27 @@ GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
 		}
 
 		GithubRepository *repository = listItem->CurrentRepository();
-		if (repository != NULL) {
-
-			BMessage issueMsg(kMenuShowIssueForRepository);
-			issueMsg.AddInt32("index", index);
-
-			BMessage commitsMsg(kMenuShowCommitsForRepository);
-			commitsMsg.AddInt32("index", index);
-
-			if (fListMenu == NULL) {
-				fListMenu = new BPopUpMenu("menu", false, false);
-				fListMenu->AddItem(fPopupIssueItem = new BMenuItem("Issues", &issueMsg));
-				fListMenu->AddItem(fPopupCommitItem = new BMenuItem("Commits", &commitsMsg));
-				fListMenu->SetTargetForItems(this);
-			} else {
-				fPopupIssueItem->SetMessage(&issueMsg);
-				fPopupCommitItem->SetMessage(&commitsMsg);
-			}
-			fListMenu->Go(point, true);
+		if (repository == NULL) {
+			return;
 		}
+
+		BMessage issueMsg(kMenuShowIssueForRepository);
+		issueMsg.AddInt32("index", index);
+
+		BMessage commitsMsg(kMenuShowCommitsForRepository);
+		commitsMsg.AddInt32("index", index);
+
+		if (fListMenu == NULL) {
+			fListMenu = new BPopUpMenu("menu", false, false);
+			fListMenu->AddItem(fPopupIssueItem = new BMenuItem("Issues", &issueMsg));
+			fListMenu->AddItem(fPopupCommitItem = new BMenuItem("Commits", &commitsMsg));
+			fListMenu->SetTargetForItems(this);
+		} else {
+			fPopupIssueItem->SetMessage(&issueMsg);
+			fPopupCommitItem->SetMessage(&commitsMsg);
+		}
+
+		fListMenu->Go(point, true);
 	}
 }
 
@@ -385,7 +387,6 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 		case kRepositoryManagerAdd: {
-			printf("kRepositoryManagerAdd\n");
 			SetCurrentRepositories(fCurrentRepositories);
 			fAddRepositoryWindow = NULL;
 			break;
@@ -397,7 +398,6 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 				fAddRepositoryWindow->SetEnabled(true);
 				fAddRepositoryWindow->Unlock();
 			}
-			printf("kRepositoryManagerExists\n");
 			break;
 		}
 
