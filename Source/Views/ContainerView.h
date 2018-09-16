@@ -42,6 +42,9 @@ private:
 			void StopDownloadThread();
 
 			void Reisize();
+			
+			void StartNetworkMonitoring();
+			bool IsConnected(); 
 
 			void HandleListInvoke(BMessage *message);
 			void SetupViews(bool isReplicant);

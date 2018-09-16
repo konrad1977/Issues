@@ -78,9 +78,6 @@ CommitModel::HandleParse(BMessage *message)
 void
 CommitModel::AddCommits(BMessage *message)
 {
-	message->PrintToStream();
-
-
 	bool isReplicant = IsReplicant();
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("nodes", *message);

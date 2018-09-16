@@ -22,6 +22,9 @@
 #include <interface/ScrollView.h>
 #include <interface/Dragger.h>
 
+#include <net/NetworkRoster.h>
+#include <net/NetworkInterface.h>
+
 #include <app/MessageRunner.h>
 #include <app/Roster.h>
 
@@ -34,7 +37,7 @@ const float kDraggerSize = 7;
 extern const char *kAppSignature;
 
 ContainerView::ContainerView(ContainerModel *model)
-	:BView("Issues", B_DRAW_ON_CHILDREN)
+	:BView(model->Name(), B_DRAW_ON_CHILDREN)
 	,fListView(NULL)
 	,fScrollView(NULL)
 	,fDragger(NULL)
@@ -102,7 +105,7 @@ ContainerView::SaveState(BMessage* into, bool deep) const
 void
 ContainerView::AttachedToWindow()
 {
-	StartAutoUpdater();
+	StartNetworkMonitoring();
 	ListView()->SetTarget(this);
 	Model()->SetTarget(this);
 	BView::AttachedToWindow();
@@ -135,6 +138,20 @@ ContainerView::MessageReceived(BMessage *message)
 	Model()->MessageReceived(message);
 
 	switch (message->what) {
+	
+		case B_NETWORK_MONITOR: {
+			if (IsConnected() == false) {
+				printf("-- No Network is available --\n");
+				return;
+			}
+			printf("-- Network is available starting requests --\n");
+			
+			StartAutoUpdater();
+			Model()->RequestData();
+			stop_watching_network(this);
+			break;
+		}
+		
 		case kContainerRequestResize: {
 			Reisize();
 			break;
@@ -160,7 +177,7 @@ ContainerView::StartAutoUpdater()
 	delete fAutoUpdateRunner;
 
 	BMessenger view(this);
-	bigtime_t seconds = 10;
+	bigtime_t seconds = 60;
 
 	BMessage autoUpdateMessage(kAutoUpdateMessage);
 	fAutoUpdateRunner = new BMessageRunner(view, &autoUpdateMessage, (bigtime_t) seconds * 1000 * 1000);
@@ -170,7 +187,7 @@ BListView *
 ContainerView::ListView()
 {
 	if (fListView == NULL) {
-		fListView = new BListView("Issues", B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
+		fListView = new BListView(Model()->Name(), B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
 		fListView->SetInvocationMessage( new BMessage(kIssueListInvokedMessage ));
 	}
 	return fListView;
@@ -189,7 +206,7 @@ ContainerView::SpawnDonwloadThread()
 {
 	StopDownloadThread();
 
-	fThreadId = spawn_thread(&DownloadFunc, "Download Issues", B_NORMAL_PRIORITY, this);
+	fThreadId = spawn_thread(&DownloadFunc, Model()->Name(), B_NORMAL_PRIORITY, this);
 	if (fThreadId >= 0)
 		resume_thread(fThreadId);
 }
@@ -251,4 +268,29 @@ ContainerView::SetupViews(bool isReplicant)
 			.Add(fDragger)
 		.End()
 	.End();
+}
+
+void 
+ContainerView::StartNetworkMonitoring()
+{
+	if (IsConnected() == false) {
+		start_watching_network(B_WATCH_NETWORK_INTERFACE_CHANGES | B_WATCH_NETWORK_LINK_CHANGES, this);
+	}
+}
+
+bool 
+ContainerView::IsConnected()
+{
+	BNetworkRoster& roster = BNetworkRoster::Default();
+	BNetworkInterface interface;
+	uint32 cookie = 0;
+	while (roster.GetNextInterface(&cookie, interface) == B_OK) {
+		uint32 flags = interface.Flags();
+		if ((flags & IFF_LOOPBACK) == 0) {
+			if ((flags & (IFF_UP | IFF_LINK)) == (IFF_UP | IFF_LINK)) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
