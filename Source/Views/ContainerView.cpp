@@ -105,6 +105,7 @@ ContainerView::SaveState(BMessage* into, bool deep) const
 void
 ContainerView::AttachedToWindow()
 {
+	StartAutoUpdater();
 	StartNetworkMonitoring();
 	ListView()->SetTarget(this);
 	Model()->SetTarget(this);
