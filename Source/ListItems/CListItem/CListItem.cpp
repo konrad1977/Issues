@@ -7,8 +7,12 @@
 #include "CListItem.h"
 #include "GithubIssue.h"
 #include "Constants.h"
+#include "FileDownloader.h"
 
 #include "ColorManager.h"
+#include <Bitmap.h>
+#include <TranslationUtils.h>
+
 #include <interface/ListView.h>
 #include <interface/Screen.h>
 #include <posix/stdio.h>
@@ -65,6 +69,8 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 	BListView *parent = dynamic_cast<BListView *>(view);
 	const int32 index = parent->IndexOf(this);
 	BRect frame = parent->ItemFrame(index);
+	
+	
 
 	if (fMultiLineTextDrawer == NULL) {
 		fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
@@ -75,6 +81,35 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 	parent->SetDrawingMode(B_OP_OVER);
 	DrawIssue(frame, true);
 	parent->FrameResized(frame.Width(), frame.Height());
+	
+	DrawIcon(parent, frame);
+}
+
+void 
+CListItem::DrawIcon(BListView *parent, BRect rect)
+{
+	const char *url = fModel.AuthorUrl().String();
+	if (url == NULL) {
+		return;
+	}
+	
+	printf("Url: %s\n", url);
+	
+	BMallocIO buffer;
+	FileDownloader downloader(fModel.AuthorUrl());
+
+	BRect r(rect);
+	const float SIZE = 24;
+	r.left = r.right - SIZE;
+	r.bottom = r.top + SIZE;
+	
+	if (downloader.Download(&buffer) == B_OK) {
+		if (fIcon = BTranslationUtils::GetBitmap(&buffer)) {
+			parent->SetDrawingMode(B_OP_ALPHA);
+			parent->DrawBitmap(fIcon, fIcon->Bounds(), r.OffsetBySelf(-3.0f, 3.0f), B_FILTER_BITMAP_BILINEAR);
+			parent->SetDrawingMode(B_OP_COPY);
+		}
+	}
 }
 
 void
@@ -98,7 +133,8 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 
 	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
 	fMultiLineTextDrawer->SetAlignment(B_ALIGN_RIGHT);
-	float authorHeight = fMultiLineTextDrawer->DrawString(frame, author, &font, enableOutput);
+	BRect authorFrame = frame;
+	float authorHeight = fMultiLineTextDrawer->DrawString(authorFrame.OffsetBySelf(-26.0f, 0), author, &font, enableOutput);
 	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
 
 	fHeight = MAX(titleHeight, authorHeight);

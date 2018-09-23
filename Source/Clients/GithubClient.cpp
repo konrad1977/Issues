@@ -111,7 +111,7 @@ GithubClient::RequestCommitsForRepository(const char *repository, const char *ow
 		.AddNode("... on Commit")
 		.AddNode("history(first:5)")
 		.AddNode("nodes")
-		.AddNode("messageHeadline message url author { name }")
+		.AddNode("messageHeadline message url author { name avatarUrl }")
 		.Query();
 
 	RunRequest(&requester, query);
@@ -151,7 +151,7 @@ GithubClient::RequestIssuesForRepository(const char *repository, const char *own
 		.AddNode("name")
 		.AddValue("issues(first:10 states:OPEN orderBy: { field: CREATED_AT direction: DESC })")
 		.AddNode("nodes")
-		.AddNode("url title body author { login }")
+		.AddNode("url title body author { login avatarUrl }")
 		.Query();
 
 	RunRequest(&requester, query);

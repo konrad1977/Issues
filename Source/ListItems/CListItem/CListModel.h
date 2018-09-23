@@ -20,12 +20,14 @@ public:
 	BString Body() const;
 	BString Url() const;
 	BString Author() const;
+	BString AuthorUrl() const;
 	
 private:
 	BString fTitle;
 	BString fBody;
 	BString fUrl;
 	BString fAuthor;
+	BString fAuthorUrl;
 };
 
 

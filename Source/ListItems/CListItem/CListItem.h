@@ -13,6 +13,7 @@
 #include "CListModel.h"
 
 class BListView;
+class BBitmap;
 class CListItem : public BListItem {
 public:
 	CListItem(CListModel model, bool isReplicant);
@@ -26,6 +27,7 @@ public:
 private:
 			void DrawBackground(BListView *parent);
 			void DrawIssue(BRect frame, bool disableOutput);
+			void DrawIcon(BListView *parent, BRect rect);
 			
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
 	ColorManager			*fListColorManager;
@@ -34,6 +36,7 @@ private:
 	float					fPreviousHeight;
 	bool					fIsReplicant;
 	bool					fSecondPass;
+	BBitmap					*fIcon;
 };
 
 #endif // _H

@@ -15,7 +15,9 @@ GithubIssue::GithubIssue(BMessage message)
 	BMessage authorMsg;
 	if (message.FindMessage("author", &authorMsg) == B_OK) {
 		authorMsg.FindString("login", &author);
+		authorMsg.FindString("avatarUrl", &authorUrl);
 	}
+	message.PrintToStream();
 }
 
 GithubIssue::~GithubIssue()

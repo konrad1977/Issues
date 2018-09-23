@@ -7,7 +7,6 @@
 #include "CommitModel.h"
 
 #include "GithubClient.h"
-#include "GithubIssue.h"
 #include "GithubRepository.h"
 #include "GithubCommit.h"
 

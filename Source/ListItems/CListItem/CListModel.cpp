@@ -11,6 +11,7 @@ CListModel::CListModel(const GithubIssue &issue)
 	,fBody(issue.body)
 	,fUrl(issue.url)
 	,fAuthor(issue.author)
+	,fAuthorUrl(issue.authorUrl)
 {
 
 }
@@ -20,6 +21,7 @@ CListModel::CListModel(const GithubCommit &commit)
 	,fBody(commit.body)
 	,fUrl(commit.url)
 	,fAuthor(commit.author)
+	,fAuthorUrl("")
 {
 
 }
@@ -46,4 +48,10 @@ BString
 CListModel::Author() const
 {
 	return fAuthor;
+}
+
+BString 
+CListModel::AuthorUrl() const
+{
+	return fAuthorUrl;
 }
