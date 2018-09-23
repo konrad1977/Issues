@@ -19,6 +19,7 @@ public:
 	BString body;	
 	BString url;
 	BString author;
+	BString authorUrl;
 	
 private:
 

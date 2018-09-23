@@ -24,6 +24,7 @@ CListItem::CListItem(CListModel model, bool isReplicant)
 	,fModel(model)
 	,fHeight(10)
 	,fIsReplicant(isReplicant)
+	,fIcon(NULL)
 {
 	fListColorManager = new ColorManager(this, fIsReplicant);
 }
@@ -69,8 +70,6 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 	BListView *parent = dynamic_cast<BListView *>(view);
 	const int32 index = parent->IndexOf(this);
 	BRect frame = parent->ItemFrame(index);
-	
-	
 
 	if (fMultiLineTextDrawer == NULL) {
 		fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
@@ -88,21 +87,26 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 void 
 CListItem::DrawIcon(BListView *parent, BRect rect)
 {
-	const char *url = fModel.AuthorUrl().String();
-	if (url == NULL) {
-		return;
-	}
-	
-	printf("Url: %s\n", url);
-	
-	BMallocIO buffer;
-	FileDownloader downloader(fModel.AuthorUrl());
-
 	BRect r(rect);
 	const float SIZE = 24;
 	r.left = r.right - SIZE;
 	r.bottom = r.top + SIZE;
 	
+	if (fIcon) {
+		parent->SetDrawingMode(B_OP_ALPHA);
+		parent->DrawBitmap(fIcon, fIcon->Bounds(), r.OffsetBySelf(-3.0f, 3.0f), B_FILTER_BITMAP_BILINEAR);
+		parent->SetDrawingMode(B_OP_COPY);
+		return;
+	}
+
+	const char *url = fModel.AuthorUrl().String();
+	if (url == NULL) {
+		return;
+	}
+	
+	BMallocIO buffer;
+	FileDownloader downloader(fModel.AuthorUrl());
+
 	if (downloader.Download(&buffer) == B_OK) {
 		if (fIcon = BTranslationUtils::GetBitmap(&buffer)) {
 			parent->SetDrawingMode(B_OP_ALPHA);

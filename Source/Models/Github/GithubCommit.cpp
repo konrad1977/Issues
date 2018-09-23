@@ -14,6 +14,7 @@ GithubCommit::GithubCommit(BMessage message)
 	BMessage authorMsg;
 	if (message.FindMessage("author", &authorMsg) == B_OK) {
 		authorMsg.FindString("name", &author);
+		authorMsg.FindString("avatarUrl", &authorUrl);
 	}
 }
 

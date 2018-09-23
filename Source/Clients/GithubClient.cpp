@@ -118,25 +118,6 @@ GithubClient::RequestCommitsForRepository(const char *repository, const char *ow
 }
 
 void
-GithubClient::RequestCommitHistory()
-{
-	NetRequester requester(fHandler, "Commits");
-
-	GraphQLBuilder builder;
-	BString query = builder
-		.AddNode("repository(name:\\\"%s\\\" owner:\\\"Haiku\\\")", "Haiku")
-		.AddNode("ref(qualifiedName:\\\"%s\\\")", "master")
-		.AddNode("target")
-		.AddNode("... on Commit")
-		.AddNode("history(first:5)")
-		.AddNode("nodes")
-		.AddNode("messageHeadline message")
-		.Query();
-
-	RunRequest(&requester, query);
-}
-
-void
 GithubClient::RequestIssuesForRepository(const char *repository, const char *owner)
 {
 	if (repository == NULL || owner == NULL) {

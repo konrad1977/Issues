@@ -21,7 +21,7 @@ CListModel::CListModel(const GithubCommit &commit)
 	,fBody(commit.body)
 	,fUrl(commit.url)
 	,fAuthor(commit.author)
-	,fAuthorUrl("")
+	,fAuthorUrl(commit.authorUrl)
 {
 
 }

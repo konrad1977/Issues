@@ -17,7 +17,6 @@ public:
 	GithubClient(BHandler *handler);
 	~GithubClient();
 
-	void RequestCommitHistory();
 	void RequestProjects();
 	void RequestRepository(const char *repository, const char *owner);
 	void RequestIssuesForRepository(const char *repository, const char *owner);
