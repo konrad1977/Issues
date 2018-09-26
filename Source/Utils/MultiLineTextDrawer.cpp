@@ -63,8 +63,8 @@ MultiLineTextDrawer::SetAlignment(alignment align)
 }
 
 const int32
-MultiLineTextDrawer::FindLineBreak(BString &text, uint32 offset) const {
-
+MultiLineTextDrawer::FindEndBreaks(BString &text, uint32 offset) const 
+{
 	int32 index = B_ERROR;
 	if ((index = text.FindLast(" ", offset)) != B_ERROR) {
 		return index;
@@ -78,6 +78,19 @@ MultiLineTextDrawer::FindLineBreak(BString &text, uint32 offset) const {
 	return B_ERROR;
 }
 
+const int32 
+MultiLineTextDrawer::FindLineBreaks(BString &text, uint32 offset) const 
+{
+	BString subString;
+	subString.SetTo(text, offset);
+	
+	int32 index = B_ERROR;
+	if ((index = subString.FindFirst('\n', 0)) != B_ERROR) {
+		return index;
+	}
+	return B_ERROR;
+}
+
 const char *
 MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont *font, float width, BString &output)
 {
@@ -87,10 +100,9 @@ MultiLineTextDrawer::GetStringFromWidth(const char *input, BFont *font, float wi
 	uint32 charatersThatFits = CharactedFittedFor(buffer, font, width);
 
 	int32 breakAt = B_ERROR;
-
-	if ( (size > charatersThatFits) && (breakAt = FindLineBreak(buffer, charatersThatFits)) != B_ERROR) {
+	if ((breakAt = FindLineBreaks(buffer, charatersThatFits)) != B_ERROR) {
 		charatersThatFits = breakAt;
-	} else if ((breakAt = buffer.FindFirst('\n', 0)) != B_ERROR) {
+	} else if ( (size > charatersThatFits) && (breakAt = FindEndBreaks(buffer, charatersThatFits)) != B_ERROR) {
 		charatersThatFits = breakAt;
 	}
 

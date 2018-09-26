@@ -31,7 +31,9 @@ public:
 		
 private:
 	
-	const int32 	FindLineBreak(BString &text, uint32 offset) const;
+	const int32 	FindEndBreaks(BString &text, uint32 offset) const;
+	const int32 	FindLineBreaks(BString &text, uint32 offset) const;
+	
 	const float 	GetFontHeight(BFont &font) const;	
 	const char 		*GetStringFromWidth(const char *input, BFont *font, float width, BString &output);
 	const uint32 	CharactedFittedFor(BString text, BFont *font, float width) const;
