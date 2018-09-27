@@ -105,8 +105,13 @@ ContainerView::SaveState(BMessage* into, bool deep) const
 void
 ContainerView::AttachedToWindow()
 {
-	StartAutoUpdater();
 	StartNetworkMonitoring();
+
+	if (IsConnected()) {
+		StartAutoUpdater();
+		Model()->RequestData();
+	}
+	
 	ListView()->SetTarget(this);
 	Model()->SetTarget(this);
 	BView::AttachedToWindow();
@@ -141,6 +146,9 @@ ContainerView::MessageReceived(BMessage *message)
 	switch (message->what) {
 	
 		case B_NETWORK_MONITOR: {
+
+			printf("B_NETWORK_MONITOR\n");
+			
 			if (IsConnected() == false) {
 				printf("-- No Network is available --\n");
 				return;
@@ -274,9 +282,7 @@ ContainerView::SetupViews(bool isReplicant)
 void 
 ContainerView::StartNetworkMonitoring()
 {
-	if (IsConnected() == false) {
-		start_watching_network(B_WATCH_NETWORK_INTERFACE_CHANGES | B_WATCH_NETWORK_LINK_CHANGES, this);
-	}
+	start_watching_network(B_WATCH_NETWORK_INTERFACE_CHANGES | B_WATCH_NETWORK_LINK_CHANGES, this);
 }
 
 bool 
