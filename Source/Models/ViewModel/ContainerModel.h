@@ -9,6 +9,7 @@
 #include <interface/ListView.h>
 #include <app/Message.h>
 
+class GithubRepository;
 class ContainerModel {
 public:
 	virtual status_t Archive(BMessage *message) = 0;
@@ -24,6 +25,9 @@ public:
 
 	void SetListView(BListView *listView) 	{ fListView = listView; }
 	BListView *ListView() 	{ return fListView; }
+
+	const GithubRepository* Repository();
+
 private:
 	BListView 	*fListView;
 	bool		fIsReplicant;

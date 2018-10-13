@@ -20,12 +20,15 @@ public:
 	IssueModel(BMessage *message);
 	virtual ~IssueModel();
 
-	virtual BString Name();	
+	virtual BString Name();
 	virtual status_t Archive(BMessage *message);
 
 	virtual void MessageReceived(BMessage *message);
 	virtual void RequestData();
 	virtual void SetTarget(BHandler *handler);
+
+	const GithubRepository* Repository() { return fGithubRepository; }
+
 
 private:
 			void HandleParse(BMessage *message);
