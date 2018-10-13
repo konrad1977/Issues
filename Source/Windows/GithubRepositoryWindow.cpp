@@ -39,20 +39,20 @@
 
 GithubRepositoryWindow::GithubRepositoryWindow()
 	:BWindow(BRect(30,30, 1, 1), "Repositories", B_DOCUMENT_WINDOW, B_FRAME_EVENTS | B_QUIT_ON_WINDOW_CLOSE | B_AUTO_UPDATE_SIZE_LIMITS)
-	,fGithubTokenWindow(NULL)
-	,fGithubClient(NULL)
-	,fRepositoryManager(NULL)
-	,fAddRepositoryWindow(NULL)
-	,fRepositoryListView(NULL)
+	,fGithubTokenWindow(nullptr)
+	,fGithubClient(nullptr)
+	,fRepositoryManager(nullptr)
+	,fAddRepositoryWindow(nullptr)
+	,fRepositoryListView(nullptr)
 	,fDownloadThread(-1)
-	,fCurrentRepositories(NULL)
-	,fCurrentFilter(NULL)
-	,fFilterView(NULL)
-	,fListMenu(NULL)
-	,fPopupIssueItem(NULL)
-	,fPopupCommitItem(NULL)
-	,fMenuItemShowIssues(NULL)
-	,fMenuItemShowCommits(NULL)
+	,fCurrentRepositories(nullptr)
+	,fCurrentFilter(nullptr)
+	,fFilterView(nullptr)
+	,fListMenu(nullptr)
+	,fPopupIssueItem(nullptr)
+	,fPopupCommitItem(nullptr)
+	,fMenuItemShowIssues(nullptr)
+	,fMenuItemShowCommits(nullptr)
 	,fPrivateTotal(0)
 	,fPublicTotal(0)
 	,fForkedTotal(0)
@@ -121,7 +121,7 @@ GithubRepositoryWindow::SetupViews()
 		.AddMenu(B_TRANSLATE("File"))
 			.AddItem(new BMenuItem(B_TRANSLATE("Add.."), new BMessage(kShowAddRepository), 'A'))
 			.AddSeparator()
-			.AddItem(new BMenuItem(B_TRANSLATE("About"), NULL, 'R'))
+			.AddItem(new BMenuItem(B_TRANSLATE("About"), nullptr, 'R'))
 		.End()
 		.AddMenu(B_TRANSLATE("Edit"))
 			.AddItem(fMenuItemShowIssues = new BMenuItem(B_TRANSLATE("Show issues"), new BMessage(kShowIssueForRepository), 'I'))
@@ -141,7 +141,7 @@ GithubRepositoryWindow::SetupViews()
 void
 GithubRepositoryWindow::SetCurrentRepositories(BList *list)
 {
-	if (fRepositoryListView == NULL) {
+	if (fRepositoryListView == nullptr) {
 		return;
 	}
 
@@ -184,8 +184,8 @@ GithubRepositoryWindow::SetCurrentRepositories(BList *list)
 BList *
 GithubRepositoryWindow::MakeFilter(BString filter)
 {
-	if (fCurrentRepositories == NULL) {
-		return NULL;
+	if (fCurrentRepositories == nullptr) {
+		return nullptr;
 	}
 
 	if (fCurrentFilter) {
@@ -209,8 +209,8 @@ GithubRepositoryWindow::MakeFilter(BString filter)
 BList *
 GithubRepositoryWindow::MakePrivateRepositories(BList *repositories) const
 {
-	if (repositories == NULL) {
-		return NULL;
+	if (repositories == nullptr) {
+		return nullptr;
 	}
 
 	BList *list = new BList();
@@ -228,8 +228,8 @@ GithubRepositoryWindow::MakePrivateRepositories(BList *repositories) const
 BList *
 GithubRepositoryWindow::MakeForkedRepositories(BList *repositories) const
 {
-	if (repositories == NULL) {
-		return NULL;
+	if (repositories == nullptr) {
+		return nullptr;
 	}
 
 	BList *list = new BList();
@@ -247,8 +247,8 @@ GithubRepositoryWindow::MakeForkedRepositories(BList *repositories) const
 BList *
 GithubRepositoryWindow::MakePublicRepositories(BList *repositories) const
 {
-	if (repositories == NULL) {
-		return NULL;
+	if (repositories == nullptr) {
+		return nullptr;
 	}
 
 	BList *list = new BList();
@@ -266,7 +266,7 @@ GithubRepositoryWindow::MakePublicRepositories(BList *repositories) const
 void
 GithubRepositoryWindow::PopuplateListView(RepositoryType type, BList *list, uint8 total)
 {
-	if (list == NULL || list->CountItems() == 0) {
+	if (list == nullptr || list->CountItems() == 0) {
 		return;
 	}
 
@@ -349,12 +349,12 @@ GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
 	if (pressed && buttons &B_SECONDARY_MOUSE_BUTTON) {
 		RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
 
-		if (listItem == NULL) {
+		if (listItem == nullptr) {
 			return;
 		}
 
 		GithubRepository *repository = listItem->CurrentRepository();
-		if (repository == NULL) {
+		if (repository == nullptr) {
 			return;
 		}
 
@@ -364,7 +364,7 @@ GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
 		BMessage commitsMsg(kMenuShowCommitsForRepository);
 		commitsMsg.AddInt32("index", index);
 
-		if (fListMenu == NULL) {
+		if (fListMenu == nullptr) {
 			fListMenu = new BPopUpMenu("menu", false, false);
 			fListMenu->AddItem(fPopupIssueItem = new BMenuItem("Issues", &issueMsg));
 			fListMenu->AddItem(fPopupCommitItem = new BMenuItem("Commits", &commitsMsg));
@@ -388,7 +388,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 		}
 		case kRepositoryManagerAdd: {
 			SetCurrentRepositories(fCurrentRepositories);
-			fAddRepositoryWindow = NULL;
+			fAddRepositoryWindow = nullptr;
 			break;
 		}
 
@@ -516,7 +516,7 @@ void
 GithubRepositoryWindow::ShowIssuesWindowFromIndex(int32 index)
 {
 	RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
-	if (listItem == NULL || listItem->CurrentRepository() == NULL) {
+	if (listItem == nullptr || listItem->CurrentRepository() == nullptr) {
 		return;
 	}
 
@@ -530,7 +530,7 @@ void
 GithubRepositoryWindow::ShowCommitsWindowFromIndex(int32 index)
 {
 	RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
-	if (listItem == NULL || listItem->CurrentRepository() == NULL) {
+	if (listItem == nullptr || listItem->CurrentRepository() == nullptr) {
 		return;
 	}
 

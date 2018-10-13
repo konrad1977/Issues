@@ -14,8 +14,8 @@
 #include <app/Handler.h>
 
 RepositoryManager::RepositoryManager(BHandler *handler)
-	:fSettingsManager(NULL)
-	,fMessenger(NULL)
+	:fSettingsManager(nullptr)
+	,fMessenger(nullptr)
 {
 	fList = new BList();
 	fSettingsManager = new SettingsManager();
@@ -60,7 +60,7 @@ RepositoryManager::RemoveRepository(GithubRepository *repository)
 	for (int32 i = 0; i<items; i++) {
 		GithubRepository *item = static_cast<GithubRepository*>(fList->ItemAtFast(i));
 
-		if (item == NULL) {
+		if (item == nullptr) {
 			continue;
 		}
 
@@ -80,7 +80,7 @@ RepositoryManager::HasRepository(GithubRepository *repository)
 	const int32 items = fList->CountItems();
 	for (int32 i = 0; i<items; i++) {
 		GithubRepository *item = static_cast<GithubRepository*>(fList->ItemAtFast(i));
-		if (item == NULL) {
+		if (item == nullptr) {
 			continue;
 		}
 		if (item->url == repository->url) {
@@ -120,7 +120,7 @@ RepositoryManager::SaveRepositories()
 	for (int32 i = 0; i<items; i++) {
 		GithubRepository *item = static_cast<GithubRepository*>(fList->ItemAtFast(i));
 
-		if (item == NULL) {
+		if (item == nullptr) {
 			continue;
 		}
 		BMessage repositoryMessage;
