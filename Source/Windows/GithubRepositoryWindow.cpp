@@ -20,6 +20,8 @@
 #include "MessageFinder.h"
 #include "ROutlineListView.h"
 
+#include <app/Application.h>
+
 #include <locale/Catalog.h>
 
 #include <interface/PopUpMenu.h>
@@ -30,7 +32,8 @@
 #include <interface/LayoutBuilder.h>
 #include <interface/OutlineListView.h>
 #include <interface/ScrollView.h>
-#include <GroupView.h>
+#include <interface/GroupView.h>
+
 #include <posix/stdio.h>
 
 
@@ -119,13 +122,15 @@ GithubRepositoryWindow::SetupViews()
 
 	BLayoutBuilder::Menu<>(fMenuBar = new BMenuBar(Bounds(), "Menu"))
 		.AddMenu(B_TRANSLATE("File"))
-			.AddItem(new BMenuItem(B_TRANSLATE("Add.."), new BMessage(kShowAddRepository), 'A'))
+			.AddItem(new BMenuItem(B_TRANSLATE("Add Repository" B_UTF8_ELLIPSIS), new BMessage(MenuAction::AddRepository), 'R'))
+			.AddItem(new BMenuItem(B_TRANSLATE("About" B_UTF8_ELLIPSIS), new BMessage(MenuAction::About), 'A'))
 			.AddSeparator()
-			.AddItem(new BMenuItem(B_TRANSLATE("About"), nullptr, 'R'))
+			.AddItem(new BMenuItem(B_TRANSLATE("Quit" B_UTF8_ELLIPSIS), new BMessage(MenuAction::Quit), 'A'))
+
 		.End()
 		.AddMenu(B_TRANSLATE("Edit"))
-			.AddItem(fMenuItemShowIssues = new BMenuItem(B_TRANSLATE("Show issues"), new BMessage(kShowIssueForRepository), 'I'))
-			.AddItem(fMenuItemShowCommits = new BMenuItem(B_TRANSLATE("Show commits"), new BMessage(kShowCommitsForRepository), 'C'))
+			.AddItem(fMenuItemShowIssues = new BMenuItem(B_TRANSLATE("Show issues"), new BMessage(MenuAction::Issues), 'I'))
+			.AddItem(fMenuItemShowCommits = new BMenuItem(B_TRANSLATE("Show commits"), new BMessage(MenuAction::Commits), 'C'))
 		.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
@@ -382,6 +387,11 @@ void
 GithubRepositoryWindow::MessageReceived(BMessage *message) {
 	switch (message->what) {
 
+		case MenuAction::Quit: {
+			be_app->PostMessage(B_QUIT_REQUESTED);
+			break;
+		}
+
 		case kListViewMouseEvent: {
 			HandleMouseDownEvents(message);
 			break;
@@ -430,7 +440,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 
-		case kShowAddRepository: {
+		case MenuAction::AddRepository: {
 			fAddRepositoryWindow = new AddRepositoryWindow();
 			fAddRepositoryWindow->SetTarget(this);
 			fAddRepositoryWindow->Show();
@@ -452,12 +462,12 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 
-		case kShowIssueForRepository: {
-			ShowCommitsWindowFromIndex(fCurrentSelectedIndex);
+		case MenuAction::Issues: {
+			ShowIssuesWindowFromIndex(fCurrentSelectedIndex);
 			break;
 		}
 
-		case kShowCommitsForRepository: {
+		case MenuAction::Commits: {
 			ShowCommitsWindowFromIndex(fCurrentSelectedIndex);
 			break;
 		}
@@ -487,7 +497,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			if (message->FindInt32("index", &index) != B_OK) {
 				return;
 			}
-			ShowCommitsWindowFromIndex(index);
+			ShowIssuesWindowFromIndex(index);
 			break;
 		}
 

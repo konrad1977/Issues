@@ -83,6 +83,14 @@ private:
 	uint8 				fForkedTotal;
 	uint8 				fCustomTotal;
 	int32				fCurrentSelectedIndex;
+
+	enum MenuAction {
+		AddRepository 		= 'addr',
+		About				= 'abou',
+		Quit				= 'quit',
+		Issues				= 'issu',
+		Commits				= 'comm'
+	};
 };
 
 

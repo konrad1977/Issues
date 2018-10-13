@@ -8,17 +8,29 @@
 #include <SupportDefs.h>
 #include <interface/Window.h>
 
+class BMenuBar;
 class ContainerView;
 class ContainerModel;
 class ContainerWindow : public BWindow {
 public:
 	ContainerWindow(ContainerModel *model);
-	~ContainerWindow();		
+	~ContainerWindow();
+
+	virtual void MessageReceived(BMessage *message);
+	virtual void Quit();
+
 private:
-			void SetupViews();		
-			
+			void SetupViews();
+			void BuildMenu();
+
 	ContainerView	*fContainerView;
 	ContainerModel	*fContainer;
+	BMenuBar		*fMenuBar;
+
+	enum Actions {
+		SHOW_SETTINGS_WINDOW 	= 'shos',
+		QUIT					= 'quit'
+	};
 };
 
 #endif // _H
