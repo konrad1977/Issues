@@ -23,10 +23,10 @@
 
 AddRepositoryWindow::AddRepositoryWindow()
 	:BWindow(BRect(0,0,1,1), B_TRANSLATE("Add repository"), B_TITLED_WINDOW, B_FRAME_EVENTS | B_AUTO_UPDATE_SIZE_LIMITS)
-	,fMessenger(NULL)
-	,fRepositoryName(NULL)
-	,fRepositoryOwner(NULL)
-	,fAddButton(NULL)
+	,fMessenger(nullptr)
+	,fRepositoryName(nullptr)
+	,fRepositoryOwner(nullptr)
+	,fAddButton(nullptr)
 {
 	SetupViews();
 	CenterOnScreen();
@@ -37,14 +37,14 @@ AddRepositoryWindow::~AddRepositoryWindow()
 	delete fMessenger;
 }
 
-bool
-AddRepositoryWindow::QuitRequested()
+void
+AddRepositoryWindow::Quit()
 {
 	BMessage message(kQuitAddRepository);
 	if (fMessenger && fMessenger->IsValid()) {
 		fMessenger->SendMessage(&message);
 	}
-	return true;
+	BWindow::Quit();
 }
 
 void
@@ -87,8 +87,8 @@ AddRepositoryWindow::SetupViews()
 
 	fAddButton = new BButton("AddRepository", "Add repository", new BMessage(kRepositoryAdded));
 
-	fRepositoryName = new BTextControl("Repository name", B_TRANSLATE("Repository name:"), "", NULL);
-	fRepositoryOwner = new BTextControl("Repository owner", B_TRANSLATE("Repository name:"), "", NULL);
+	fRepositoryName = new BTextControl("Repository name", B_TRANSLATE("Repository name:"), "", nullptr);
+	fRepositoryOwner = new BTextControl("Repository owner", B_TRANSLATE("Repository name:"), "", nullptr);
 
 	BLayoutBuilder::Group<>(this, B_HORIZONTAL)
 		.SetExplicitMinSize(BSize(400, 80))

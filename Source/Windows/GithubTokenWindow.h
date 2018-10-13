@@ -17,12 +17,12 @@ public:
 	~GithubTokenWindow();
 
 	virtual void MessageReceived(BMessage *message);
-	virtual bool QuitRequested();
-	
+			void Quit();
+
 private:
 			void InitLayout();
 	BTextControl *TextControl();
-			
+
 	BMessenger		*fMessenger;
 	BTextControl 	*fTokenControl;
 };

@@ -13,7 +13,7 @@ const char *kAppSignature = "application/x-vnd.konradsson-Issues";
 
 App::App(void)
 	:BApplication(kAppSignature)
-	,fGithubRepositoryWindow(NULL)
+	,fGithubRepositoryWindow(nullptr)
 {
 	fGithubRepositoryWindow = new GithubRepositoryWindow();
 	fGithubRepositoryWindow->Show();

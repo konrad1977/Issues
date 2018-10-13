@@ -20,9 +20,9 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "GithubTokenWindow"
 
-GithubTokenWindow::GithubTokenWindow(BHandler *handler) 
+GithubTokenWindow::GithubTokenWindow(BHandler *handler)
 	:BWindow(BRect(40,40, 200, 200), B_TRANSLATE("GithubToken"), B_FLOATING_WINDOW_LOOK, B_NORMAL_WINDOW_FEEL, B_AUTO_UPDATE_SIZE_LIMITS)
-	,fMessenger(NULL)	
+	,fMessenger(NULL)
 	,fTokenControl(NULL)
 {
 	fMessenger = new BMessenger(handler);
@@ -36,7 +36,7 @@ GithubTokenWindow::~GithubTokenWindow()
 	delete fMessenger;
 }
 
-void 
+void
 GithubTokenWindow::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
@@ -55,7 +55,7 @@ GithubTokenWindow::MessageReceived(BMessage *message)
 }
 
 BTextControl *
-GithubTokenWindow::TextControl() 
+GithubTokenWindow::TextControl()
 {
 	if (fTokenControl == NULL) {
 		fTokenControl = new BTextControl("Name", B_TRANSLATE("Personal access token:"), "", NULL);
@@ -63,15 +63,15 @@ GithubTokenWindow::TextControl()
 	return fTokenControl;
 }
 
-void 
+void
 GithubTokenWindow::InitLayout()
 {
 	BGroupLayout *group = new BGroupLayout(B_VERTICAL);
 	SetLayout(group);
-	
+
 	BButton *createButton = new BButton("Save", "Save", new BMessage(kGithubTokenSaveMessage));
 	createButton->SetTarget(this);
-	
+
 	BLayoutBuilder::Group<>(this, B_HORIZONTAL)
 		.SetExplicitMinSize(BSize(700, 40))
 		.SetInsets(10,10,10,10)
@@ -79,12 +79,12 @@ GithubTokenWindow::InitLayout()
 		.Add(createButton);
 }
 
-bool
-GithubTokenWindow::QuitRequested()
+void
+GithubTokenWindow::Quit()
 {
 	BMessage message(kWindowQuitMessage);
 	if (fMessenger && fMessenger->IsValid()) {
 		fMessenger->SendMessage(&message);
 	}
-	return true;
+	BWindow::Quit();
 }

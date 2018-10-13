@@ -38,13 +38,13 @@ private:
 
 	static int32 DownloadFunc(void *cookie);
 			void StartAutoUpdater();
-			void SpawnDonwloadThread();
+			void SpawnDownloadThread();
 			void StopDownloadThread();
 
 			void Reisize();
-			
+
 			void StartNetworkMonitoring();
-			bool IsConnected(); 
+			bool IsConnected();
 
 			void HandleListInvoke(BMessage *message);
 			void SetupViews(bool isReplicant);

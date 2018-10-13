@@ -19,12 +19,12 @@
 
 CListItem::CListItem(CListModel model, bool isReplicant)
 	:BListItem()
-	,fMultiLineTextDrawer(NULL)
-	,fListColorManager(NULL)
+	,fMultiLineTextDrawer(nullptr)
+	,fListColorManager(nullptr)
 	,fModel(model)
 	,fHeight(10)
 	,fIsReplicant(isReplicant)
-	,fIcon(NULL)
+	,fIcon(nullptr)
 {
 	fListColorManager = new ColorManager(this, fIsReplicant);
 }
@@ -71,7 +71,7 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 	const int32 index = parent->IndexOf(this);
 	BRect frame = parent->ItemFrame(index);
 
-	if (fMultiLineTextDrawer == NULL) {
+	if (fMultiLineTextDrawer == nullptr) {
 		fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
 		fMultiLineTextDrawer->SetInsets(BSize(10,5));
 	}
@@ -80,18 +80,18 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 	parent->SetDrawingMode(B_OP_OVER);
 	DrawIssue(frame, true);
 	parent->FrameResized(frame.Width(), frame.Height());
-	
+
 	DrawIcon(parent, frame);
 }
 
-void 
+void
 CListItem::DrawIcon(BListView *parent, BRect rect)
 {
 	BRect r(rect);
 	const float SIZE = 24;
 	r.left = r.right - SIZE;
 	r.bottom = r.top + SIZE;
-	
+
 	if (fIcon) {
 		parent->SetDrawingMode(B_OP_ALPHA);
 		parent->DrawBitmap(fIcon, fIcon->Bounds(), r.OffsetBySelf(-3.0f, 3.0f), B_FILTER_BITMAP_BILINEAR);
@@ -100,10 +100,10 @@ CListItem::DrawIcon(BListView *parent, BRect rect)
 	}
 
 	const char *url = fModel.AuthorUrl().String();
-	if (url == NULL) {
+	if (url == nullptr) {
 		return;
 	}
-	
+
 	BMallocIO buffer;
 	FileDownloader downloader(fModel.AuthorUrl());
 
@@ -158,7 +158,7 @@ CListItem::Update(BView *view, const BFont *font)
 	if (fPreviousHeight != fHeight) {
 		fPreviousHeight = fHeight;
 
-		if (fMultiLineTextDrawer == NULL) {
+		if (fMultiLineTextDrawer == nullptr) {
 			BListView *parent = dynamic_cast<BListView *>(view);
 			fMultiLineTextDrawer = new MultiLineTextDrawer(parent);
 			fMultiLineTextDrawer->SetInsets(BSize(10,5));

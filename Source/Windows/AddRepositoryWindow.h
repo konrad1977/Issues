@@ -18,7 +18,7 @@ public:
 	~AddRepositoryWindow();
 
 	virtual void MessageReceived(BMessage *message);
-	virtual bool QuitRequested();
+			void Quit();
 			void SetTarget(BHandler *handler);
 			void SetEnabled(bool value);
 

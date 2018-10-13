@@ -38,27 +38,26 @@ extern const char *kAppSignature;
 
 ContainerView::ContainerView(ContainerModel *model)
 	:BView(model->Name(), B_DRAW_ON_CHILDREN)
-	,fListView(NULL)
-	,fScrollView(NULL)
-	,fDragger(NULL)
-	,fAutoUpdateRunner(NULL)
+	,fListView(nullptr)
+	,fScrollView(nullptr)
+	,fDragger(nullptr)
+	,fAutoUpdateRunner(nullptr)
 	,fThreadId(-1)
 	,fIsReplicant(false)
 	,fContainerModel(model)
 {
 	SetupViews(fIsReplicant);
-	SpawnDonwloadThread();
 }
 
 ContainerView::ContainerView(BMessage *message)
 	:BView(message)
-	,fListView(NULL)
-	,fScrollView(NULL)
-	,fDragger(NULL)
-	,fAutoUpdateRunner(NULL)
+	,fListView(nullptr)
+	,fScrollView(nullptr)
+	,fDragger(nullptr)
+	,fAutoUpdateRunner(nullptr)
 	,fThreadId(-1)
 	,fIsReplicant(true)
-	,fContainerModel(NULL)
+	,fContainerModel(nullptr)
 {
 	BString type;
 	if (message->FindString("type", &type) == B_OK) {
@@ -68,9 +67,7 @@ ContainerView::ContainerView(BMessage *message)
 			fContainerModel = new CommitModel(message);
 		}
 	}
-
 	SetupViews(fIsReplicant);
-	SpawnDonwloadThread();
 }
 
 
@@ -109,9 +106,9 @@ ContainerView::AttachedToWindow()
 
 	if (IsConnected()) {
 		StartAutoUpdater();
-		Model()->RequestData();
+		//Model()->RequestData();
 	}
-	
+
 	ListView()->SetTarget(this);
 	Model()->SetTarget(this);
 	BView::AttachedToWindow();
@@ -120,7 +117,7 @@ ContainerView::AttachedToWindow()
 void
 ContainerView::Reisize()
 {
-	if (fListView == NULL ) {
+	if (fListView == nullptr ) {
 		return;
 	}
 
@@ -144,23 +141,23 @@ ContainerView::MessageReceived(BMessage *message)
 	Model()->MessageReceived(message);
 
 	switch (message->what) {
-	
+
 		case B_NETWORK_MONITOR: {
 
 			printf("B_NETWORK_MONITOR\n");
-			
+
 			if (IsConnected() == false) {
 				printf("-- No Network is available --\n");
 				return;
 			}
 			printf("-- Network is available starting requests --\n");
-			
+
 			StartAutoUpdater();
 			Model()->RequestData();
 			stop_watching_network(this);
 			break;
 		}
-		
+
 		case kContainerRequestResize: {
 			Reisize();
 			break;
@@ -172,7 +169,7 @@ ContainerView::MessageReceived(BMessage *message)
 		}
 
 		case kAutoUpdateMessage: {
-			SpawnDonwloadThread();
+			SpawnDownloadThread();
 			break;
 		}
 		default:
@@ -190,12 +187,14 @@ ContainerView::StartAutoUpdater()
 
 	BMessage autoUpdateMessage(kAutoUpdateMessage);
 	fAutoUpdateRunner = new BMessageRunner(view, &autoUpdateMessage, (bigtime_t) seconds * 1000 * 1000);
+
+	SpawnDownloadThread();
 }
 
 BListView *
 ContainerView::ListView()
 {
-	if (fListView == NULL) {
+	if (fListView == nullptr) {
 		fListView = new BListView(Model()->Name(), B_SINGLE_SELECTION_LIST, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE);
 		fListView->SetInvocationMessage( new BMessage(kIssueListInvokedMessage ));
 	}
@@ -211,7 +210,7 @@ ContainerView::DownloadFunc(void *cookie)
 }
 
 void
-ContainerView::SpawnDonwloadThread()
+ContainerView::SpawnDownloadThread()
 {
 	StopDownloadThread();
 
@@ -226,7 +225,7 @@ ContainerView::StopDownloadThread()
 	if (fThreadId == -1) {
 		return;
 	}
-	wait_for_thread(fThreadId, NULL);
+	wait_for_thread(fThreadId, nullptr);
 	fThreadId = -1;
 }
 
@@ -237,7 +236,7 @@ ContainerView::HandleListInvoke(BMessage *message)
 	if (message->FindInt32("index", &index) == B_OK) {
 		CListItem *listItem = dynamic_cast<CListItem*>(ListView()->ItemAt(index));
 
-		if (listItem == NULL) {
+		if (listItem == nullptr) {
 			return;
 		}
 
@@ -279,13 +278,13 @@ ContainerView::SetupViews(bool isReplicant)
 	.End();
 }
 
-void 
+void
 ContainerView::StartNetworkMonitoring()
 {
 	start_watching_network(B_WATCH_NETWORK_INTERFACE_CHANGES | B_WATCH_NETWORK_LINK_CHANGES, this);
 }
 
-bool 
+bool
 ContainerView::IsConnected()
 {
 	BNetworkRoster& roster = BNetworkRoster::Default();

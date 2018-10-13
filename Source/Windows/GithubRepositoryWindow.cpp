@@ -438,7 +438,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 		}
 
 		case kQuitAddRepository: {
-			fAddRepositoryWindow = NULL;
+			fAddRepositoryWindow = nullptr;
 			break;
 		}
 
@@ -448,17 +448,17 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 		}
 
 		case kWindowQuitMessage: {
-			fGithubTokenWindow = NULL;
+			fGithubTokenWindow = nullptr;
 			break;
 		}
 
 		case kShowIssueForRepository: {
-			ShowIssuesWithIndex(fCurrentSelectedIndex);
+			ShowCommitsWindowFromIndex(fCurrentSelectedIndex);
 			break;
 		}
 
 		case kShowCommitsForRepository: {
-			ShowCommitsWithIndex(fCurrentSelectedIndex);
+			ShowCommitsWindowFromIndex(fCurrentSelectedIndex);
 			break;
 		}
 		case kListSelectionChanged: {
@@ -487,7 +487,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			if (message->FindInt32("index", &index) != B_OK) {
 				return;
 			}
-			ShowIssuesWithIndex(index);
+			ShowCommitsWindowFromIndex(index);
 			break;
 		}
 
@@ -496,7 +496,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			if (message->FindInt32("index", &index) != B_OK) {
 				return;
 			}
-			ShowCommitsWithIndex(index);
+			ShowCommitsWindowFromIndex(index);
 			break;
 		}
 
@@ -513,7 +513,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 }
 
 void
-GithubRepositoryWindow::ShowIssuesWithIndex(int32 index)
+GithubRepositoryWindow::ShowIssuesWindowFromIndex(int32 index)
 {
 	RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
 	if (listItem == NULL || listItem->CurrentRepository() == NULL) {
@@ -527,7 +527,7 @@ GithubRepositoryWindow::ShowIssuesWithIndex(int32 index)
 }
 
 void
-GithubRepositoryWindow::ShowCommitsWithIndex(int32 index)
+GithubRepositoryWindow::ShowCommitsWindowFromIndex(int32 index)
 {
 	RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
 	if (listItem == NULL || listItem->CurrentRepository() == NULL) {

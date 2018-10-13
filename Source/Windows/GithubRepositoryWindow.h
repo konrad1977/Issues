@@ -51,8 +51,8 @@ private:
 			void PopuplateListView(RepositoryType type, BList *list, uint8 total);
 			void ClearRepositories();
 
-			void ShowIssuesWithIndex(int32 index);
-			void ShowCommitsWithIndex(int32 index);
+			void ShowIssuesWindowFromIndex(int32 index);
+			void ShowCommitsWindowFromIndex(int32 index);
 
 	static int SortRepositoriesByName(const void *first, const void *second);
 	static int SortRepositoriesByType(const void *first, const void *second);

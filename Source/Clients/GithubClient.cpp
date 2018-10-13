@@ -23,8 +23,8 @@
 
 GithubClient::GithubClient(BHandler *handler)
 	:fHandler(handler)
-	,fMessenger(NULL)
-	,fBaseUrl(NULL)
+	,fMessenger(nullptr)
+	,fBaseUrl(nullptr)
 {
 	fBaseUrl = strdup("https://api.github.com/graphql");
 	SetTarget(handler);
@@ -98,7 +98,7 @@ GithubClient::RequestRepository(const char *repository, const char *owner)
 	RunRequest(&requester, query);
 }
 
-void 
+void
 GithubClient::RequestCommitsForRepository(const char *repository, const char *owner)
 {
 	NetRequester requester(fHandler, "Commits");
@@ -120,7 +120,7 @@ GithubClient::RequestCommitsForRepository(const char *repository, const char *ow
 void
 GithubClient::RequestIssuesForRepository(const char *repository, const char *owner)
 {
-	if (repository == NULL || owner == NULL) {
+	if (repository == nullptr || owner == nullptr) {
 		return;
 	}
 
@@ -172,7 +172,7 @@ GithubClient::RunRequest(NetRequester *requester, BString body) {
 	request->AdoptInputData(io, body.Length());
 
 	thread_id thread = request->Run();
-	wait_for_thread(thread, NULL);
+	wait_for_thread(thread, nullptr);
 	delete request;
 }
 
