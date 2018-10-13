@@ -89,7 +89,9 @@ private:
 		About				= 'abou',
 		Quit				= 'quit',
 		Issues				= 'issu',
-		Commits				= 'comm'
+		IssuesPopUp			= 'iisu',
+		Commits				= 'comm',
+		CommitsPopUp		= 'cimm'
 	};
 };
 

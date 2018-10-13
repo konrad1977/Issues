@@ -363,10 +363,10 @@ GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
 			return;
 		}
 
-		BMessage issueMsg(kMenuShowIssueForRepository);
+		BMessage issueMsg(MenuAction::IssuesPopUp);
 		issueMsg.AddInt32("index", index);
 
-		BMessage commitsMsg(kMenuShowCommitsForRepository);
+		BMessage commitsMsg(MenuAction::CommitsPopUp);
 		commitsMsg.AddInt32("index", index);
 
 		if (fListMenu == nullptr) {
@@ -491,7 +491,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 
-		case kMenuShowIssueForRepository:
+		case MenuAction::IssuesPopUp:
 		case kListInvokedMessage: {
 			int32 index = B_ERROR;
 			if (message->FindInt32("index", &index) != B_OK) {
@@ -501,7 +501,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 
-		case kMenuShowCommitsForRepository: {
+		case MenuAction::CommitsPopUp: {
 			int32 index = B_ERROR;
 			if (message->FindInt32("index", &index) != B_OK) {
 				return;
