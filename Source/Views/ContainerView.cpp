@@ -106,7 +106,6 @@ ContainerView::AttachedToWindow()
 
 	if (IsConnected()) {
 		StartAutoUpdater();
-		//Model()->RequestData();
 	}
 
 	ListView()->SetTarget(this);

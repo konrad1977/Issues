@@ -162,8 +162,6 @@ GithubClient::RequestProjects()
 void
 GithubClient::RunRequest(NetRequester *requester, BString body) {
 
-	printf("query: %s\n", body.String());
-
 	BUrl url = BUrl(fBaseUrl);
 	BHttpRequest* request = dynamic_cast<BHttpRequest*>(BUrlProtocolRoster::MakeRequest(url, requester));
 	request->SetMethod(B_HTTP_POST);

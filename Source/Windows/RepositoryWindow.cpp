@@ -83,6 +83,7 @@ RepositoryWindow::~RepositoryWindow()
 
 	delete fAddRepositoryWindow;
 	delete fGithubTokenWindow;
+	delete fRepositoryManager;
 	delete fGithubClient;
 }
 
@@ -372,7 +373,7 @@ RepositoryWindow::HandleMouseDownEvents(BMessage *message)
 			return;
 		}
 
-		Repository *repository = listItem->CurrentRepository();
+		const Repository *repository = listItem->CurrentRepository();
 		if (repository == nullptr) {
 			return;
 		}
@@ -531,12 +532,13 @@ RepositoryWindow::MessageReceived(BMessage *message) {
 void
 RepositoryWindow::ShowIssuesWindowFromIndex(int32 index)
 {
+
 	RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
 	if (listItem == nullptr || listItem->CurrentRepository() == nullptr) {
 		return;
 	}
 
-	Repository *repository = listItem->CurrentRepository();
+	const Repository *repository = listItem->CurrentRepository();
 	IssueModel *model = new IssueModel(repository->Name(), repository->Owner());
 	ContainerWindow *window = new ContainerWindow(model);
 	window->Show();
@@ -550,7 +552,7 @@ RepositoryWindow::ShowCommitsWindowFromIndex(int32 index)
 		return;
 	}
 
-	Repository *repository = listItem->CurrentRepository();
+	const Repository *repository = listItem->CurrentRepository();
 	CommitModel *model = new CommitModel(repository->Name(), repository->Owner());
 	ContainerWindow *window = new ContainerWindow(model);
 	window->Show();
@@ -580,11 +582,6 @@ RepositoryWindow::HandleUserRepositories(BMessage *message)
 	}
 
 	fRepositoryManager->AddRepositories(list);
-	delete list;
-
-	//BList *repositories = fRepositoryManager->Repositories();
-	//repositories->SortItems(SortRepositoriesByName);
-	//SetCurrentRepositories(repositories);
 }
 
 void

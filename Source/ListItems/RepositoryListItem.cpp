@@ -26,7 +26,7 @@ RepositoryListItem::~RepositoryListItem()
 	delete fMultiLineTextDrawer;
 }
 
-Repository *
+const Repository*
 RepositoryListItem::CurrentRepository() const
 {
 	return fRepository;
@@ -88,7 +88,7 @@ RepositoryListItem::DrawRepository(BRect rect, bool enableOutput)
 
 	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_LIGHTEN_1_TINT));
 
-	height = fMultiLineTextDrawer->DrawString(frame, fRepository->Description().String(), &font, enableOutput);
+	height = fMultiLineTextDrawer->DrawString(frame, fRepository->Description().Trim().String(), &font, enableOutput);
 	fHeight += height;
 
 	frame = frame.OffsetBySelf(0, height);

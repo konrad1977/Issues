@@ -17,8 +17,8 @@
 
 RepositoryManager::RepositoryManager(BHandler *handler)
 	:fSettingsManager(nullptr)
-	,fMessenger(nullptr)
 	,fRepositoryList(nullptr)
+	,fMessenger(nullptr)
 {
 	fSettingsManager = new SettingsManager();
 	fMessenger = new BMessenger(handler);
@@ -32,10 +32,6 @@ RepositoryManager::~RepositoryManager()
 {
 	delete fMessenger;
 	delete fSettingsManager;
-
-	while (fRepositoryList->CountItems()) {
-		delete reinterpret_cast<Repository*>(fRepositoryList->RemoveItem(int32(0)));
-	}
 	delete fRepositoryList;
 }
 
@@ -55,10 +51,11 @@ RepositoryManager::AddRepositories(BList *list)
 		if (HasRepository(item)) {
 			continue;
 		}
-		fRepositoryList->AddItem(reinterpret_cast<void*>(item));
+		fRepositoryList->AddItem(item);
 	}
 
 	SaveRepositories();
+
 	BMessage msg(Action::Added);
 	fMessenger->SendMessage(&msg);
 }
@@ -72,7 +69,7 @@ RepositoryManager::AddRepository(Repository *repository)
 		return;
 	}
 
-	fRepositoryList->AddItem(reinterpret_cast<void*>(repository));
+	fRepositoryList->AddItem(repository);
 	SaveRepositories();
 
 	BMessage msg(Action::Added);
@@ -93,7 +90,9 @@ RepositoryManager::RemoveRepository(Repository *repository)
 
 		if (repository->Url() == item->Url()) {
 			fRepositoryList->RemoveItem(i);
+
 			SaveRepositories();
+
 			BMessage msg(Action::Removed);
 			fMessenger->SendMessage(&msg);
 			break;
@@ -107,11 +106,11 @@ RepositoryManager::HasRepository(Repository *repository)
 	const int32 items = fRepositoryList->CountItems();
 	for (int32 i = 0; i<items; i++) {
 		Repository *item = static_cast<Repository*>(fRepositoryList->ItemAtFast(i));
+
 		if (item == nullptr) {
 			continue;
 		}
 
-		//printf("%s == %s\n", repository->Url().String(), item->Url().String());
 		if (item->Url() == repository->Url()) {
 			return true;
 		}

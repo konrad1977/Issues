@@ -38,7 +38,7 @@ status_t
 Repository::Load(BMessage &message)
 {
 	fRepository = new GithubRepository(message);
-	fIsManuallyAdded = message.FindBool("ManuallyAdded");
+	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
 }
 
 void
@@ -54,34 +54,34 @@ Repository::SetRepository(GithubRepository *repository)
 	fRepository = repository;
 }
 
-BString&
+BString
 Repository::Name() const
 {
-	return fRepository->name;
+	return fRepository->Name();
 }
 
-BString&
+BString
 Repository::Owner() const
 {
-	return fRepository->owner;
+	return fRepository->Owner();
 }
 
-BString&
+BString
 Repository::Description() const
 {
-	return fRepository->description;
+	return fRepository->Description();
 }
 
-BString&
+BString
 Repository::Url() const
 {
-	return fRepository->url;
+	return fRepository->Url();
 }
 
-BString&
+BString
 Repository::Id() const
 {
-	return fRepository->id;
+	return fRepository->Id();
 }
 
 int

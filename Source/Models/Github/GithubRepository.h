@@ -15,11 +15,12 @@ public:
 	GithubRepository(BMessage message);
 	~GithubRepository();
 
-	BString name;
-	BString owner;
-	BString description;
-	BString url;
-	BString id;
+	BString Name() const;
+	BString Owner() const;
+	BString Description() const;
+
+	const BString Url() const;
+	const BString Id() const;
 
 	bool IsFork() const;
 	bool IsPrivate() const;
@@ -30,9 +31,13 @@ public:
 	status_t Load(BMessage &message);
 
 private:
+	BString fName;
+	BString fOwner;
+	BString fDescription;
+	BString fUrl;
+	BString fId;
 	bool fIsFork;
 	bool fIsPrivate;
-
 };
 
 

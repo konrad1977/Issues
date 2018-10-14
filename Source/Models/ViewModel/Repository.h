@@ -23,11 +23,11 @@ public:
 	status_t Save(BMessage &message);
 	status_t Load(BMessage &message);
 
-	BString& Name() const;
-	BString& Owner() const;
-	BString& Description() const;
-	BString& Url() const;
-	BString& Id() const;
+	BString Name() const;
+	BString Owner() const;
+	BString Description() const;
+	BString Url() const;
+	BString Id() const;
 
 	bool IsFork() const;
 	bool IsPrivate() const;

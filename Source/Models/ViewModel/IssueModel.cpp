@@ -139,5 +139,6 @@ IssueModel::RequestData()
 	if (fGithubClient == NULL) {
 		return;
 	}
+
 	fGithubClient->RequestIssuesForRepository(fRepository.String(), fOwner.String());
 }
