@@ -7,12 +7,13 @@
 
 
 #include <SupportDefs.h>
+#include <app/Message.h>
 
 class BList;
 class BMessenger;
 class BHandler;
 class SettingsManager;
-class GithubRepository;
+class Repository;
 class RepositoryManager {
 public:
 	RepositoryManager(BHandler *handler);
@@ -20,9 +21,9 @@ public:
 
 	BList *Repositories() const;
 
-	void AddRepository(GithubRepository *repository);
-	void RemoveRepository(GithubRepository *repository);
-	bool HasRepository(GithubRepository *repository);
+	void AddRepository(Repository *repository);
+	void RemoveRepository(Repository *repository);
+	bool HasRepository(Repository *repository);
 
 	enum Action {
 		Added 	= 'repa',
@@ -37,7 +38,7 @@ private:
 	void SaveRepositories();
 
 	SettingsManager *fSettingsManager;
-	BList 			*fList;
+	BList 			*fRepositoryList;
 	BMessenger 		*fMessenger;
 };
 

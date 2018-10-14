@@ -6,7 +6,7 @@
 
 #include "RepositoryManager.h"
 #include "SettingsManager.h"
-#include "GithubRepository.h"
+#include "Repository.h"
 #include "Constants.h"
 
 #include <support/List.h>
@@ -18,58 +18,61 @@
 RepositoryManager::RepositoryManager(BHandler *handler)
 	:fSettingsManager(nullptr)
 	,fMessenger(nullptr)
+	,fRepositoryList(nullptr)
 {
-	fList = new BList();
 	fSettingsManager = new SettingsManager();
 	fMessenger = new BMessenger(handler);
+	fRepositoryList = new BList();
 	LoadRepositories();
+
+	printf("RepositoryManager = %d\n", fRepositoryList->CountItems());
 }
 
 RepositoryManager::~RepositoryManager()
 {
 	delete fMessenger;
 	delete fSettingsManager;
-	delete fList;
+	delete fRepositoryList;
 }
 
 BList *
 RepositoryManager::Repositories() const
 {
-	return fList;
+	return fRepositoryList;
 }
 
 void
-RepositoryManager::AddRepository(GithubRepository *repository)
+RepositoryManager::AddRepository(Repository *repository)
 {
-	printf("AddRepository: %s\n", repository->name.String());
 	if (HasRepository(repository)) {
-		BMessage msg(Action::Exists);
-		fMessenger->SendMessage(&msg);
-		printf("Repository already exists\n");
+	//	BMessage msg(Action::Exists);
+	//	fMessenger->SendMessage(&msg);
 		return;
 	}
 
-	fList->AddItem(reinterpret_cast<void*>(repository));
+	fRepositoryList->AddItem(reinterpret_cast<void*>(repository));
 	SaveRepositories();
 
+/*
 	BMessage msg(Action::Added);
 	fMessenger->SendMessage(&msg);
+	*/
 }
 
 void
-RepositoryManager::RemoveRepository(GithubRepository *repository)
+RepositoryManager::RemoveRepository(Repository *repository)
 {
-	const int32 items = fList->CountItems();
+	const int32 items = fRepositoryList->CountItems();
 
 	for (int32 i = 0; i<items; i++) {
-		GithubRepository *item = static_cast<GithubRepository*>(fList->ItemAtFast(i));
+		Repository *item = static_cast<Repository*>(fRepositoryList->ItemAtFast(i));
 
 		if (item == nullptr) {
 			continue;
 		}
 
-		if (repository->id == item->id) {
-			fList->RemoveItem(i);
+		if (repository->Url() == item->Url()) {
+			fRepositoryList->RemoveItem(i);
 			SaveRepositories();
 			BMessage msg(Action::Removed);
 			fMessenger->SendMessage(&msg);
@@ -79,15 +82,17 @@ RepositoryManager::RemoveRepository(GithubRepository *repository)
 }
 
 bool
-RepositoryManager::HasRepository(GithubRepository *repository)
+RepositoryManager::HasRepository(Repository *repository)
 {
-	const int32 items = fList->CountItems();
+	const int32 items = fRepositoryList->CountItems();
 	for (int32 i = 0; i<items; i++) {
-		GithubRepository *item = static_cast<GithubRepository*>(fList->ItemAtFast(i));
+		Repository *item = static_cast<Repository*>(fRepositoryList->ItemAtFast(i));
 		if (item == nullptr) {
 			continue;
 		}
-		if (item->url == repository->url) {
+
+		//printf("%s == %s\n", repository->Url().String(), item->Url().String());
+		if (item->Url() == repository->Url()) {
 			return true;
 		}
 	}
@@ -105,13 +110,11 @@ RepositoryManager::LoadRepositories()
 	while ( (message.FindMessage("Repositories", index, &repositoryMessage) == B_OK )) {
 		BString repositoryName;
 		if (repositoryMessage.FindString("Repository", &repositoryName) == B_OK) {
-			GithubRepository *repository = new GithubRepository(repositoryMessage);
-			fList->AddItem((void*)repository);
+			Repository *repository = new Repository(repositoryMessage);
+			fRepositoryList->AddItem((void*)repository);
 		}
 		index++;
 	}
-	BMessage msg(Action::Loaded);
-	fMessenger->SendMessage(&msg);
 }
 
 void
@@ -122,18 +125,18 @@ RepositoryManager::SaveRepositories()
 
 	message.RemoveName("Repositories");
 
-	const int32 items = fList->CountItems();
+	const int32 items = fRepositoryList->CountItems();
 	for (int32 i = 0; i<items; i++) {
-		GithubRepository *item = static_cast<GithubRepository*>(fList->ItemAtFast(i));
+		Repository *item = static_cast<Repository*>(fRepositoryList->ItemAtFast(i));
 
 		if (item == nullptr) {
 			continue;
 		}
+
 		BMessage repositoryMessage;
-		repositoryMessage.AddString("Repository", item->name);
+		repositoryMessage.AddString("Repository", item->Name());
 		item->Save(repositoryMessage);
 		message.AddMessage("Repositories", &repositoryMessage);
 	}
-
 	fSettingsManager->SaveSettings(message);
 }

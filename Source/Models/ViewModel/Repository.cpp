@@ -7,54 +7,78 @@
 #include "Repository.h"
 #include "GithubRepository.h"
 
-Repository::Repository(GithubRepository *repository)
-	:fRepository(repository)
+Repository::Repository()
+	:fRepository(nullptr)
+	,fIsManuallyAdded(false)
 {
 
 }
 
+Repository::Repository(BMessage &message)
+	:fRepository(nullptr)
+	,fIsManuallyAdded(false)
+{
+	Load(message);
+}
+
+
 Repository::~Repository()
 {
-
+	delete fRepository;
 }
 
 status_t
 Repository::Save(BMessage &message)
 {
-
+	fRepository->Save(message);
+	message.AddBool("ManuallyAdded", fIsManuallyAdded);
 }
 
 status_t
 Repository::Load(BMessage &message)
 {
-
+	fRepository = new GithubRepository(message);
+	fIsManuallyAdded = message.FindBool("ManuallyAdded");
 }
 
-const BString&
+void
+Repository::SetIsManuallyAdded(bool value)
+{
+	fIsManuallyAdded = value;
+}
+
+void
+Repository::SetRepository(GithubRepository *repository)
+{
+	delete fRepository;
+	fRepository = repository;
+}
+
+BString&
 Repository::Name() const
 {
 	return fRepository->name;
 }
 
-const BString&
+BString&
 Repository::Owner() const
 {
 	return fRepository->owner;
 }
 
-const BString&
+BString&
 Repository::Description() const
 {
 	return fRepository->description;
 }
 
-const BString&
+BString&
 Repository::Url() const
 {
 	return fRepository->url;
 }
 
-const BString&
+BString&
 Repository::Id() const
 {
 	return fRepository->id;
@@ -69,6 +93,12 @@ Repository::SortOrder()
 		return 1;
 	}
 	return 0;
+}
+
+bool
+Repository::IsManuallyAdded() const
+{
+	return fIsManuallyAdded;
 }
 
 bool

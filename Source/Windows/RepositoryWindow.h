@@ -37,6 +37,7 @@ private:
 			BList *MakePrivateRepositories(BList *list) const;
 			BList *MakeForkedRepositories(BList *list) const;
 			BList *MakePublicRepositories(BList *list) const;
+			BList *MakeCustomRepositories(BList *list) const;
 
 			void ParseData(BMessage *message);
 
@@ -73,6 +74,7 @@ private:
 	BList				*fCurrentRepositories;
 	BList				*fCurrentFilter;
 	FilterView			*fFilterView;
+
 	BPopUpMenu			*fListMenu;
 	BMenuItem 			*fPopupIssueItem;
 	BMenuItem 			*fPopupCommitItem;
@@ -85,6 +87,7 @@ private:
 	uint8 				fPublicTotal;
 	uint8 				fForkedTotal;
 	uint8 				fCustomTotal;
+
 	int32				fCurrentSelectedIndex;
 
 	enum MenuAction {

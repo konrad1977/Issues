@@ -13,22 +13,22 @@
 #include "MultiLineTextDrawer.h"
 
 class ColorManager;
-class GithubRepository;
+class Repository;
 class RepositoryListItem : public BListItem {
 public:
-	RepositoryListItem(GithubRepository *repository);
-	~RepositoryListItem();	
+	RepositoryListItem(Repository *repository);
+	~RepositoryListItem();
 
 	virtual void DrawItem(BView *view, BRect rect, bool complete = false);
-	virtual void Update(BView *view, const BFont *font);	
-	
-	GithubRepository *CurrentRepository() const;
-	
+	virtual void Update(BView *view, const BFont *font);
+
+	Repository *CurrentRepository() const;
+
 private:
 			void DrawRepository(BRect frame, bool disableOutput);
 			void DrawBackground(BListView *parent);
-			
-	GithubRepository		*fRepository;
+
+	Repository				*fRepository;
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
 	ColorManager			*fListColorManager;
 
