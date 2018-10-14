@@ -13,6 +13,8 @@
 #include <app/Messenger.h>
 #include <app/Handler.h>
 
+#include <posix/stdio.h>
+
 RepositoryManager::RepositoryManager(BHandler *handler)
 	:fSettingsManager(nullptr)
 	,fMessenger(nullptr)
@@ -39,9 +41,11 @@ RepositoryManager::Repositories() const
 void
 RepositoryManager::AddRepository(GithubRepository *repository)
 {
+	printf("AddRepository: %s\n", repository->name.String());
 	if (HasRepository(repository)) {
 		BMessage msg(Action::Exists);
 		fMessenger->SendMessage(&msg);
+		printf("Repository already exists\n");
 		return;
 	}
 
@@ -115,6 +119,8 @@ RepositoryManager::SaveRepositories()
 {
 	BMessage message;
 	fSettingsManager->LoadSettings(message);
+
+	message.RemoveName("Repositories");
 
 	const int32 items = fList->CountItems();
 	for (int32 i = 0; i<items; i++) {

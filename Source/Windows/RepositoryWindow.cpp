@@ -24,6 +24,7 @@
 
 #include <locale/Catalog.h>
 
+#include <interface/Alert.h>
 #include <interface/PopUpMenu.h>
 #include <interface/MenuBar.h>
 #include <interface/MenuItem.h>
@@ -152,10 +153,10 @@ RepositoryWindow::SetCurrentRepositories(BList *list)
 
 	fRepositoryListView->MakeEmpty();
 
-	BList *publicList = MakePublicRepositories(list);
-	BList *privateList = MakePrivateRepositories(list);
-	BList *forkedList = MakeForkedRepositories(list);
-	BList *customList = fRepositoryManager->Repositories();
+	BList *publicList 	= MakePublicRepositories(list);
+	BList *privateList 	= MakePrivateRepositories(list);
+	BList *forkedList 	= MakeForkedRepositories(list);
+	BList *customList 	= fRepositoryManager->Repositories();
 
 	if (fPrivateTotal < privateList->CountItems()) {
 		fPrivateTotal = privateList->CountItems();
@@ -408,6 +409,7 @@ RepositoryWindow::MessageReceived(BMessage *message) {
 				fAddRepositoryWindow->SetEnabled(true);
 				fAddRepositoryWindow->Unlock();
 			}
+			ShowAlert("Repository Exists", "The repository already exists in your list");
 			break;
 		}
 
@@ -578,7 +580,7 @@ RepositoryWindow::HandleUserRepositories(BMessage *message)
 }
 
 void
-RepositoryWindow::HandleRepository(BMessage *message)
+RepositoryWindow::HandleManualAddedRepository(BMessage *message)
 {
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("repository", *message);
@@ -592,7 +594,13 @@ RepositoryWindow::ParseData(BMessage *message)
 	if (message->HasMessage("UserRepositories")) {
 		HandleUserRepositories(message);
 	} else if (message->HasMessage("Repository")) {
-		HandleRepository(message);
+		HandleManualAddedRepository(message);
 	}
 }
 
+void
+RepositoryWindow::ShowAlert(const char *title, const char *text)
+{
+	BAlert* alert = new BAlert(title, text, "Ok", nullptr, nullptr, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+	alert->Go();
+}

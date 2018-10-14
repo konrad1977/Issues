@@ -41,7 +41,7 @@ private:
 			void ParseData(BMessage *message);
 
 			void HandleUserRepositories(BMessage *message);
-			void HandleRepository(BMessage *message);
+			void HandleManualAddedRepository(BMessage *message);
 			void HandleMouseDownEvents(BMessage *message);
 
 			void HandleAddRepository(BMessage *message);
@@ -55,6 +55,7 @@ private:
 
 			void ShowIssuesWindowFromIndex(int32 index);
 			void ShowCommitsWindowFromIndex(int32 index);
+			void ShowAlert(const char *title, const char *text);
 
 	static int SortRepositoriesByName(const void *first, const void *second);
 	static int SortRepositoriesByType(const void *first, const void *second);
