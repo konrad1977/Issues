@@ -4,7 +4,7 @@
  */
 
 
-#include "GithubRepositoryWindow.h"
+#include "RepositoryWindow.h"
 #include "GithubRepository.h"
 #include "GithubTokenWindow.h"
 #include "ContainerWindow.h"
@@ -38,9 +38,9 @@
 
 
 #undef B_TRANSLATION_CONTEXT
-#define B_TRANSLATION_CONTEXT "GithubRepositoryWindow"
+#define B_TRANSLATION_CONTEXT "RepositoryWindow"
 
-GithubRepositoryWindow::GithubRepositoryWindow()
+RepositoryWindow::RepositoryWindow()
 	:BWindow(BRect(30,30, 1, 1), "Repositories", B_DOCUMENT_WINDOW, B_FRAME_EVENTS | B_QUIT_ON_WINDOW_CLOSE | B_AUTO_UPDATE_SIZE_LIMITS)
 	,fGithubTokenWindow(nullptr)
 	,fGithubClient(nullptr)
@@ -69,7 +69,7 @@ GithubRepositoryWindow::GithubRepositoryWindow()
 	CenterOnScreen();
 }
 
-GithubRepositoryWindow::~GithubRepositoryWindow()
+RepositoryWindow::~RepositoryWindow()
 {
 	if (fGithubTokenWindow) {
 		fGithubTokenWindow->Lock();
@@ -92,15 +92,15 @@ GithubRepositoryWindow::~GithubRepositoryWindow()
 }
 
 int32
-GithubRepositoryWindow::DownloadRepositories(void *cookie)
+RepositoryWindow::DownloadRepositories(void *cookie)
 {
-	GithubRepositoryWindow *window = static_cast<GithubRepositoryWindow*>(cookie);
+	RepositoryWindow *window = static_cast<RepositoryWindow*>(cookie);
 	window->fGithubClient->RequestProjects();
 	return 0;
 }
 
 void
-GithubRepositoryWindow::SpawnDownloadThread()
+RepositoryWindow::SpawnDownloadThread()
 {
 	fDownloadThread = spawn_thread(&DownloadRepositories, "Download Data", B_NORMAL_PRIORITY, this);
 	if (fDownloadThread >= 0)
@@ -108,7 +108,7 @@ GithubRepositoryWindow::SpawnDownloadThread()
 }
 
 void
-GithubRepositoryWindow::SetupViews()
+RepositoryWindow::SetupViews()
 {
 	fFilterView = new FilterView();
 	fFilterView->SetTarget(this);
@@ -144,7 +144,7 @@ GithubRepositoryWindow::SetupViews()
 }
 
 void
-GithubRepositoryWindow::SetCurrentRepositories(BList *list)
+RepositoryWindow::SetCurrentRepositories(BList *list)
 {
 	if (fRepositoryListView == nullptr) {
 		return;
@@ -187,7 +187,7 @@ GithubRepositoryWindow::SetCurrentRepositories(BList *list)
 }
 
 BList *
-GithubRepositoryWindow::MakeFilter(BString filter)
+RepositoryWindow::MakeFilter(BString filter)
 {
 	if (fCurrentRepositories == nullptr) {
 		return nullptr;
@@ -212,7 +212,7 @@ GithubRepositoryWindow::MakeFilter(BString filter)
 }
 
 BList *
-GithubRepositoryWindow::MakePrivateRepositories(BList *repositories) const
+RepositoryWindow::MakePrivateRepositories(BList *repositories) const
 {
 	if (repositories == nullptr) {
 		return nullptr;
@@ -231,7 +231,7 @@ GithubRepositoryWindow::MakePrivateRepositories(BList *repositories) const
 }
 
 BList *
-GithubRepositoryWindow::MakeForkedRepositories(BList *repositories) const
+RepositoryWindow::MakeForkedRepositories(BList *repositories) const
 {
 	if (repositories == nullptr) {
 		return nullptr;
@@ -250,7 +250,7 @@ GithubRepositoryWindow::MakeForkedRepositories(BList *repositories) const
 }
 
 BList *
-GithubRepositoryWindow::MakePublicRepositories(BList *repositories) const
+RepositoryWindow::MakePublicRepositories(BList *repositories) const
 {
 	if (repositories == nullptr) {
 		return nullptr;
@@ -269,7 +269,7 @@ GithubRepositoryWindow::MakePublicRepositories(BList *repositories) const
 }
 
 void
-GithubRepositoryWindow::PopuplateListView(RepositoryType type, BList *list, uint8 total)
+RepositoryWindow::PopuplateListView(RepositoryType type, BList *list, uint8 total)
 {
 	if (list == nullptr || list->CountItems() == 0) {
 		return;
@@ -288,7 +288,7 @@ GithubRepositoryWindow::PopuplateListView(RepositoryType type, BList *list, uint
 }
 
 int
-GithubRepositoryWindow::SortRepositoriesByName(const void *first, const void *second)
+RepositoryWindow::SortRepositoriesByName(const void *first, const void *second)
 {
 	GithubRepository *firstRep = *(GithubRepository**)first;
 	GithubRepository *secondRep = *(GithubRepository**)second;
@@ -296,7 +296,7 @@ GithubRepositoryWindow::SortRepositoriesByName(const void *first, const void *se
 }
 
 int
-GithubRepositoryWindow::SortRepositoriesByType(const void *first, const void *second)
+RepositoryWindow::SortRepositoriesByType(const void *first, const void *second)
 {
 	GithubRepository *firstRep = *(GithubRepository**)first;
 	GithubRepository *secondRep = *(GithubRepository**)second;
@@ -308,7 +308,7 @@ GithubRepositoryWindow::SortRepositoriesByType(const void *first, const void *se
 }
 
 void
-GithubRepositoryWindow::HandleFilterMessage(BMessage *message)
+RepositoryWindow::HandleFilterMessage(BMessage *message)
 {
 	BString filter;
 	if (message->FindString("Filter", &filter) == B_OK) {
@@ -323,7 +323,7 @@ GithubRepositoryWindow::HandleFilterMessage(BMessage *message)
 }
 
 void
-GithubRepositoryWindow::HandleAddRepository(BMessage *message)
+RepositoryWindow::HandleAddRepository(BMessage *message)
 {
 	BString name;
 	if (message->FindString("name", &name) != B_OK) {
@@ -339,7 +339,7 @@ GithubRepositoryWindow::HandleAddRepository(BMessage *message)
 }
 
 void
-GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
+RepositoryWindow::HandleMouseDownEvents(BMessage *message)
 {
 	int32 index;
 	bool pressed;
@@ -384,7 +384,7 @@ GithubRepositoryWindow::HandleMouseDownEvents(BMessage *message)
 }
 
 void
-GithubRepositoryWindow::MessageReceived(BMessage *message) {
+RepositoryWindow::MessageReceived(BMessage *message) {
 	switch (message->what) {
 
 		case MenuAction::Quit: {
@@ -523,7 +523,7 @@ GithubRepositoryWindow::MessageReceived(BMessage *message) {
 }
 
 void
-GithubRepositoryWindow::ShowIssuesWindowFromIndex(int32 index)
+RepositoryWindow::ShowIssuesWindowFromIndex(int32 index)
 {
 	RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
 	if (listItem == nullptr || listItem->CurrentRepository() == nullptr) {
@@ -537,7 +537,7 @@ GithubRepositoryWindow::ShowIssuesWindowFromIndex(int32 index)
 }
 
 void
-GithubRepositoryWindow::ShowCommitsWindowFromIndex(int32 index)
+RepositoryWindow::ShowCommitsWindowFromIndex(int32 index)
 {
 	RepositoryListItem *listItem = dynamic_cast<RepositoryListItem*>(fRepositoryListView->ItemAt(index));
 	if (listItem == nullptr || listItem->CurrentRepository() == nullptr) {
@@ -551,7 +551,7 @@ GithubRepositoryWindow::ShowCommitsWindowFromIndex(int32 index)
 }
 
 void
-GithubRepositoryWindow::HandleUserRepositories(BMessage *message)
+RepositoryWindow::HandleUserRepositories(BMessage *message)
 {
 	while (fCurrentRepositories->CountItems()) {
 		delete reinterpret_cast<GithubRepository*>(fCurrentRepositories->RemoveItem(int32(0)));
@@ -578,7 +578,7 @@ GithubRepositoryWindow::HandleUserRepositories(BMessage *message)
 }
 
 void
-GithubRepositoryWindow::HandleRepository(BMessage *message)
+RepositoryWindow::HandleRepository(BMessage *message)
 {
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("repository", *message);
@@ -587,7 +587,7 @@ GithubRepositoryWindow::HandleRepository(BMessage *message)
 }
 
 void
-GithubRepositoryWindow::ParseData(BMessage *message)
+RepositoryWindow::ParseData(BMessage *message)
 {
 	if (message->HasMessage("UserRepositories")) {
 		HandleUserRepositories(message);

@@ -2,8 +2,8 @@
  * Copyright 2015 Your Name <your@email.address>
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef GITHUBREPOSITORYWINDOW_H
-#define GITHUBREPOSITORYWINDOW_H
+#ifndef REPOSITORYWINDOW_H
+#define REPOSITORYWINDOW_H
 
 
 #include <SupportDefs.h>
@@ -20,10 +20,10 @@ class AddRepositoryWindow;
 class GithubClient;
 class RepositoryManager;
 class GithubTokenWindow;
-class GithubRepositoryWindow : public BWindow {
+class RepositoryWindow : public BWindow {
 public:
-	GithubRepositoryWindow();
-	~GithubRepositoryWindow();
+	RepositoryWindow();
+	~RepositoryWindow();
 
 	virtual void MessageReceived(BMessage *message);
 
