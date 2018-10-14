@@ -24,16 +24,13 @@
 GithubClient::GithubClient(BHandler *handler)
 	:fHandler(handler)
 	,fMessenger(nullptr)
-	,fBaseUrl(nullptr)
 {
-	fBaseUrl = strdup("https://api.github.com/graphql");
 	SetTarget(handler);
 	LoadToken();
 }
 
 GithubClient::~GithubClient()
 {
-	free(fBaseUrl);
 	delete fMessenger;
 }
 
@@ -162,7 +159,7 @@ GithubClient::RequestProjects()
 void
 GithubClient::RunRequest(NetRequester *requester, BString body) {
 
-	BUrl url = BUrl(fBaseUrl);
+	BUrl url = BUrl("https://api.github.com/graphql");
 	BHttpRequest* request = dynamic_cast<BHttpRequest*>(BUrlProtocolRoster::MakeRequest(url, requester));
 	request->SetMethod(B_HTTP_POST);
 	request->SetHeaders(fRequestHeaders);

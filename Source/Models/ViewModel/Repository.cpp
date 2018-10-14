@@ -6,6 +6,7 @@
 
 #include "Repository.h"
 #include "GithubRepository.h"
+#include <posix/stdio.h>
 
 Repository::Repository()
 	:fRepository(nullptr)
@@ -25,6 +26,7 @@ Repository::Repository(BMessage &message)
 Repository::~Repository()
 {
 	delete fRepository;
+	printf("Repository::~Repository()\n");
 }
 
 status_t
@@ -38,6 +40,7 @@ status_t
 Repository::Load(BMessage &message)
 {
 	fRepository = new GithubRepository(message);
+	printf("Loaded: %s\n", fRepository->Name().String());
 	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
 }
 
@@ -52,6 +55,7 @@ Repository::SetRepository(GithubRepository *repository)
 {
 	delete fRepository;
 	fRepository = repository;
+	printf("SetRepository\n");
 }
 
 BString

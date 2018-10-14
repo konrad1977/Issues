@@ -148,10 +148,24 @@ RepositoryWindow::SetCurrentRepositories(BList *list)
 
 	fRepositoryListView->MakeEmpty();
 
-	BList *publicList 	= MakePublicRepositories(list);
-	BList *privateList 	= MakePrivateRepositories(list);
-	BList *forkedList 	= MakeForkedRepositories(list);
-	BList *customList 	= MakeCustomRepositories(list);
+	BList *publicList 	= new BList();
+	BList *privateList 	= new BList();
+	BList *forkedList 	= new BList();
+	BList *customList 	= new BList();
+
+	const int32 items = list->CountItems();
+	for (int32 index = 0; index < items; index++) {
+		Repository *repository = static_cast<Repository*>(list->ItemAtFast(index));
+		if (repository->IsManuallyAdded() == true) {
+			customList->AddItem(repository);
+		} else if (repository->IsPrivate() == true) {
+			privateList->AddItem(repository);
+		} else if (repository->IsFork() == true) {
+			forkedList->AddItem(repository);
+		} else {
+			publicList->AddItem(repository);
+		}
+	}
 
 	if (fPrivateTotal < privateList->CountItems()) {
 		fPrivateTotal = privateList->CountItems();
@@ -185,6 +199,7 @@ BList *
 RepositoryWindow::MakeFilter(BString filter)
 {
 	const BList *repositories = fRepositoryManager->Repositories();
+
 	if (repositories == nullptr) {
 		return nullptr;
 	}
@@ -205,82 +220,6 @@ RepositoryWindow::MakeFilter(BString filter)
 		}
 	}
 	return fCurrentFilter;
-}
-
-BList *
-RepositoryWindow::MakePrivateRepositories(BList *repositories) const
-{
-	if (repositories == nullptr) {
-		return nullptr;
-	}
-
-	BList *list = new BList();
-
-	const int32 items = repositories->CountItems();
-	for (int32 i = 0; i<items; i++) {
-		Repository *repository = static_cast<Repository*>(repositories->ItemAt(i));
-		if (repository->IsPrivate() == true) {
-			list->AddItem(repository);
-		}
-	}
-	return list;
-}
-
-BList *
-RepositoryWindow::MakeForkedRepositories(BList *repositories) const
-{
-	if (repositories == nullptr) {
-		return nullptr;
-	}
-
-	BList *list = new BList();
-
-	const int32 items = repositories->CountItems();
-	for (int32 i = 0; i<items; i++) {
-		Repository *repository = static_cast<Repository*>(repositories->ItemAt(i));
-		if (repository->IsFork() == true) {
-			list->AddItem(repository);
-		}
-	}
-	return list;
-}
-
-BList *
-RepositoryWindow::MakePublicRepositories(BList *repositories) const
-{
-	if (repositories == nullptr) {
-		return nullptr;
-	}
-
-	BList *list = new BList();
-
-	const int32 items = repositories->CountItems();
-	for (int32 i = 0; i<items; i++) {
-		Repository *repository = static_cast<Repository*>(repositories->ItemAt(i));
-		if (repository->IsFork() == false && repository->IsPrivate() == false && repository->IsManuallyAdded() == false) {
-			list->AddItem(repository);
-		}
-	}
-	return list;
-}
-
-BList *
-RepositoryWindow::MakeCustomRepositories(BList *repositories) const
-{
-	if (repositories == nullptr) {
-		return nullptr;
-	}
-
-	BList *list = new BList();
-
-	const int32 items = repositories->CountItems();
-	for (int32 i = 0; i<items; i++) {
-		Repository *repository = static_cast<Repository*>(repositories->ItemAt(i));
-		if (repository->IsManuallyAdded() == true) {
-			list->AddItem(repository);
-		}
-	}
-	return list;
 }
 
 void
@@ -582,6 +521,7 @@ RepositoryWindow::HandleUserRepositories(BMessage *message)
 	}
 
 	fRepositoryManager->AddRepositories(list);
+	delete list;
 }
 
 void

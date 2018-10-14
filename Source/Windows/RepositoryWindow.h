@@ -34,11 +34,6 @@ private:
 
 			BList *MakeFilter(BString filter);
 
-			BList *MakePrivateRepositories(BList *list) const;
-			BList *MakeForkedRepositories(BList *list) const;
-			BList *MakePublicRepositories(BList *list) const;
-			BList *MakeCustomRepositories(BList *list) const;
-
 			void ParseData(BMessage *message);
 
 			void HandleUserRepositories(BMessage *message);
