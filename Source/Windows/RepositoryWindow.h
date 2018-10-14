@@ -71,7 +71,6 @@ private:
 	BMenuBar 			*fMenuBar;
 	thread_id			fDownloadThread;
 
-	BList				*fCurrentRepositories;
 	BList				*fCurrentFilter;
 	FilterView			*fFilterView;
 

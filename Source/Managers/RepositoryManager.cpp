@@ -32,6 +32,10 @@ RepositoryManager::~RepositoryManager()
 {
 	delete fMessenger;
 	delete fSettingsManager;
+
+	while (fRepositoryList->CountItems()) {
+		delete reinterpret_cast<Repository*>(fRepositoryList->RemoveItem(int32(0)));
+	}
 	delete fRepositoryList;
 }
 
@@ -42,21 +46,37 @@ RepositoryManager::Repositories() const
 }
 
 void
+RepositoryManager::AddRepositories(BList *list)
+{
+	const int32 items = list->CountItems();
+	for (int32 i = 0; i<items; i++) {
+		Repository *item = static_cast<Repository*>(list->ItemAtFast(i));
+
+		if (HasRepository(item)) {
+			continue;
+		}
+		fRepositoryList->AddItem(reinterpret_cast<void*>(item));
+	}
+
+	SaveRepositories();
+	BMessage msg(Action::Added);
+	fMessenger->SendMessage(&msg);
+}
+
+void
 RepositoryManager::AddRepository(Repository *repository)
 {
 	if (HasRepository(repository)) {
-	//	BMessage msg(Action::Exists);
-	//	fMessenger->SendMessage(&msg);
+		BMessage msg(Action::Exists);
+		fMessenger->SendMessage(&msg);
 		return;
 	}
 
 	fRepositoryList->AddItem(reinterpret_cast<void*>(repository));
 	SaveRepositories();
 
-/*
 	BMessage msg(Action::Added);
 	fMessenger->SendMessage(&msg);
-	*/
 }
 
 void

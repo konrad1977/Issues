@@ -21,6 +21,7 @@ public:
 
 	BList *Repositories() const;
 
+	void AddRepositories(BList *list);
 	void AddRepository(Repository *repository);
 	void RemoveRepository(Repository *repository);
 	bool HasRepository(Repository *repository);

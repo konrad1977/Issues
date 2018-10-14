@@ -50,7 +50,6 @@ RepositoryWindow::RepositoryWindow()
 	,fAddRepositoryWindow(nullptr)
 	,fRepositoryListView(nullptr)
 	,fDownloadThread(-1)
-	,fCurrentRepositories(nullptr)
 	,fCurrentFilter(nullptr)
 	,fFilterView(nullptr)
 	,fListMenu(nullptr)
@@ -65,7 +64,6 @@ RepositoryWindow::RepositoryWindow()
 {
 	SetupViews();
 
-	fCurrentRepositories = new BList();
 	fGithubClient = new GithubClient(this);
 	fRepositoryManager = new RepositoryManager(this);
 	CenterOnScreen();
@@ -83,11 +81,6 @@ RepositoryWindow::~RepositoryWindow()
 		fAddRepositoryWindow->Quit();
 	}
 
-	while (fCurrentRepositories->CountItems()) {
-		delete reinterpret_cast<Repository*>(fCurrentRepositories->RemoveItem(int32(0)));
-	}
-
-	delete fCurrentRepositories;
 	delete fAddRepositoryWindow;
 	delete fGithubTokenWindow;
 	delete fGithubClient;
@@ -190,7 +183,8 @@ RepositoryWindow::SetCurrentRepositories(BList *list)
 BList *
 RepositoryWindow::MakeFilter(BString filter)
 {
-	if (fCurrentRepositories == nullptr) {
+	BList *repositories = fRepositoryManager->Repositories();
+	if (repositories == nullptr) {
 		return nullptr;
 	}
 
@@ -201,10 +195,10 @@ RepositoryWindow::MakeFilter(BString filter)
 	delete fCurrentFilter;
 	fCurrentFilter = new BList();
 
-	const int32 count = fCurrentRepositories->CountItems();
+	const int32 count = repositories->CountItems();
 
 	for (int32 i = 0; i<count; i++) {
-		Repository *repository = static_cast<Repository*>(fCurrentRepositories->ItemAtFast(i));
+		Repository *repository = static_cast<Repository*>(repositories->ItemAtFast(i));
 		if (repository && repository->Name().ToLower().FindFirst(filter.ToLower()) != B_ERROR) {
 			fCurrentFilter->AddItem(repository);
 		}
@@ -262,7 +256,7 @@ RepositoryWindow::MakePublicRepositories(BList *repositories) const
 	const int32 items = repositories->CountItems();
 	for (int32 i = 0; i<items; i++) {
 		Repository *repository = static_cast<Repository*>(repositories->ItemAt(i));
-		if (repository->IsFork() == false && repository->IsPrivate() == false) {
+		if (repository->IsFork() == false && repository->IsPrivate() == false && repository->IsManuallyAdded() == false) {
 			list->AddItem(repository);
 		}
 	}
@@ -335,10 +329,10 @@ RepositoryWindow::HandleFilterMessage(BMessage *message)
 		if (filter.Length() > 0) {
 			SetCurrentRepositories(MakeFilter(filter));
 		} else {
-			SetCurrentRepositories(fCurrentRepositories);
+			SetCurrentRepositories(fRepositoryManager->Repositories());
 		}
 	} else {
-		SetCurrentRepositories(fCurrentRepositories);
+		SetCurrentRepositories(fRepositoryManager->Repositories());
 	}
 }
 
@@ -417,7 +411,8 @@ RepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 		case RepositoryManager::Action::Added: {
-			SetCurrentRepositories(fCurrentRepositories);
+			printf("RepositoryManager::Action::Added\n");
+			SetCurrentRepositories(fRepositoryManager->Repositories());
 			fAddRepositoryWindow = nullptr;
 			break;
 		}
@@ -564,17 +559,15 @@ RepositoryWindow::ShowCommitsWindowFromIndex(int32 index)
 void
 RepositoryWindow::HandleUserRepositories(BMessage *message)
 {
-	while (fCurrentRepositories->CountItems()) {
-		delete reinterpret_cast<Repository*>(fCurrentRepositories->RemoveItem(int32(0)));
-	}
-
 	MessageFinder messageFinder;
 	BMessage msg = messageFinder.FindMessage("nodes", *message);
-
 	BMessage repositoriesMessage;
+
 	char *name;
 	uint32 type;
 	int32 count;
+
+	BList *list = new BList();
 
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
@@ -582,14 +575,16 @@ RepositoryWindow::HandleUserRepositories(BMessage *message)
 			Repository *repository = new Repository();
 			repository->SetIsManuallyAdded(false);
 			repository->SetRepository(new GithubRepository(nodeMsg));
-			fRepositoryManager->AddRepository(repository);
+			list->AddItem(repository);
 		}
 	}
 
-	BList *repositories = fRepositoryManager->Repositories();
-	printf("List %d\n", repositories->CountItems());
-	//fCurrentRepositories->SortItems(SortRepositoriesByName);
-	SetCurrentRepositories(repositories);
+	fRepositoryManager->AddRepositories(list);
+	delete list;
+
+	//BList *repositories = fRepositoryManager->Repositories();
+	//repositories->SortItems(SortRepositoriesByName);
+	//SetCurrentRepositories(repositories);
 }
 
 void
