@@ -88,7 +88,7 @@ AddRepositoryWindow::SetupViews()
 	fAddButton = new BButton("AddRepository", "Add repository", new BMessage(kRepositoryAdded));
 
 	fRepositoryName = new BTextControl("Repository name", B_TRANSLATE("Repository name:"), "", nullptr);
-	fRepositoryOwner = new BTextControl("Repository owner", B_TRANSLATE("Repository name:"), "", nullptr);
+	fRepositoryOwner = new BTextControl("Repository owner", B_TRANSLATE("Repository owner:"), "", nullptr);
 
 	BLayoutBuilder::Group<>(this, B_HORIZONTAL)
 		.SetExplicitMinSize(BSize(400, 80))

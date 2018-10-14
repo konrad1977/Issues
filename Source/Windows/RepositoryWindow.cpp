@@ -184,7 +184,7 @@ RepositoryWindow::SetCurrentRepositories(BList *list)
 BList *
 RepositoryWindow::MakeFilter(BString filter)
 {
-	BList *repositories = fRepositoryManager->Repositories();
+	const BList *repositories = fRepositoryManager->Repositories();
 	if (repositories == nullptr) {
 		return nullptr;
 	}
