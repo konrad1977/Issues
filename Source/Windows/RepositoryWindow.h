@@ -11,15 +11,17 @@
 #include "RepositoryTypeItem.h"
 
 class BPopUpMenu;
-class ROutlineListView;
-class FilterView;
 class BMenuBar;
 class BMenuItem;
 class BOutlineListView;
+
+class ROutlineListView;
+class FilterView;
 class AddRepositoryWindow;
 class GithubClient;
 class RepositoryManager;
 class GithubTokenWindow;
+
 class RepositoryWindow : public BWindow {
 public:
 	RepositoryWindow();

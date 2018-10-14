@@ -396,13 +396,13 @@ RepositoryWindow::MessageReceived(BMessage *message) {
 			HandleMouseDownEvents(message);
 			break;
 		}
-		case kRepositoryManagerAdd: {
+		case RepositoryManager::Action::Added: {
 			SetCurrentRepositories(fCurrentRepositories);
 			fAddRepositoryWindow = nullptr;
 			break;
 		}
 
-		case kRepositoryManagerExists: {
+		case RepositoryManager::Action::Exists: {
 			if (fAddRepositoryWindow) {
 				fAddRepositoryWindow->Lock();
 				fAddRepositoryWindow->SetEnabled(true);
@@ -411,12 +411,12 @@ RepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 
-		case kRepositoryManagerRemove: {
+		case RepositoryManager::Action::Removed: {
 			printf("kRepositoryManagerRemove\n");
 			break;
 		}
 
-		case kRepositoryManagerLoaded: {
+		case RepositoryManager::Action::Loaded: {
 			printf("kRepositoryManagerLoaded\n");
 			break;
 		}

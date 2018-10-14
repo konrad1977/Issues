@@ -24,6 +24,13 @@ public:
 	void RemoveRepository(GithubRepository *repository);
 	bool HasRepository(GithubRepository *repository);
 
+	enum Action {
+		Added 	= 'repa',
+		Removed	= 'repr',
+		Loaded 	= 'repl',
+		Exists	= 'repe'
+	};
+
 private:
 
 	void LoadRepositories();

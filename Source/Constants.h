@@ -35,13 +35,6 @@ const int32 kShowAddRepository			= 'kSRm';
 const int32 kQuitAddRepository			= 'kQRm';
 const int32 kRepositoryAdded			= 'kRAm';
 
-const int32 kRepositoryManagerAdd		= 'kATm';
-const int32 kRepositoryManagerExists	= 'kREm';
-const int32 kRepositoryManagerRemove	= 'kRRm';
-const int32 kRepositoryManagerLoaded	= 'kRLm';
-
-
-
 const int32 kFilterChangedMessage	= 'kFCm';
 
 const int32 kListSelectionChanged 		= 'klsc';

@@ -40,7 +40,7 @@ void
 RepositoryManager::AddRepository(GithubRepository *repository)
 {
 	if (HasRepository(repository)) {
-		BMessage msg(kRepositoryManagerExists);
+		BMessage msg(Action::Exists);
 		fMessenger->SendMessage(&msg);
 		return;
 	}
@@ -48,7 +48,7 @@ RepositoryManager::AddRepository(GithubRepository *repository)
 	fList->AddItem(reinterpret_cast<void*>(repository));
 	SaveRepositories();
 
-	BMessage msg(kRepositoryManagerAdd);
+	BMessage msg(Action::Added);
 	fMessenger->SendMessage(&msg);
 }
 
@@ -67,7 +67,7 @@ RepositoryManager::RemoveRepository(GithubRepository *repository)
 		if (repository->id == item->id) {
 			fList->RemoveItem(i);
 			SaveRepositories();
-			BMessage msg(kRepositoryManagerRemove);
+			BMessage msg(Action::Removed);
 			fMessenger->SendMessage(&msg);
 			break;
 		}
@@ -106,7 +106,7 @@ RepositoryManager::LoadRepositories()
 		}
 		index++;
 	}
-	BMessage msg(kRepositoryManagerLoaded);
+	BMessage msg(Action::Loaded);
 	fMessenger->SendMessage(&msg);
 }
 
