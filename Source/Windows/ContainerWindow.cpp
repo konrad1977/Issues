@@ -9,6 +9,7 @@
 #include "Constants.h"
 #include "ContainerView.h"
 #include "ContainerModel.h"
+#include "SettingsWindow.h"
 
 #include <locale/Catalog.h>
 
@@ -27,6 +28,7 @@ ContainerWindow::ContainerWindow(ContainerModel *container)
 	:BWindow(BRect(0,0,1,1), "Container", B_TITLED_WINDOW, B_FRAME_EVENTS | B_AUTO_UPDATE_SIZE_LIMITS)
 	,fContainerView(nullptr)
 	,fContainer(container)
+	,fSettingsWindow(nullptr)
 	,fMenuBar(nullptr)
 {
 	SetTitle(container->Name());
@@ -37,12 +39,26 @@ ContainerWindow::ContainerWindow(ContainerModel *container)
 ContainerWindow::~ContainerWindow()
 {
 	delete fContainer;
+	if (fSettingsWindow) {
+		fSettingsWindow->Lock();
+		fSettingsWindow->Quit();
+	}
 }
 
 void
 ContainerWindow::Quit()
 {
 	BWindow::Quit();
+}
+
+SettingsWindow*
+ContainerWindow::CurrentSettingsWindow()
+{
+	if (fSettingsWindow == NULL) {
+		fSettingsWindow = new SettingsWindow(NULL);
+		fSettingsWindow->SetTarget(this);
+	}
+	return fSettingsWindow;
 }
 
 void
@@ -76,7 +92,12 @@ ContainerWindow::MessageReceived(BMessage *message)
 {
 	switch(message->what) {
 		case Actions::SHOW_SETTINGS_WINDOW: {
-			printf("Show settings\n");
+			CurrentSettingsWindow()->Show();
+			break;
+		}
+
+		case kSettingsWindowQuit: {
+			fSettingsWindow = nullptr;
 			break;
 		}
 

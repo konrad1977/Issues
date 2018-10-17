@@ -6,18 +6,26 @@
 
 #include "Repository.h"
 #include "GithubRepository.h"
+#include <app/Messenger.h>
+#include <app/Handler.h>
 #include <posix/stdio.h>
 
 Repository::Repository()
-	:fRepository(nullptr)
-	,fIsManuallyAdded(false)
+	:fIsManuallyAdded(false)
+	,fRefreshrate(10)
+	,fTransparency(127)
+	,fRepository(nullptr)
+	,fMessenger(nullptr)
 {
 
 }
 
 Repository::Repository(BMessage &message)
-	:fRepository(nullptr)
-	,fIsManuallyAdded(false)
+	:fIsManuallyAdded(false)
+	,fRefreshrate(10)
+	,fTransparency(127)
+	,fRepository(nullptr)
+	,fMessenger(nullptr)
 {
 	Load(message);
 }
@@ -26,6 +34,7 @@ Repository::Repository(BMessage &message)
 Repository::~Repository()
 {
 	delete fRepository;
+	delete fMessenger;
 	printf("Repository::~Repository()\n");
 }
 
@@ -34,6 +43,14 @@ Repository::Save(BMessage &message)
 {
 	fRepository->Save(message);
 	message.AddBool("ManuallyAdded", fIsManuallyAdded);
+
+	if (message.ReplaceUInt8("Refreshrate", fRefreshrate) != B_OK) {
+		message.AddUInt8("Refreshrate", fRefreshrate);
+	}
+
+	if (message.ReplaceUInt8("Transparency", fTransparency) != B_OK) {
+		message.AddUInt8("Transparency", fTransparency);
+	}
 }
 
 status_t
@@ -42,12 +59,21 @@ Repository::Load(BMessage &message)
 	fRepository = new GithubRepository(message);
 	printf("Loaded: %s\n", fRepository->Name().String());
 	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
+	fTransparency = message.GetUInt8("Transparency", 127);
+	fRefreshrate = message.GetUInt8("Refreshrate", 10);
 }
 
 void
 Repository::SetIsManuallyAdded(bool value)
 {
 	fIsManuallyAdded = value;
+}
+
+void
+Repository::SetTarget(BHandler *handler)
+{
+	delete fMessenger;
+	fMessenger = new BMessenger(handler);
 }
 
 void
@@ -99,6 +125,17 @@ Repository::SortOrder()
 	return 0;
 }
 
+void
+Repository::NotifyUpdates()
+{
+	if (fMessenger == NULL) {
+		return;
+	}
+
+	BMessage message(RepositoryAction::SettingsChanged);
+	fMessenger->SendMessage(&message);
+}
+
 bool
 Repository::IsManuallyAdded() const
 {
@@ -117,15 +154,33 @@ Repository::IsPrivate() const
 	return fRepository->IsPrivate();
 }
 
+void
+Repository::SetTransparency(uint8 value)
+{
+	if (fTransparency != value) {
+		fTransparency = value;
+		NotifyUpdates();
+	}
+}
+
+void
+Repository::SetRefreshRate(uint8 value)
+{
+	if (fRefreshrate != value) {
+		fRefreshrate = value;
+		NotifyUpdates();
+	}
+}
+
 uint8
 Repository::Transparency() const
 {
-	return 127;
+	return fTransparency;
 }
 
 uint8
 Repository::RefreshRate() const
 {
-	return 10;
+	return fRefreshrate;
 }
 

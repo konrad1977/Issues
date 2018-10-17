@@ -10,6 +10,13 @@
 #include <String.h>
 #include <Message.h>
 
+enum RepositoryAction {
+	SettingsChanged = 'rchs'
+};
+
+class BHandler;
+class BMessenger;
+class BMessage;
 class GithubRepository;
 class Repository {
 public:
@@ -19,6 +26,7 @@ public:
 	~Repository();
 
 	void SetRepository(GithubRepository *repository);
+	void SetTarget(BHandler *handler);
 
 	status_t Save(BMessage &message);
 	status_t Load(BMessage &message);
@@ -36,12 +44,23 @@ public:
 	void SetIsManuallyAdded(bool value);
 	int SortOrder();
 
+	void SetTransparency(uint8 value);
+	void SetRefreshRate(uint8 value);
+
 	uint8 Transparency() const;
 	uint8 RefreshRate() const;
 
 private:
-	GithubRepository 	*fRepository;
+
+	void NotifyUpdates();
+
 	bool 				fIsManuallyAdded;
+
+	uint8				fRefreshrate;
+	uint8 				fTransparency;
+
+	GithubRepository 	*fRepository;
+	BMessenger 			*fMessenger;
 };
 
 

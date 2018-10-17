@@ -9,6 +9,7 @@
 #include <interface/Window.h>
 
 class BMenuBar;
+class SettingsWindow;
 class ContainerView;
 class ContainerModel;
 class ContainerWindow : public BWindow {
@@ -23,8 +24,11 @@ private:
 			void SetupViews();
 			void BuildMenu();
 
+	SettingsWindow *CurrentSettingsWindow();
+
 	ContainerView	*fContainerView;
 	ContainerModel	*fContainer;
+	SettingsWindow	*fSettingsWindow;
 	BMenuBar		*fMenuBar;
 
 	enum Actions {
