@@ -128,6 +128,26 @@ RepositoryManager::HasRepository(Repository *repository)
 	return false;
 }
 
+BMessage *
+RepositoryManager::RepositoryLoadMessage(BString name)
+{
+	BMessage message;
+	fSettingsManager->LoadSettings(message);
+
+	int32 index = 0;
+	BMessage repositoryMessage;
+	while ( (message.FindMessage("Repositories", index, &repositoryMessage) == B_OK )) {
+		BString repositoryName;
+		if (repositoryMessage.FindString("Repository", &repositoryName) == B_OK) {
+			if (name == repositoryName) {
+				return new BMessage(repositoryMessage);
+			}
+		}
+		index++;
+	}
+	return nullptr;
+}
+
 void
 RepositoryManager::LoadRepositories()
 {

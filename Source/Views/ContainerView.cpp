@@ -157,6 +157,11 @@ ContainerView::MessageReceived(BMessage *message)
 			break;
 		}
 
+		case B_NODE_MONITOR: {
+			printf("Settings changed\n");
+			break;
+		}
+
 		case kContainerRequestResize: {
 			Reisize();
 			break;

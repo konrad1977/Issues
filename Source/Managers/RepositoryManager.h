@@ -16,10 +16,13 @@ class SettingsManager;
 class Repository;
 class RepositoryManager {
 public:
+
 	RepositoryManager(BHandler *handler);
 	~RepositoryManager();
 
 	BList *Repositories() const;
+
+	BMessage *RepositoryLoadMessage(BString name);
 
 	void AddRepositories(BList *list);
 	void AddRepository(Repository *repository);

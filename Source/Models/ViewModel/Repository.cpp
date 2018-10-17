@@ -6,6 +6,7 @@
 
 #include "Repository.h"
 #include "GithubRepository.h"
+#include "RepositoryManager.h"
 #include <app/Messenger.h>
 #include <app/Handler.h>
 #include <posix/stdio.h>
@@ -82,6 +83,14 @@ Repository::SetRepository(GithubRepository *repository)
 	delete fRepository;
 	fRepository = repository;
 	printf("SetRepository\n");
+}
+
+void
+Repository::ReloadSavedData()
+{
+	if (BMessage *message = RepositoryManager(nullptr).RepositoryLoadMessage(Name())) {
+		Load(*message);
+	}
 }
 
 BString

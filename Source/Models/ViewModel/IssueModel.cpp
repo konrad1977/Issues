@@ -20,9 +20,9 @@
 #include <stdio.h>
 
 IssueModel::IssueModel(BString repository, BString owner)
-	:fGithubClient(NULL)
-	,fGithubRepository(NULL)
-	,fMessenger(NULL)
+	:fGithubClient(nullptr)
+	,fRepositoryModel(nullptr)
+	,fMessenger(nullptr)
 	,fRepository(repository)
 	,fOwner(owner)
 {
@@ -30,9 +30,9 @@ IssueModel::IssueModel(BString repository, BString owner)
 }
 
 IssueModel::IssueModel(BMessage *message)
-	:fGithubClient(NULL)
-	,fGithubRepository(NULL)
-	,fMessenger(NULL)
+	:fGithubClient(nullptr)
+	,fRepositoryModel(nullptr)
+	,fMessenger(nullptr)
 {
 	message->FindString("Repository", &fRepository);
 	message->FindString("Owner", &fOwner);

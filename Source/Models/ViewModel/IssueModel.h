@@ -11,7 +11,7 @@
 #include "ContainerModel.h"
 
 class BMessenger;
-class GithubRepository;
+class Repository;
 class GithubClient;
 class IssueModel : public ContainerModel {
 public:
@@ -27,7 +27,7 @@ public:
 	virtual void RequestData();
 	virtual void SetTarget(BHandler *handler);
 
-	const GithubRepository* Repository() { return fGithubRepository; }
+	const Repository* RepositoryModel() { return fRepositoryModel; }
 
 
 private:
@@ -35,7 +35,7 @@ private:
 			void AddIssues(BMessage *message);
 
 	GithubClient 		*fGithubClient;
-	GithubRepository	*fGithubRepository;
+	Repository			*fRepositoryModel;
 	BMessenger			*fMessenger;
 	BString				fRepository;
 	BString 			fOwner;
