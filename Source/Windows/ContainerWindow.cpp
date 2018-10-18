@@ -55,7 +55,7 @@ SettingsWindow*
 ContainerWindow::CurrentSettingsWindow()
 {
 	if (fSettingsWindow == NULL) {
-		fSettingsWindow = new SettingsWindow(NULL);
+		fSettingsWindow = new SettingsWindow(fContainer->RepositoryModel());
 		fSettingsWindow->SetTarget(this);
 	}
 	return fSettingsWindow;

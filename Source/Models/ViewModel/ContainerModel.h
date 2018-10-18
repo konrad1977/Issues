@@ -12,6 +12,7 @@
 class Repository;
 class ContainerModel {
 public:
+
 	virtual status_t Archive(BMessage *message) = 0;
 
 	virtual void MessageReceived(BMessage *message) = 0;
@@ -23,13 +24,17 @@ public:
 			void SetIsReplicant(bool replicant) { fIsReplicant = replicant; }
 			bool IsReplicant() { return fIsReplicant; }
 
-	void SetListView(BListView *listView) 	{ fListView = listView; }
-	BListView *ListView() 	{ return fListView; }
+	void SetListView(BListView *listView)				{ fListView = listView; }
+	void SetRepository(Repository *repository) 	{ fRepository = repository; }
 
-	const Repository* RepositoryModel();
+	BListView *ListView() 	{ return fListView; }
+	Repository* RepositoryModel() { return fRepository; }
+
+
 
 private:
 	BListView 	*fListView;
+	Repository	*fRepository;
 	bool		fIsReplicant;
 
 };

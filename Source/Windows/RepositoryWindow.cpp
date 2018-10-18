@@ -477,8 +477,9 @@ RepositoryWindow::ShowIssuesWindowFromIndex(int32 index)
 		return;
 	}
 
-	const Repository *repository = listItem->CurrentRepository();
+	Repository *repository = listItem->CurrentRepository();
 	IssueModel *model = new IssueModel(repository->Name(), repository->Owner());
+	model->SetRepository(repository);
 	ContainerWindow *window = new ContainerWindow(model);
 	window->Show();
 }
@@ -491,8 +492,9 @@ RepositoryWindow::ShowCommitsWindowFromIndex(int32 index)
 		return;
 	}
 
-	const Repository *repository = listItem->CurrentRepository();
+	Repository *repository = listItem->CurrentRepository();
 	CommitModel *model = new CommitModel(repository->Name(), repository->Owner());
+	model->SetRepository(repository);
 	ContainerWindow *window = new ContainerWindow(model);
 	window->Show();
 }

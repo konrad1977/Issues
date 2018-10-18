@@ -26,7 +26,7 @@ RepositoryListItem::~RepositoryListItem()
 	delete fMultiLineTextDrawer;
 }
 
-const Repository*
+Repository*
 RepositoryListItem::CurrentRepository() const
 {
 	return fRepository;

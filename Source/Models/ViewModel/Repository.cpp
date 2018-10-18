@@ -58,10 +58,13 @@ status_t
 Repository::Load(BMessage &message)
 {
 	fRepository = new GithubRepository(message);
-	printf("Loaded: %s\n", fRepository->Name().String());
 	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
 	fTransparency = message.GetUInt8("Transparency", 127);
 	fRefreshrate = message.GetUInt8("Refreshrate", 10);
+
+	printf("-- %s --\n", fRepository->Name().String());
+	printf("Transparency = %d\n", fTransparency);
+	printf("Refreshrate = %d\n", fRefreshrate);
 }
 
 void
@@ -80,9 +83,11 @@ Repository::SetTarget(BHandler *handler)
 void
 Repository::SetRepository(GithubRepository *repository)
 {
-	delete fRepository;
-	fRepository = repository;
-	printf("SetRepository\n");
+	if (fRepository != repository) {
+		delete fRepository;
+		fRepository = repository;
+		printf("SetRepository\n");
+	}
 }
 
 void
