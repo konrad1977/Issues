@@ -55,17 +55,12 @@ Repository::Save(BMessage &message)
 	if (message.ReplaceUInt8("Transparency", Transparency()) != B_OK) {
 		message.AddUInt8("Transparency", Transparency());
 	}
-
-	printf("Transparency: %d\n", message.GetUInt8("Transparency", 127));
-	printf("Refreshrate: %d\n", message.GetUInt8("Refreshrate", 10));
 }
 
 status_t
 Repository::Load(BMessage &message)
 {
 	fRepository = new GithubRepository(message);
-	printf("Repository: %s Owner: %s\n", Name().String(), Owner().String());
-
 	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
 	fTransparency = message.GetUInt8("Transparency", 127);
 	fRefreshrate = message.GetUInt8("Refreshrate", 10);

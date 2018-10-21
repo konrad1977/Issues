@@ -140,7 +140,10 @@ ContainerView::SetupTargets()
 	Model()->SetTarget(this);
 	Model()->RepositoryModel()->SetTarget(this);
 	ListView()->SetTarget(this);
-	fSettingsManager->StartMonitoring(this);
+
+	if (fSettingsManager != nullptr) {
+		fSettingsManager->StartMonitoring(this);
+	}
 }
 
 void
@@ -165,6 +168,16 @@ ContainerView::Reisize()
 }
 
 void
+ContainerView::ReloadRepositoryData()
+{
+	Repository *repository = Model()->RepositoryModel();
+	if (repository == nullptr) {
+		return;
+	}
+
+}
+
+void
 ContainerView::MessageReceived(BMessage *message)
 {
 	Model()->MessageReceived(message);
@@ -183,6 +196,7 @@ ContainerView::MessageReceived(BMessage *message)
 
 		case B_NODE_MONITOR: {
 			printf("Settings changed. Should reinitalize!\n");
+			ReloadRepositoryData();
 			SpawnDownloadThread();
 			break;
 		}

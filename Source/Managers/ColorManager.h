@@ -12,7 +12,6 @@
 class ColorManager {
 public:
 	ColorManager(BListItem *listItem, bool isFeplicant);
-	ColorManager(bool isFeplicant);
 	~ColorManager();
 
 	bool IsDark();

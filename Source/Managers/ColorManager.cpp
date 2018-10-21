@@ -16,14 +16,6 @@ ColorManager::ColorManager(BListItem *listItem, bool isreplicant)
 
 }
 
-ColorManager::ColorManager(bool isreplicant)
-	:fListItem(NULL)
-	,fIsReplicant(isreplicant)
-	,fTransparency(127)
-{
-
-}
-
 ColorManager::~ColorManager()
 {
 
@@ -60,7 +52,7 @@ ColorManager::BackgroundColor()
 	if (fIsReplicant && IsSelected() == false) {
 		BScreen screen;
 		rgb_color color = screen.DesktopColor();
-		color.alpha = fTransparency;
+		color.alpha = Transparency();
 		return color;
 	}
 	return IsSelected() ? ui_color(B_LIST_SELECTED_BACKGROUND_COLOR) : ui_color(B_LIST_BACKGROUND_COLOR);

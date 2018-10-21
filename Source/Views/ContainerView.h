@@ -44,8 +44,8 @@ private:
 			void StopDownloadThread();
 
 			void SetupTargets();
-
 			void Reisize();
+			void ReloadRepositoryData();
 
 			void StartNetworkMonitoring();
 			bool IsConnected();

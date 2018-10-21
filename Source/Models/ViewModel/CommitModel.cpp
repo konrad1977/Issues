@@ -97,13 +97,15 @@ CommitModel::AddCommits(BMessage *message)
 	list->AddItem( titleItem );
 
 	*/
+	uint8 transparency = fRepository->Transparency();
+	printf("transparency %d\n", transparency);
 
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
 			GithubCommit commit(nodeMsg);
 			CListItem *listItem = new CListItem(commit, isReplicant);
-			listItem->SetTransparency(fRepository->Transparency());
+			listItem->SetTransparency(transparency);
 			list->AddItem( listItem );
 		}
 	}
