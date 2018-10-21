@@ -107,9 +107,10 @@ ContainerView::SaveState(BMessage* into, bool deep) const
 void
 ContainerView::AttachedToWindow()
 {
-	StartNetworkMonitoring();
-
-	if (IsConnected()) {
+	if (IsConnected() == false) {
+		StartNetworkMonitoring();
+	} else {
+		SpawnDownloadThread();
 		StartAutoUpdater();
 	}
 
@@ -165,23 +166,17 @@ ContainerView::MessageReceived(BMessage *message)
 	switch (message->what) {
 
 		case B_NETWORK_MONITOR: {
-
-			printf("B_NETWORK_MONITOR\n");
-
 			if (IsConnected() == false) {
-				printf("-- No Network is available --\n");
 				return;
 			}
-			printf("-- Network is available starting requests --\n");
-
+			SpawnDownloadThread();
 			StartAutoUpdater();
-			Model()->RequestData();
 			stop_watching_network(this);
 			break;
 		}
 
 		case B_NODE_MONITOR: {
-			printf("Settings changed\n");
+			SpawnDownloadThread();
 			break;
 		}
 
@@ -221,8 +216,6 @@ ContainerView::StartAutoUpdater()
 
 	BMessage autoUpdateMessage(kAutoUpdateMessage);
 	fAutoUpdateRunner = new BMessageRunner(view, &autoUpdateMessage, (bigtime_t) seconds * 1000 * 1000);
-
-	SpawnDownloadThread();
 }
 
 BListView *

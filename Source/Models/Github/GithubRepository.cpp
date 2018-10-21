@@ -21,35 +21,16 @@ GithubRepository::~GithubRepository()
 status_t
 GithubRepository::Save(BMessage &message)
 {
-	if (message.ReplaceString("name", fName) != B_OK) {
-		message.AddString("name", fName);
-	}
-
-	if (message.ReplaceString("description", fDescription) != B_OK) {
-		message.AddString("description", fDescription);
-	}
-
-	if (message.ReplaceString("url", fUrl) != B_OK) {
-		message.AddString("url", fUrl);
-	}
-
-	if (message.ReplaceString("id", fId) != B_OK) {
-		message.AddString("id", fId);
-	}
+	message.AddString("name", fName);
+	message.AddString("description", fDescription);
+	message.AddBool("isFork", fIsFork);
+	message.AddBool("isPrivate", fIsPrivate);
+	message.AddString("url", fUrl);
+	message.AddString("id", fId);
 
 	BMessage ownerMsg;
-	if (message.ReplaceString("login", fOwner) != B_OK) {
-		message.AddString("login", fOwner);
-	}
+	ownerMsg.AddString("login", fOwner);
 	message.AddMessage("owner", &ownerMsg);
-
-	if (message.ReplaceBool("isFork", fIsFork) != B_OK) {
-		message.AddBool("isFork", fIsFork);
-	}
-
-	if (message.ReplaceBool("isPrivate", fIsPrivate) != B_OK) {
-		message.AddBool("isPrivate", fIsPrivate);
-	}
 }
 
 status_t

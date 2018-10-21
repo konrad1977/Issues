@@ -42,7 +42,7 @@ NetRequester::DataReceived(BUrlRequest* caller, const char* data, off_t position
 void
 NetRequester::HandleData(BString data)
 {
-	//printf("%s\n", data.String());
+	printf("%s\n", data.String());
 
 	BMessage parsedData;
 	BJson parser;

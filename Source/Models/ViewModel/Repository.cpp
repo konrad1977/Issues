@@ -64,6 +64,7 @@ status_t
 Repository::Load(BMessage &message)
 {
 	fRepository = new GithubRepository(message);
+	printf("Repository: %s Owner: %s\n", Name().String(), Owner().String());
 
 	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
 	fTransparency = message.GetUInt8("Transparency", 127);
