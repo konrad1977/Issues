@@ -176,6 +176,7 @@ ContainerView::MessageReceived(BMessage *message)
 		}
 
 		case B_NODE_MONITOR: {
+			printf("Settings changed. Should reinitalize!\n");
 			SpawnDownloadThread();
 			break;
 		}

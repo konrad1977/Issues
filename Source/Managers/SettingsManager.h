@@ -11,12 +11,17 @@
 #include <Path.h>
 #include <String.h>
 
+enum SettingsManagerType {
+	GithubToken = 0,
+	SavedData
+};
+
 class BList;
 class BLocker;
 class BMessenger;
 class SettingsManager {
 public:
-	SettingsManager(BString filename);
+	SettingsManager(SettingsManagerType type);
 	~SettingsManager();
 
 	void StartMonitoring(BHandler *handler);

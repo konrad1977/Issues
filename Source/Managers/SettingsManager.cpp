@@ -23,10 +23,19 @@
 #include <string.h>
 #include <stdio.h>
 
-SettingsManager::SettingsManager(BString filename)
-	:fFileName(filename)
-	,fLocker(NULL)
+SettingsManager::SettingsManager(SettingsManagerType type)
+	: fLocker(nullptr)
 {
+	switch (type) {
+		case SettingsManagerType::GithubToken: {
+			fFileName = "IssueToken";
+			break;
+		}
+		case SettingsManagerType::SavedData: {
+			fFileName = "IssuesSettings";
+			break;
+		}
+	}
 	fLocker = new BLocker("SettingsLocker");
 }
 

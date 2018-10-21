@@ -20,7 +20,7 @@ RepositoryManager::RepositoryManager(BHandler *handler)
 	,fRepositoryList(nullptr)
 	,fMessenger(nullptr)
 {
-	fSettingsManager = new SettingsManager("IssuesSettings");
+	fSettingsManager = new SettingsManager(SettingsManagerType::SavedData);
 	fMessenger = new BMessenger(handler);
 	fRepositoryList = new BList();
 	LoadRepositories();
@@ -173,6 +173,5 @@ RepositoryManager::SaveRepositories()
 		item->Save(repositoryMessage);
 		message.AddMessage("Repositories", &repositoryMessage);
 	}
-	message.PrintToStream();
 	fSettingsManager->SaveSettings(message);
 }
