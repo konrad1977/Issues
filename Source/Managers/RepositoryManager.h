@@ -9,11 +9,12 @@
 #include <SupportDefs.h>
 #include <app/Message.h>
 
+#include "Repository.h"
+
 class BList;
 class BMessenger;
 class BHandler;
 class SettingsManager;
-class Repository;
 class RepositoryManager {
 public:
 
@@ -22,12 +23,13 @@ public:
 
 	BList *Repositories() const;
 
-	BMessage *RepositoryLoadMessage(BString name);
+	BMessage* RepositoryMessage(BString name);
 
+	void SaveRepositories();
 	void AddRepositories(BList *list);
-	void AddRepository(Repository *repository);
-	void RemoveRepository(Repository *repository);
-	bool HasRepository(Repository *repository);
+	void AddRepository(const Repository *repository);
+	void RemoveRepository(const Repository *repository);
+	bool HasRepository(const Repository *repository);
 
 	enum Action {
 		Added 	= 'repa',
@@ -39,7 +41,6 @@ public:
 private:
 
 	void LoadRepositories();
-	void SaveRepositories();
 
 	SettingsManager *fSettingsManager;
 	BList 			*fRepositoryList;

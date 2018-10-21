@@ -43,28 +43,31 @@ status_t
 Repository::Save(BMessage &message)
 {
 	fRepository->Save(message);
-	message.AddBool("ManuallyAdded", fIsManuallyAdded);
 
-	if (message.ReplaceUInt8("Refreshrate", fRefreshrate) != B_OK) {
-		message.AddUInt8("Refreshrate", fRefreshrate);
+	if (message.ReplaceBool("ManuallyAdded", fIsManuallyAdded) != B_OK) {
+		message.AddBool("ManuallyAdded", fIsManuallyAdded);
 	}
 
-	if (message.ReplaceUInt8("Transparency", fTransparency) != B_OK) {
-		message.AddUInt8("Transparency", fTransparency);
+	if (message.ReplaceUInt8("Refreshrate", RefreshRate()) != B_OK) {
+		message.AddUInt8("Refreshrate", RefreshRate());
 	}
+
+	if (message.ReplaceUInt8("Transparency", Transparency()) != B_OK) {
+		message.AddUInt8("Transparency", Transparency());
+	}
+
+	printf("Transparency: %d\n", message.GetUInt8("Transparency", 127));
+	printf("Refreshrate: %d\n", message.GetUInt8("Refreshrate", 10));
 }
 
 status_t
 Repository::Load(BMessage &message)
 {
 	fRepository = new GithubRepository(message);
+
 	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
 	fTransparency = message.GetUInt8("Transparency", 127);
 	fRefreshrate = message.GetUInt8("Refreshrate", 10);
-
-	printf("-- %s --\n", fRepository->Name().String());
-	printf("Transparency = %d\n", fTransparency);
-	printf("Refreshrate = %d\n", fRefreshrate);
 }
 
 void
@@ -86,16 +89,17 @@ Repository::SetRepository(GithubRepository *repository)
 	if (fRepository != repository) {
 		delete fRepository;
 		fRepository = repository;
-		printf("SetRepository\n");
 	}
 }
 
 void
 Repository::ReloadSavedData()
 {
+	/*
 	if (BMessage *message = RepositoryManager(nullptr).RepositoryLoadMessage(Name())) {
 		Load(*message);
 	}
+	*/
 }
 
 BString
@@ -146,7 +150,7 @@ Repository::NotifyUpdates()
 		return;
 	}
 
-	BMessage message(RepositoryAction::SettingsChanged);
+	BMessage message(RepositoryAction::Updated);
 	fMessenger->SendMessage(&message);
 }
 

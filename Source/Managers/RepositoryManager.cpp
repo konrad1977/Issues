@@ -20,12 +20,10 @@ RepositoryManager::RepositoryManager(BHandler *handler)
 	,fRepositoryList(nullptr)
 	,fMessenger(nullptr)
 {
-	fSettingsManager = new SettingsManager();
+	fSettingsManager = new SettingsManager("IssuesSettings");
 	fMessenger = new BMessenger(handler);
 	fRepositoryList = new BList();
 	LoadRepositories();
-
-	printf("RepositoryManager::LoadedItems(%d)\n", fRepositoryList->CountItems());
 }
 
 RepositoryManager::~RepositoryManager()
@@ -38,7 +36,6 @@ RepositoryManager::~RepositoryManager()
 	}
 
 	delete fRepositoryList;
-	printf("RepositoryManager::~RepositoryManager()\n");
 }
 
 BList *
@@ -71,7 +68,7 @@ RepositoryManager::AddRepositories(BList *list)
 }
 
 void
-RepositoryManager::AddRepository(Repository *repository)
+RepositoryManager::AddRepository(const Repository *repository)
 {
 	if (HasRepository(repository)) {
 		BMessage msg(Action::Exists);
@@ -79,7 +76,7 @@ RepositoryManager::AddRepository(Repository *repository)
 		return;
 	}
 
-	fRepositoryList->AddItem(repository);
+	fRepositoryList->AddItem(const_cast<Repository *>(repository));
 	SaveRepositories();
 
 	BMessage msg(Action::Added);
@@ -87,7 +84,7 @@ RepositoryManager::AddRepository(Repository *repository)
 }
 
 void
-RepositoryManager::RemoveRepository(Repository *repository)
+RepositoryManager::RemoveRepository(const Repository *repository)
 {
 	const int32 items = fRepositoryList->CountItems();
 
@@ -111,7 +108,7 @@ RepositoryManager::RemoveRepository(Repository *repository)
 }
 
 bool
-RepositoryManager::HasRepository(Repository *repository)
+RepositoryManager::HasRepository(const Repository *repository)
 {
 	const int32 items = fRepositoryList->CountItems();
 	for (int32 i = 0; i<items; i++) {
@@ -128,8 +125,8 @@ RepositoryManager::HasRepository(Repository *repository)
 	return false;
 }
 
-BMessage *
-RepositoryManager::RepositoryLoadMessage(BString name)
+BMessage*
+RepositoryManager::RepositoryMessage(BString name)
 {
 	BMessage message;
 	fSettingsManager->LoadSettings(message);
@@ -137,11 +134,8 @@ RepositoryManager::RepositoryLoadMessage(BString name)
 	int32 index = 0;
 	BMessage repositoryMessage;
 	while ( (message.FindMessage("Repositories", index, &repositoryMessage) == B_OK )) {
-		BString repositoryName;
-		if (repositoryMessage.FindString("Repository", &repositoryName) == B_OK) {
-			if (name == repositoryName) {
-				return new BMessage(repositoryMessage);
-			}
+		if (repositoryMessage.GetString("name", "") == name) {
+			return new BMessage(repositoryMessage);
 		}
 		index++;
 	}
@@ -153,16 +147,12 @@ RepositoryManager::LoadRepositories()
 {
 	BMessage message;
 	fSettingsManager->LoadSettings(message);
-	message.PrintToStream();
 
 	int32 index = 0;
 	BMessage repositoryMessage;
 	while ( (message.FindMessage("Repositories", index, &repositoryMessage) == B_OK )) {
-		BString repositoryName;
-		if (repositoryMessage.FindString("Repository", &repositoryName) == B_OK) {
-			Repository *repository = new Repository(repositoryMessage);
-			fRepositoryList->AddItem((void*)repository);
-		}
+		Repository *repository = new Repository(repositoryMessage);
+		fRepositoryList->AddItem((void*)repository);
 		index++;
 	}
 }
@@ -171,10 +161,6 @@ void
 RepositoryManager::SaveRepositories()
 {
 	BMessage message;
-	fSettingsManager->LoadSettings(message);
-
-	message.RemoveName("Repositories");
-
 	const int32 items = fRepositoryList->CountItems();
 	for (int32 i = 0; i<items; i++) {
 		Repository *item = static_cast<Repository*>(fRepositoryList->ItemAtFast(i));
@@ -184,9 +170,9 @@ RepositoryManager::SaveRepositories()
 		}
 
 		BMessage repositoryMessage;
-		repositoryMessage.AddString("Repository", item->Name());
 		item->Save(repositoryMessage);
 		message.AddMessage("Repositories", &repositoryMessage);
 	}
+	message.PrintToStream();
 	fSettingsManager->SaveSettings(message);
 }

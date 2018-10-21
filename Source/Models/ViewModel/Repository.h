@@ -11,7 +11,7 @@
 #include <Message.h>
 
 enum RepositoryAction {
-	SettingsChanged = 'rchs'
+	Updated = 'rchs'
 };
 
 class BHandler;
@@ -27,6 +27,7 @@ public:
 
 	void SetRepository(GithubRepository *repository);
 	void SetTarget(BHandler *handler);
+
 	void ReloadSavedData();
 
 	status_t Save(BMessage &message);

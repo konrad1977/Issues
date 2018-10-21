@@ -17,14 +17,19 @@ public:
 
 	bool IsDark();
 
+	void SetTransparency(uint8 transparency);
+
 	rgb_color BackgroundColor();
 	rgb_color TextColor();
-	
+
 private:
+
 	bool 		IsSelected() const;
-	
+	const uint8 Transparency() const;
+
 	BListItem 	*fListItem;
 	bool 		fIsReplicant;
+	uint8 		fTransparency;
 };
 
 

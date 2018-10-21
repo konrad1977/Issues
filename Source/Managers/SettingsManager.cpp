@@ -23,8 +23,8 @@
 #include <string.h>
 #include <stdio.h>
 
-SettingsManager::SettingsManager()
-	:fFileName("IssuesSettings")
+SettingsManager::SettingsManager(BString filename)
+	:fFileName(filename)
 	,fLocker(NULL)
 {
 	fLocker = new BLocker("SettingsLocker");
@@ -66,7 +66,7 @@ SettingsManager::SavePath() const
 		return NULL;
 	}
 
-	path.Append(fFileName);
+	path.Append(fFileName.String());
 	return path.Path();
 }
 

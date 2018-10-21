@@ -46,7 +46,7 @@ GithubClient::SaveToken(const char *token)
 {
 	BMessage message;
 	message.AddString("Token", BString(token));
-	SettingsManager manager;
+	SettingsManager manager("IssueToken");
 	manager.SaveSettings(message);
 	LoadToken();
 }
@@ -55,7 +55,7 @@ void
 GithubClient::LoadToken()
 {
 	BMessage message;
-	SettingsManager manager;
+	SettingsManager manager("IssueToken");
 	manager.LoadSettings(message);
 	if (message.FindString("Token", &fToken) == B_OK) {
 		InitHeaders();

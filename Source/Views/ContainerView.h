@@ -30,6 +30,7 @@ public:
 
   	virtual void MessageReceived(BMessage *message);
   	virtual void AttachedToWindow();
+			void SetTarget(BHandler *handler);
 
 	ContainerModel *Model() const { return fContainerModel; }
 
@@ -40,6 +41,8 @@ private:
 			void StartAutoUpdater();
 			void SpawnDownloadThread();
 			void StopDownloadThread();
+
+			void SetupTargets();
 
 			void Reisize();
 
@@ -53,13 +56,11 @@ private:
 	BScrollView 		*fScrollView;
 	BDragger			*fDragger;
 	BMessageRunner		*fAutoUpdateRunner;
+	BMessenger			*fMessenger;
+	ContainerModel		*fContainerModel;
 
 	thread_id			fThreadId;
 	bool 				fIsReplicant;
-
-	BString	 			fRepository;
-	BString	 			fOwner;
-	ContainerModel		*fContainerModel;
 };
 
 

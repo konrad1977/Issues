@@ -13,7 +13,6 @@
 #include "CommitModel.h"
 #include "GithubClient.h"
 #include "AddRepositoryWindow.h"
-#include "SettingsManager.h"
 #include "RepositoryListItem.h"
 #include "RepositoryManager.h"
 #include "Constants.h"
@@ -478,9 +477,8 @@ RepositoryWindow::ShowIssuesWindowFromIndex(int32 index)
 	}
 
 	Repository *repository = listItem->CurrentRepository();
-	IssueModel *model = new IssueModel(repository->Name(), repository->Owner());
-	model->SetRepository(repository);
-	ContainerWindow *window = new ContainerWindow(model);
+	IssueModel *model = new IssueModel(repository);
+	ContainerWindow *window = new ContainerWindow(model, fRepositoryManager);
 	window->Show();
 }
 
@@ -493,9 +491,8 @@ RepositoryWindow::ShowCommitsWindowFromIndex(int32 index)
 	}
 
 	Repository *repository = listItem->CurrentRepository();
-	CommitModel *model = new CommitModel(repository->Name(), repository->Owner());
-	model->SetRepository(repository);
-	ContainerWindow *window = new ContainerWindow(model);
+	CommitModel *model = new CommitModel(repository);
+	ContainerWindow *window = new ContainerWindow(model,fRepositoryManager);
 	window->Show();
 }
 

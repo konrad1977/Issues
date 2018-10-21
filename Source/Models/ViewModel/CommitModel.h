@@ -11,12 +11,12 @@
 #include "ContainerModel.h"
 
 class BMessenger;
-class GithubRepository;
+class Repository;
 class GithubClient;
 class CommitModel : public ContainerModel {
 public:
 
-	CommitModel(BString repository, BString owner);
+	CommitModel(Repository *repository);
 	CommitModel(BMessage *message);
 	virtual ~CommitModel();
 
@@ -27,17 +27,15 @@ public:
 	virtual void RequestData();
 	virtual void SetTarget(BHandler *handler);
 
-	const GithubRepository* Repository() { return fGithubRepository; }
+	virtual Repository* RepositoryModel() { return fRepository; }
 
 private:
 			void HandleParse(BMessage *message);
 			void AddCommits(BMessage *message);
 
 	GithubClient 		*fGithubClient;
-	GithubRepository	*fGithubRepository;
+	Repository			*fRepository;
 	BMessenger			*fMessenger;
-	BString				fRepository;
-	BString 			fOwner;
 };
 
 #endif // _H

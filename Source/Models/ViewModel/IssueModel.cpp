@@ -7,7 +7,7 @@
 #include "IssueModel.h"
 #include "GithubClient.h"
 #include "GithubIssue.h"
-#include "GithubRepository.h"
+#include "Repository.h"
 
 #include "Constants.h"
 #include "CListItem.h"
@@ -19,23 +19,20 @@
 
 #include <stdio.h>
 
-IssueModel::IssueModel(BString repository, BString owner)
+IssueModel::IssueModel(Repository *repository)
 	:fGithubClient(nullptr)
-	,fRepositoryModel(nullptr)
-	,fMessenger(nullptr)
 	,fRepository(repository)
-	,fOwner(owner)
+	,fMessenger(nullptr)
 {
 
 }
 
 IssueModel::IssueModel(BMessage *message)
 	:fGithubClient(nullptr)
-	,fRepositoryModel(nullptr)
+	,fRepository(nullptr)
 	,fMessenger(nullptr)
 {
-	message->FindString("Repository", &fRepository);
-	message->FindString("Owner", &fOwner);
+	fRepository = new Repository(*message);
 }
 
 IssueModel::~IssueModel()
@@ -47,14 +44,13 @@ IssueModel::~IssueModel()
 BString
 IssueModel::Name()
 {
-	return fRepository;
+	return fRepository->Name();
 }
 
 status_t
 IssueModel::Archive(BMessage *message)
 {
-	message->AddString("Repository", fRepository);
-	message->AddString("Owner", fOwner);
+	fRepository->Save(*message);
 	message->AddString("type", "issues");
 	return B_ERROR;
 }
@@ -93,7 +89,7 @@ IssueModel::AddIssues(BMessage *message)
 	}
 
 	TitleSettings settings;
-	settings.title = fRepository;
+	settings.title = fRepository->Name();
 	settings.subTitle = "Issues";
 
 	IssueTitleItem *titleItem = new IssueTitleItem(settings, isReplicant);
@@ -140,5 +136,5 @@ IssueModel::RequestData()
 		return;
 	}
 
-	fGithubClient->RequestIssuesForRepository(fRepository.String(), fOwner.String());
+	fGithubClient->RequestIssuesForRepository(fRepository->Name().String(), fRepository->Owner().String());
 }

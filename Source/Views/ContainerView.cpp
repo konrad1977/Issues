@@ -7,6 +7,8 @@
 #include "GithubClient.h"
 #include "GithubIssue.h"
 #include "GithubRepository.h"
+#include "RepositoryManager.h"
+#include "Repository.h"
 
 #include "Constants.h"
 #include "MessageFinder.h"
@@ -42,9 +44,10 @@ ContainerView::ContainerView(ContainerModel *model)
 	,fScrollView(nullptr)
 	,fDragger(nullptr)
 	,fAutoUpdateRunner(nullptr)
+	,fMessenger(nullptr)
+	,fContainerModel(model)
 	,fThreadId(-1)
 	,fIsReplicant(false)
-	,fContainerModel(model)
 {
 	SetupViews(fIsReplicant);
 }
@@ -55,9 +58,10 @@ ContainerView::ContainerView(BMessage *message)
 	,fScrollView(nullptr)
 	,fDragger(nullptr)
 	,fAutoUpdateRunner(nullptr)
+	,fMessenger(nullptr)
+	,fContainerModel(nullptr)
 	,fThreadId(-1)
 	,fIsReplicant(true)
-	,fContainerModel(nullptr)
 {
 	BString type;
 	if (message->FindString("type", &type) == B_OK) {
@@ -77,6 +81,7 @@ ContainerView::~ContainerView()
 		delete fListView->RemoveItem(int32(0));
 	}
 	delete fListView;
+	delete fMessenger;
 }
 
 status_t
@@ -108,9 +113,27 @@ ContainerView::AttachedToWindow()
 		StartAutoUpdater();
 	}
 
-	ListView()->SetTarget(this);
-	Model()->SetTarget(this);
+	SetupTargets();
 	BView::AttachedToWindow();
+}
+
+void
+ContainerView::SetTarget(BHandler *handler)
+{
+	delete fMessenger;
+	fMessenger = new BMessenger(handler);
+}
+
+void
+ContainerView::SetupTargets()
+{
+	if (Model() == nullptr || Model()->RepositoryModel() == nullptr) {
+		return;
+	}
+
+	Model()->SetTarget(this);
+	Model()->RepositoryModel()->SetTarget(this);
+	ListView()->SetTarget(this);
 }
 
 void
@@ -172,10 +195,17 @@ ContainerView::MessageReceived(BMessage *message)
 			break;
 		}
 
+		case RepositoryAction::Updated: {
+			BMessage msg(RepositoryAction::Updated);
+			fMessenger->SendMessage(&msg);
+			break;
+		}
+
 		case kAutoUpdateMessage: {
 			SpawnDownloadThread();
 			break;
 		}
+
 		default:
 			BView::MessageReceived(message);
 	}

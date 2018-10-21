@@ -6,6 +6,7 @@
 
 #include "ContainerWindow.h"
 #include "GithubRepository.h"
+#include "RepositoryManager.h"
 #include "Constants.h"
 #include "ContainerView.h"
 #include "ContainerModel.h"
@@ -24,11 +25,12 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "ContainerWindow"
 
-ContainerWindow::ContainerWindow(ContainerModel *container)
+ContainerWindow::ContainerWindow(ContainerModel *container, RepositoryManager *manager)
 	:BWindow(BRect(0,0,1,1), "Container", B_TITLED_WINDOW, B_FRAME_EVENTS | B_AUTO_UPDATE_SIZE_LIMITS)
 	,fContainerView(nullptr)
 	,fContainer(container)
 	,fSettingsWindow(nullptr)
+	,fRepositoryManager(manager)
 	,fMenuBar(nullptr)
 {
 	SetTitle(container->Name());
@@ -55,7 +57,7 @@ SettingsWindow*
 ContainerWindow::CurrentSettingsWindow()
 {
 	if (fSettingsWindow == NULL) {
-		fSettingsWindow = new SettingsWindow(fContainer->RepositoryModel());
+		fSettingsWindow = new SettingsWindow(const_cast<Repository*>(fContainer->RepositoryModel()));
 		fSettingsWindow->SetTarget(this);
 	}
 	return fSettingsWindow;
@@ -76,6 +78,7 @@ void
 ContainerWindow::SetupViews()
 {
 	fContainerView = new ContainerView(fContainer);
+	fContainerView->SetTarget(this);
 	fContainerView->SetExplicitMinSize(BSize(380, B_SIZE_UNSET));
 	fContainerView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 
@@ -98,6 +101,11 @@ ContainerWindow::MessageReceived(BMessage *message)
 
 		case kSettingsWindowQuit: {
 			fSettingsWindow = nullptr;
+			break;
+		}
+
+		case RepositoryAction::Updated: {
+			fRepositoryManager->SaveRepositories();
 			break;
 		}
 

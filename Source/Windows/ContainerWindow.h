@@ -9,12 +9,13 @@
 #include <interface/Window.h>
 
 class BMenuBar;
+class RepositoryManager;
 class SettingsWindow;
 class ContainerView;
 class ContainerModel;
 class ContainerWindow : public BWindow {
 public:
-	ContainerWindow(ContainerModel *model);
+	ContainerWindow(ContainerModel *model, RepositoryManager *manager);
 	~ContainerWindow();
 
 	virtual void MessageReceived(BMessage *message);
@@ -26,10 +27,11 @@ private:
 
 	SettingsWindow *CurrentSettingsWindow();
 
-	ContainerView	*fContainerView;
-	ContainerModel	*fContainer;
-	SettingsWindow	*fSettingsWindow;
-	BMenuBar		*fMenuBar;
+	ContainerView		*fContainerView;
+	ContainerModel		*fContainer;
+	SettingsWindow		*fSettingsWindow;
+	RepositoryManager 	*fRepositoryManager;
+	BMenuBar			*fMenuBar;
 
 	enum Actions {
 		SHOW_SETTINGS_WINDOW 	= 'shos',

@@ -7,8 +7,8 @@
 #include "CommitModel.h"
 
 #include "GithubClient.h"
-#include "GithubRepository.h"
 #include "GithubCommit.h"
+#include "Repository.h"
 
 #include "Constants.h"
 #include "CListItem.h"
@@ -19,23 +19,19 @@
 
 #include <stdio.h>
 
-CommitModel::CommitModel(BString repository, BString owner)
-	:fGithubClient(NULL)
-	,fGithubRepository(NULL)
-	,fMessenger(NULL)
+CommitModel::CommitModel(Repository *repository)
+	:fGithubClient(nullptr)
 	,fRepository(repository)
-	,fOwner(owner)
+	,fMessenger(nullptr)
 {
-
 }
 
 CommitModel::CommitModel(BMessage *message)
-	:fGithubClient(NULL)
-	,fGithubRepository(NULL)
-	,fMessenger(NULL)
+	:fGithubClient(nullptr)
+	,fRepository(nullptr)
+	,fMessenger(nullptr)
 {
-	message->FindString("Repository", &fRepository);
-	message->FindString("Owner", &fOwner);
+	fRepository = new Repository(*message);
 }
 
 CommitModel::~CommitModel()
@@ -47,14 +43,13 @@ CommitModel::~CommitModel()
 BString
 CommitModel::Name()
 {
-	return fRepository;
+	return fRepository->Name();
 }
 
 status_t
 CommitModel::Archive(BMessage *message)
 {
-	message->AddString("Repository", fRepository);
-	message->AddString("Owner", fOwner);
+	fRepository->Save(*message);
 	message->AddString("type", "commits");
 	return B_ERROR;
 }
@@ -93,7 +88,7 @@ CommitModel::AddCommits(BMessage *message)
 	}
 
 	TitleSettings settings;
-	settings.title = fRepository;
+	settings.title = fRepository->Name();
 	settings.subTitle = "commits";
 
 	IssueTitleItem *titleItem = new IssueTitleItem(settings, isReplicant);
@@ -135,8 +130,8 @@ CommitModel::SetTarget(BHandler *handler)
 void
 CommitModel::RequestData()
 {
-	if (fGithubClient == NULL) {
+	if (fGithubClient == nullptr || fRepository == nullptr) {
 		return;
 	}
-	fGithubClient->RequestCommitsForRepository(fRepository.String(), fOwner.String());
+	fGithubClient->RequestCommitsForRepository(fRepository->Name().String(), fRepository->Owner().String());
 }

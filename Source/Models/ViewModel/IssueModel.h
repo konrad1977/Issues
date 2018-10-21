@@ -16,7 +16,7 @@ class GithubClient;
 class IssueModel : public ContainerModel {
 public:
 
-	IssueModel(BString repository, BString owner);
+	IssueModel(Repository *repository);
 	IssueModel(BMessage *message);
 	virtual ~IssueModel();
 
@@ -27,18 +27,15 @@ public:
 	virtual void RequestData();
 	virtual void SetTarget(BHandler *handler);
 
-	const Repository* RepositoryModel() { return fRepositoryModel; }
-
+	virtual Repository* RepositoryModel() { return fRepository; }
 
 private:
 			void HandleParse(BMessage *message);
 			void AddIssues(BMessage *message);
 
 	GithubClient 		*fGithubClient;
-	Repository			*fRepositoryModel;
+	Repository			*fRepository;
 	BMessenger			*fMessenger;
-	BString				fRepository;
-	BString 			fOwner;
 };
 
 #endif // _H
