@@ -11,6 +11,7 @@
 #include <support/String.h>
 #include "ContainerModel.h"
 
+class SettingsManager;
 class BMessageRunner;
 class BDragger;
 class BListView;
@@ -58,6 +59,7 @@ private:
 	BMessageRunner		*fAutoUpdateRunner;
 	BMessenger			*fMessenger;
 	ContainerModel		*fContainerModel;
+	SettingsManager		*fSettingsManager;
 
 	thread_id			fThreadId;
 	bool 				fIsReplicant;

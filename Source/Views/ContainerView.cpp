@@ -9,6 +9,7 @@
 #include "GithubRepository.h"
 #include "RepositoryManager.h"
 #include "Repository.h"
+#include "SettingsManager.h"
 
 #include "Constants.h"
 #include "MessageFinder.h"
@@ -45,11 +46,13 @@ ContainerView::ContainerView(ContainerModel *model)
 	,fDragger(nullptr)
 	,fAutoUpdateRunner(nullptr)
 	,fMessenger(nullptr)
+	,fSettingsManager(nullptr)
 	,fContainerModel(model)
 	,fThreadId(-1)
 	,fIsReplicant(false)
 {
 	SetupViews(fIsReplicant);
+	fSettingsManager = new SettingsManager(SettingsManagerType::SavedData);
 }
 
 ContainerView::ContainerView(BMessage *message)
@@ -60,6 +63,7 @@ ContainerView::ContainerView(BMessage *message)
 	,fAutoUpdateRunner(nullptr)
 	,fMessenger(nullptr)
 	,fContainerModel(nullptr)
+	,fSettingsManager(nullptr)
 	,fThreadId(-1)
 	,fIsReplicant(true)
 {
@@ -72,6 +76,7 @@ ContainerView::ContainerView(BMessage *message)
 		}
 	}
 	SetupViews(fIsReplicant);
+	fSettingsManager = new SettingsManager(SettingsManagerType::SavedData);
 }
 
 
@@ -135,6 +140,7 @@ ContainerView::SetupTargets()
 	Model()->SetTarget(this);
 	Model()->RepositoryModel()->SetTarget(this);
 	ListView()->SetTarget(this);
+	fSettingsManager->StartMonitoring(this);
 }
 
 void
