@@ -11,6 +11,7 @@
 ColorManager::ColorManager(BListItem *listItem, bool isreplicant)
 	:fListItem(listItem)
 	,fIsReplicant(isreplicant)
+	,fTransparency(127)
 {
 
 }

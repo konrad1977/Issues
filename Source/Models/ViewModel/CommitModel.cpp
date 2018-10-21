@@ -88,6 +88,7 @@ CommitModel::AddCommits(BMessage *message)
 		delete list->RemoveItem(int32(0));
 	}
 
+/*
 	TitleSettings settings;
 	settings.title = fRepository->Name();
 	settings.subTitle = "commits";
@@ -95,11 +96,14 @@ CommitModel::AddCommits(BMessage *message)
 	IssueTitleItem *titleItem = new IssueTitleItem(settings, isReplicant);
 	list->AddItem( titleItem );
 
+	*/
+
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
 			GithubCommit commit(nodeMsg);
 			CListItem *listItem = new CListItem(commit, isReplicant);
+			listItem->SetTransparency(fRepository->Transparency());
 			list->AddItem( listItem );
 		}
 	}

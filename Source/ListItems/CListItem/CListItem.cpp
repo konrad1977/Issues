@@ -153,6 +153,15 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 }
 
 void
+CListItem::SetTransparency(uint8 transparency)
+{
+	if (fListColorManager == nullptr) {
+		return;
+	}
+	fListColorManager->SetTransparency(transparency);
+}
+
+void
 CListItem::Update(BView *view, const BFont *font)
 {
 	if (fPreviousHeight != fHeight) {

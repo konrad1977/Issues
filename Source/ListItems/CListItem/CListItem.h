@@ -17,21 +17,21 @@ class BBitmap;
 class CListItem : public BListItem {
 public:
 	CListItem(CListModel model, bool isReplicant);
-	~CListItem();	
-	
-	virtual void DrawItem(BView *view, BRect rect, bool complete = true);	
-	virtual void Update(BView *view, const BFont *font);	
-			
+	~CListItem();
+
+	virtual void DrawItem(BView *view, BRect rect, bool complete = true);
+	virtual void Update(BView *view, const BFont *font);
+			void SetTransparency(uint8 value);
 	CListModel CurrentModel() const;
-	
+
 private:
 			void DrawBackground(BListView *parent);
 			void DrawIssue(BRect frame, bool disableOutput);
 			void DrawIcon(BListView *parent, BRect rect);
-			
+
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
 	ColorManager			*fListColorManager;
-	CListModel				fModel;	
+	CListModel				fModel;
 	float 					fHeight;
 	float					fPreviousHeight;
 	bool					fIsReplicant;

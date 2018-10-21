@@ -102,7 +102,8 @@ IssueModel::AddIssues(BMessage *message)
 			GithubIssue issue(nodeMsg);
 			CListModel model(issue);
 			CListItem *listItem = new CListItem(model, isReplicant);
-			list->AddItem( listItem );
+			listItem->SetTransparency(fRepository->Transparency());
+			list->AddItem(listItem);
 		}
 	}
 }
