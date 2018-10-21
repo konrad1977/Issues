@@ -16,7 +16,6 @@ const rgb_color kPrivateColor 	= { 255, 64, 80 };
 const rgb_color kPublicColor 	= { 38, 201, 158 };
 const rgb_color kCustomColor 	= { 198, 100, 242 };
 
-const int32 kDataReceivedMessage 	= 'kDRM';
 const int32 kWindowQuitMessage 		= 'kWQM';
 const int32 kGithubTokenSaveMessage = 'kTSM';
 const int32 kNoTokenMessage			= 'kNTM';

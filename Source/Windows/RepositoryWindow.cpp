@@ -19,6 +19,7 @@
 #include "FilterView.h"
 #include "MessageFinder.h"
 #include "ROutlineListView.h"
+#include "NetRequester.h"
 
 #include <app/Application.h>
 
@@ -397,7 +398,7 @@ RepositoryWindow::MessageReceived(BMessage *message) {
 			break;
 		}
 
-		case kDataReceivedMessage: {
+		case NetRequesterAction::DataReceived: {
  			ParseData(message);
 			break;
 		}

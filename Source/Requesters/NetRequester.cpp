@@ -15,17 +15,16 @@
 
 
 
-NetRequester::NetRequester(BHandler *handler, const char *messageName)
+NetRequester::NetRequester(BHandler *handler, BString caller)
 	: BUrlProtocolListener()
-	,fHandler(handler)
-	,fMessageName(messageName)
+	,fCallerName(caller)
 {
-
+	fMessenger = new BMessenger(handler);
 }
 
 NetRequester::~NetRequester()
 {
-
+	delete fMessenger;
 }
 
 void
@@ -46,12 +45,12 @@ NetRequester::HandleData(BString data)
 
 	BMessage parsedData;
 	BJson parser;
-	status_t status = parser.Parse(data, parsedData);
 
-	BMessenger messenger(fHandler);
-	BMessage message(kDataReceivedMessage);
-	message.AddMessage(fMessageName, &parsedData);
-	messenger.SendMessage(&message);
+	if (parser.Parse(data, parsedData) == B_OK) {
+		BMessage message(NetRequesterAction::DataReceived);
+		message.AddMessage(fCallerName, &parsedData);
+		fMessenger->SendMessage(&message);
+	}
 }
 
 void

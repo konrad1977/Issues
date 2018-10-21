@@ -8,6 +8,7 @@
 #include "GithubClient.h"
 #include "GithubIssue.h"
 #include "Repository.h"
+#include "NetRequester.h"
 
 #include "Constants.h"
 #include "CListItem.h"
@@ -110,7 +111,7 @@ void
 IssueModel::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
-		case kDataReceivedMessage: {
+		case NetRequesterAction::DataReceived: {
  			HandleParse(message);
 			break;
 		}

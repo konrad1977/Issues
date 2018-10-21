@@ -9,6 +9,7 @@
 #include "GithubClient.h"
 #include "GithubCommit.h"
 #include "Repository.h"
+#include "NetRequester.h"
 
 #include "Constants.h"
 #include "CListItem.h"
@@ -108,7 +109,7 @@ void
 CommitModel::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
-		case kDataReceivedMessage: {
+		case NetRequesterAction::DataReceived: {
  			HandleParse(message);
 			break;
 		}
