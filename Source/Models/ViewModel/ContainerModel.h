@@ -14,6 +14,7 @@ class ContainerModel {
 public:
 
 	virtual status_t Archive(BMessage *message) = 0;
+
 	virtual BString Name() = 0;
 	virtual Repository* RepositoryModel() = 0;
 

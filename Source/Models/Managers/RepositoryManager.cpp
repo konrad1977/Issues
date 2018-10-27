@@ -32,7 +32,7 @@ RepositoryManager::~RepositoryManager()
 	delete fSettingsManager;
 
 	while (fRepositoryList->CountItems()) {
-		delete fRepositoryList->RemoveItem(int32(0));
+		delete reinterpret_cast<Repository*>(fRepositoryList->RemoveItem(int32(0)));
 	}
 
 	delete fRepositoryList;

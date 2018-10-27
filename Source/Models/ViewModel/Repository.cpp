@@ -36,7 +36,6 @@ Repository::~Repository()
 {
 	delete fRepository;
 	delete fMessenger;
-	printf("Repository::~Repository()\n");
 }
 
 status_t
@@ -55,6 +54,7 @@ Repository::Save(BMessage &message)
 	if (message.ReplaceUInt8("Transparency", Transparency()) != B_OK) {
 		message.AddUInt8("Transparency", Transparency());
 	}
+	return B_OK;
 }
 
 status_t
@@ -64,6 +64,7 @@ Repository::Load(BMessage &message)
 	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
 	fTransparency = message.GetUInt8("Transparency", 127);
 	fRefreshrate = message.GetUInt8("Refreshrate", 10);
+	return B_OK;
 }
 
 void

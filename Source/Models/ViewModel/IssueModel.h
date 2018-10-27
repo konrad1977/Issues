@@ -18,7 +18,8 @@ public:
 
 	IssueModel(Repository *repository);
 	IssueModel(BMessage *message);
-	virtual ~IssueModel();
+
+	~IssueModel();
 
 	virtual BString Name();
 	virtual status_t Archive(BMessage *message);

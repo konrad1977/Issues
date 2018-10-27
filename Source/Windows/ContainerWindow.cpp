@@ -40,7 +40,6 @@ ContainerWindow::ContainerWindow(ContainerModel *container, RepositoryManager *m
 
 ContainerWindow::~ContainerWindow()
 {
-	delete fContainer;
 	if (fSettingsWindow) {
 		fSettingsWindow->Lock();
 		fSettingsWindow->Quit();

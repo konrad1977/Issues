@@ -100,6 +100,7 @@ CListItem::DrawIcon(BListView *parent, BRect rect)
 	}
 
 	const char *url = fModel.AuthorUrl().String();
+
 	if (url == nullptr) {
 		return;
 	}
@@ -107,13 +108,18 @@ CListItem::DrawIcon(BListView *parent, BRect rect)
 	BMallocIO buffer;
 	FileDownloader downloader(fModel.AuthorUrl());
 
-	if (downloader.Download(&buffer) == B_OK) {
-		if (fIcon = BTranslationUtils::GetBitmap(&buffer)) {
-			parent->SetDrawingMode(B_OP_ALPHA);
-			parent->DrawBitmap(fIcon, fIcon->Bounds(), r.OffsetBySelf(-3.0f, 3.0f), B_FILTER_BITMAP_BILINEAR);
-			parent->SetDrawingMode(B_OP_COPY);
-		}
+	if (downloader.Download(&buffer) != B_OK) {
+		return;
 	}
+
+	fIcon = BTranslationUtils::GetBitmap(&buffer);
+	if (fIcon == nullptr) {
+		return;
+	}
+
+	parent->SetDrawingMode(B_OP_ALPHA);
+	parent->DrawBitmap(fIcon, fIcon->Bounds(), r.OffsetBySelf(-3.0f, 3.0f), B_FILTER_BITMAP_BILINEAR);
+	parent->SetDrawingMode(B_OP_COPY);
 }
 
 void

@@ -31,6 +31,7 @@ GithubRepository::Save(BMessage &message)
 	BMessage ownerMsg;
 	ownerMsg.AddString("login", fOwner);
 	message.AddMessage("owner", &ownerMsg);
+	return B_OK;
 }
 
 status_t

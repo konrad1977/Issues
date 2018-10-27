@@ -18,7 +18,8 @@ public:
 
 	CommitModel(Repository *repository);
 	CommitModel(BMessage *message);
-	virtual ~CommitModel();
+
+	~CommitModel();
 
 	virtual BString Name();
 	virtual status_t Archive(BMessage *message);
