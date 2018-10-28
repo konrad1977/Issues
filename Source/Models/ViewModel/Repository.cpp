@@ -92,11 +92,9 @@ Repository::SetRepository(GithubRepository *repository)
 void
 Repository::ReloadSavedData()
 {
-	/*
-	if (BMessage *message = RepositoryManager(nullptr).RepositoryLoadMessage(Name())) {
+	if (BMessage *message = RepositoryManager(nullptr).RepositoryMessage(Name())) {
 		Load(*message);
 	}
-	*/
 }
 
 BString

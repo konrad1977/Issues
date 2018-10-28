@@ -174,7 +174,7 @@ ContainerView::ReloadRepositoryData()
 	if (repository == nullptr) {
 		return;
 	}
-
+	repository->ReloadSavedData();
 }
 
 void
