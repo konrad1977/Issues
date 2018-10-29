@@ -11,6 +11,7 @@
 #include <support/String.h>
 #include "ContainerModel.h"
 
+class SettingsManager;
 class BMessageRunner;
 class BDragger;
 class BListView;
@@ -30,6 +31,7 @@ public:
 
   	virtual void MessageReceived(BMessage *message);
   	virtual void AttachedToWindow();
+			void SetTarget(BHandler *handler);
 
 	ContainerModel *Model() const { return fContainerModel; }
 
@@ -41,7 +43,9 @@ private:
 			void SpawnDownloadThread();
 			void StopDownloadThread();
 
+			void SetupTargets();
 			void Reisize();
+			void ReloadRepositoryData();
 
 			void StartNetworkMonitoring();
 			bool IsConnected();
@@ -53,13 +57,12 @@ private:
 	BScrollView 		*fScrollView;
 	BDragger			*fDragger;
 	BMessageRunner		*fAutoUpdateRunner;
+	BMessenger			*fMessenger;
+	ContainerModel		*fContainerModel;
+	SettingsManager		*fSettingsManager;
 
 	thread_id			fThreadId;
 	bool 				fIsReplicant;
-
-	BString	 			fRepository;
-	BString	 			fOwner;
-	ContainerModel		*fContainerModel;
 };
 
 

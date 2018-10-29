@@ -2,8 +2,8 @@
  * Copyright 2015 Your Name <your@email.address>
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef GITHUBREPOSITORYWINDOW_H
-#define GITHUBREPOSITORYWINDOW_H
+#ifndef REPOSITORYWINDOW_H
+#define REPOSITORYWINDOW_H
 
 
 #include <SupportDefs.h>
@@ -11,19 +11,21 @@
 #include "RepositoryTypeItem.h"
 
 class BPopUpMenu;
-class ROutlineListView;
-class FilterView;
 class BMenuBar;
 class BMenuItem;
 class BOutlineListView;
+
+class ROutlineListView;
+class FilterView;
 class AddRepositoryWindow;
 class GithubClient;
 class RepositoryManager;
 class GithubTokenWindow;
-class GithubRepositoryWindow : public BWindow {
+
+class RepositoryWindow : public BWindow {
 public:
-	GithubRepositoryWindow();
-	~GithubRepositoryWindow();
+	RepositoryWindow();
+	~RepositoryWindow();
 
 	virtual void MessageReceived(BMessage *message);
 
@@ -32,14 +34,10 @@ private:
 
 			BList *MakeFilter(BString filter);
 
-			BList *MakePrivateRepositories(BList *list) const;
-			BList *MakeForkedRepositories(BList *list) const;
-			BList *MakePublicRepositories(BList *list) const;
-
 			void ParseData(BMessage *message);
 
 			void HandleUserRepositories(BMessage *message);
-			void HandleRepository(BMessage *message);
+			void HandleManualAddedRepository(BMessage *message);
 			void HandleMouseDownEvents(BMessage *message);
 
 			void HandleAddRepository(BMessage *message);
@@ -53,6 +51,7 @@ private:
 
 			void ShowIssuesWindowFromIndex(int32 index);
 			void ShowCommitsWindowFromIndex(int32 index);
+			void ShowAlert(const char *title, const char *text);
 
 	static int SortRepositoriesByName(const void *first, const void *second);
 	static int SortRepositoriesByType(const void *first, const void *second);
@@ -67,9 +66,9 @@ private:
 	BMenuBar 			*fMenuBar;
 	thread_id			fDownloadThread;
 
-	BList				*fCurrentRepositories;
 	BList				*fCurrentFilter;
 	FilterView			*fFilterView;
+
 	BPopUpMenu			*fListMenu;
 	BMenuItem 			*fPopupIssueItem;
 	BMenuItem 			*fPopupCommitItem;
@@ -82,6 +81,7 @@ private:
 	uint8 				fPublicTotal;
 	uint8 				fForkedTotal;
 	uint8 				fCustomTotal;
+
 	int32				fCurrentSelectedIndex;
 
 	enum MenuAction {

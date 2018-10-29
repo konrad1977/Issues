@@ -11,5 +11,5 @@ resource app_version {
 	internal = 0,
 
 	short_info = "A simple github issue ticker application",
-	long_info = "An application showing repositories and issues"
+	long_info = "An application showing repositories"
 };

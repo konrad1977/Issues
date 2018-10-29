@@ -24,16 +24,13 @@
 GithubClient::GithubClient(BHandler *handler)
 	:fHandler(handler)
 	,fMessenger(nullptr)
-	,fBaseUrl(nullptr)
 {
-	fBaseUrl = strdup("https://api.github.com/graphql");
 	SetTarget(handler);
 	LoadToken();
 }
 
 GithubClient::~GithubClient()
 {
-	free(fBaseUrl);
 	delete fMessenger;
 }
 
@@ -49,7 +46,7 @@ GithubClient::SaveToken(const char *token)
 {
 	BMessage message;
 	message.AddString("Token", BString(token));
-	SettingsManager manager;
+	SettingsManager manager(SettingsManagerType::GithubToken);
 	manager.SaveSettings(message);
 	LoadToken();
 }
@@ -58,7 +55,7 @@ void
 GithubClient::LoadToken()
 {
 	BMessage message;
-	SettingsManager manager;
+	SettingsManager manager(SettingsManagerType::GithubToken);
 	manager.LoadSettings(message);
 	if (message.FindString("Token", &fToken) == B_OK) {
 		InitHeaders();
@@ -111,7 +108,7 @@ GithubClient::RequestCommitsForRepository(const char *repository, const char *ow
 		.AddNode("... on Commit")
 		.AddNode("history(first:5)")
 		.AddNode("nodes")
-		.AddNode("messageHeadline message url author { name avatarUrl }")
+		.AddNode("messageHeadline message url pushedDate author { name avatarUrl }")
 		.Query();
 
 	RunRequest(&requester, query);
@@ -132,7 +129,7 @@ GithubClient::RequestIssuesForRepository(const char *repository, const char *own
 		.AddNode("name")
 		.AddValue("issues(first:10 states:OPEN orderBy: { field: CREATED_AT direction: DESC })")
 		.AddNode("nodes")
-		.AddNode("url title body author { login avatarUrl }")
+		.AddNode("url title body updatedAt author { login avatarUrl }")
 		.Query();
 
 	RunRequest(&requester, query);
@@ -162,9 +159,7 @@ GithubClient::RequestProjects()
 void
 GithubClient::RunRequest(NetRequester *requester, BString body) {
 
-	printf("query: %s\n", body.String());
-
-	BUrl url = BUrl(fBaseUrl);
+	BUrl url = BUrl("https://api.github.com/graphql");
 	BHttpRequest* request = dynamic_cast<BHttpRequest*>(BUrlProtocolRoster::MakeRequest(url, requester));
 	request->SetMethod(B_HTTP_POST);
 	request->SetHeaders(fRequestHeaders);

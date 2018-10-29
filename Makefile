@@ -61,13 +61,32 @@ LIBS = be bnetapi localestub shared tracker translation $(STDCPPLIBS)
 #	to the Makefile. The paths included are not parsed recursively, so
 #	include all of the paths where libraries must be found. Directories where
 #	source files were specified are	automatically included.
-LIBPATHS =
+ifeq ($(shell uname -p), x86)
+LIBPATHS = $(shell findpaths -a x86 B_FIND_PATH_DEVELOP_LIB_DIRECTORY)
+else
+LIBPATHS = $(shell findpaths B_FIND_PATH_DEVELOP_LIB_DIRECTORY)
+endif
 
 #	Additional paths to look for system headers. These use the form
 #	"#include <header>". Directories that contain the files in SRCS are
 #	NOT auto-included here.
-SYSTEM_INCLUDE_PATHS = /system/develop/headers/private/shared \
-						/system/develop/headers/private/interface
+#	Additional paths to look for system headers. These use the form
+#	"#include <header>". Directories that contain the files in SRCS are
+#	NOT auto-included here.
+ifeq ($(shell uname -p), x86)
+SYSTEM_INCLUDE_PATHS = \
+	$(shell findpaths -e B_FIND_PATH_HEADERS_DIRECTORY private/interface) \
+	$(shell findpaths -e B_FIND_PATH_HEADERS_DIRECTORY private/shared) \
+	$(shell findpaths -e B_FIND_PATH_HEADERS_DIRECTORY private/tracker) \
+	$(shell findpaths -a x86 -e B_FIND_PATH_HEADERS_DIRECTORY scintilla)
+else
+SYSTEM_INCLUDE_PATHS = \
+	$(shell findpaths -e B_FIND_PATH_HEADERS_DIRECTORY private/interface) \
+	$(shell findpaths -e B_FIND_PATH_HEADERS_DIRECTORY private/shared) \
+	$(shell findpaths -e B_FIND_PATH_HEADERS_DIRECTORY private/tracker) \
+	$(shell findpaths -e B_FIND_PATH_HEADERS_DIRECTORY scintilla)
+endif
+
 
 #	Additional paths paths to look for local headers. These use the form
 #	#include "header". Directories that contain the files in SRCS are
@@ -90,7 +109,7 @@ LOCALES = en sv
 #	use. For example, setting DEFINES to "DEBUG=1" will cause the compiler
 #	option "-DDEBUG=1" to be used. Setting DEFINES to "DEBUG" would pass
 #	"-DDEBUG" on the compiler's command line.
-DEFINES = DEBUG
+DEFINES =
 
 #	Specify the warning level. Either NONE (suppress all warnings),
 #	ALL (enable all warnings), or leave blank (enable default warnings).
@@ -105,7 +124,7 @@ SYMBOLS := TRUE
 DEBUGGER := TRUE
 
 #	Specify any additional compiler flags to be used.
-COMPILER_FLAGS = 
+COMPILER_FLAGS = -std=c++17
 
 #	Specify any additional linker flags to be used.
 LINKER_FLAGS =

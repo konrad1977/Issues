@@ -10,31 +10,59 @@
 #include <String.h>
 #include <Message.h>
 
+enum RepositoryAction {
+	Updated = 'rchs'
+};
+
+class BHandler;
+class BMessenger;
+class BMessage;
 class GithubRepository;
 class Repository {
 public:
 
-	Repository(GithubRepository *repository);
+	Repository();
+	Repository(BMessage &message);
 	~Repository();
+
+	void SetRepository(GithubRepository *repository);
+	void SetTarget(BHandler *handler);
+
+	void ReloadSavedData();
 
 	status_t Save(BMessage &message);
 	status_t Load(BMessage &message);
 
-	const BString& Name() const;
-	const BString& Owner() const;
-	const BString& Description() const;
-	const BString& Url() const;
-	const BString& Id() const;
+	BString Name() const;
+	BString Owner() const;
+	BString Description() const;
+	BString Url() const;
+	BString Id() const;
 
 	bool IsFork() const;
 	bool IsPrivate() const;
+	bool IsManuallyAdded() const;
+
+	void SetIsManuallyAdded(bool value);
 	int SortOrder();
+
+	void SetTransparency(uint8 value);
+	void SetRefreshRate(uint8 value);
 
 	uint8 Transparency() const;
 	uint8 RefreshRate() const;
 
 private:
-	GithubRepository *fRepository;
+
+	void NotifyUpdates();
+
+	bool 				fIsManuallyAdded;
+
+	uint8				fRefreshrate;
+	uint8 				fTransparency;
+
+	GithubRepository 	*fRepository;
+	BMessenger 			*fMessenger;
 };
 
 

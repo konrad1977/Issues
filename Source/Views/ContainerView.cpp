@@ -7,6 +7,9 @@
 #include "GithubClient.h"
 #include "GithubIssue.h"
 #include "GithubRepository.h"
+#include "RepositoryManager.h"
+#include "Repository.h"
+#include "SettingsManager.h"
 
 #include "Constants.h"
 #include "MessageFinder.h"
@@ -42,11 +45,14 @@ ContainerView::ContainerView(ContainerModel *model)
 	,fScrollView(nullptr)
 	,fDragger(nullptr)
 	,fAutoUpdateRunner(nullptr)
+	,fMessenger(nullptr)
+	,fContainerModel(model)
+	,fSettingsManager(nullptr)
 	,fThreadId(-1)
 	,fIsReplicant(false)
-	,fContainerModel(model)
 {
 	SetupViews(fIsReplicant);
+	fSettingsManager = new SettingsManager(SettingsManagerType::SavedData);
 }
 
 ContainerView::ContainerView(BMessage *message)
@@ -55,9 +61,11 @@ ContainerView::ContainerView(BMessage *message)
 	,fScrollView(nullptr)
 	,fDragger(nullptr)
 	,fAutoUpdateRunner(nullptr)
+	,fMessenger(nullptr)
+	,fContainerModel(nullptr)
+	,fSettingsManager(nullptr)
 	,fThreadId(-1)
 	,fIsReplicant(true)
-	,fContainerModel(nullptr)
 {
 	BString type;
 	if (message->FindString("type", &type) == B_OK) {
@@ -68,6 +76,7 @@ ContainerView::ContainerView(BMessage *message)
 		}
 	}
 	SetupViews(fIsReplicant);
+	fSettingsManager = new SettingsManager(SettingsManagerType::SavedData);
 }
 
 
@@ -77,6 +86,7 @@ ContainerView::~ContainerView()
 		delete fListView->RemoveItem(int32(0));
 	}
 	delete fListView;
+	delete fMessenger;
 }
 
 status_t
@@ -102,16 +112,38 @@ ContainerView::SaveState(BMessage* into, bool deep) const
 void
 ContainerView::AttachedToWindow()
 {
-	StartNetworkMonitoring();
-
-	if (IsConnected()) {
+	if (IsConnected() == false) {
+		StartNetworkMonitoring();
+	} else {
+		SpawnDownloadThread();
 		StartAutoUpdater();
-		//Model()->RequestData();
 	}
 
-	ListView()->SetTarget(this);
-	Model()->SetTarget(this);
+	SetupTargets();
 	BView::AttachedToWindow();
+}
+
+void
+ContainerView::SetTarget(BHandler *handler)
+{
+	delete fMessenger;
+	fMessenger = new BMessenger(handler);
+}
+
+void
+ContainerView::SetupTargets()
+{
+	if (Model() == nullptr || Model()->RepositoryModel() == nullptr) {
+		return;
+	}
+
+	Model()->SetTarget(this);
+	Model()->RepositoryModel()->SetTarget(this);
+	ListView()->SetTarget(this);
+
+	if (fSettingsManager != nullptr) {
+		fSettingsManager->StartMonitoring(this);
+	}
 }
 
 void
@@ -136,6 +168,16 @@ ContainerView::Reisize()
 }
 
 void
+ContainerView::ReloadRepositoryData()
+{
+	Repository *repository = Model()->RepositoryModel();
+	if (repository == nullptr) {
+		return;
+	}
+	repository->ReloadSavedData();
+}
+
+void
 ContainerView::MessageReceived(BMessage *message)
 {
 	Model()->MessageReceived(message);
@@ -143,18 +185,19 @@ ContainerView::MessageReceived(BMessage *message)
 	switch (message->what) {
 
 		case B_NETWORK_MONITOR: {
-
-			printf("B_NETWORK_MONITOR\n");
-
 			if (IsConnected() == false) {
-				printf("-- No Network is available --\n");
 				return;
 			}
-			printf("-- Network is available starting requests --\n");
-
+			SpawnDownloadThread();
 			StartAutoUpdater();
-			Model()->RequestData();
 			stop_watching_network(this);
+			break;
+		}
+
+		case B_NODE_MONITOR: {
+			printf("Settings changed. Should reinitalize!\n");
+			ReloadRepositoryData();
+			SpawnDownloadThread();
 			break;
 		}
 
@@ -168,10 +211,17 @@ ContainerView::MessageReceived(BMessage *message)
 			break;
 		}
 
+		case RepositoryAction::Updated: {
+			BMessage msg(RepositoryAction::Updated);
+			fMessenger->SendMessage(&msg);
+			break;
+		}
+
 		case kAutoUpdateMessage: {
 			SpawnDownloadThread();
 			break;
 		}
+
 		default:
 			BView::MessageReceived(message);
 	}
@@ -187,8 +237,6 @@ ContainerView::StartAutoUpdater()
 
 	BMessage autoUpdateMessage(kAutoUpdateMessage);
 	fAutoUpdateRunner = new BMessageRunner(view, &autoUpdateMessage, (bigtime_t) seconds * 1000 * 1000);
-
-	SpawnDownloadThread();
 }
 
 BListView *

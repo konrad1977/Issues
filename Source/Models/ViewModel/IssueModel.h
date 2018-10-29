@@ -11,14 +11,15 @@
 #include "ContainerModel.h"
 
 class BMessenger;
-class GithubRepository;
+class Repository;
 class GithubClient;
 class IssueModel : public ContainerModel {
 public:
 
-	IssueModel(BString repository, BString owner);
+	IssueModel(Repository *repository);
 	IssueModel(BMessage *message);
-	virtual ~IssueModel();
+
+	~IssueModel();
 
 	virtual BString Name();
 	virtual status_t Archive(BMessage *message);
@@ -27,18 +28,15 @@ public:
 	virtual void RequestData();
 	virtual void SetTarget(BHandler *handler);
 
-	const GithubRepository* Repository() { return fGithubRepository; }
-
+	virtual Repository* RepositoryModel() { return fRepository; }
 
 private:
 			void HandleParse(BMessage *message);
 			void AddIssues(BMessage *message);
 
 	GithubClient 		*fGithubClient;
-	GithubRepository	*fGithubRepository;
+	Repository			*fRepository;
 	BMessenger			*fMessenger;
-	BString				fRepository;
-	BString 			fOwner;
 };
 
 #endif // _H

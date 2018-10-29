@@ -6,6 +6,7 @@
 
 #include "SettingsWindow.h"
 #include "Repository.h"
+#include "Constants.h"
 
 #include <Catalog.h>
 #include <Messenger.h>
@@ -54,10 +55,10 @@ SettingsWindow::SetTarget(BHandler *handler)
 void
 SettingsWindow::Quit()
 {
-//	BMessage message(kQuitSettingsWindowMessage);
-//	if (fMessenger && fMessenger->IsValid()) {
-//		fMessenger->SendMessage(&message);
-//	}
+	BMessage message(kSettingsWindowQuit);
+	if (fMessenger && fMessenger->IsValid()) {
+		fMessenger->SendMessage(&message);
+	}
 	BWindow::Quit();
 }
 
@@ -125,7 +126,7 @@ SettingsWindow::MessageReceived(BMessage *message)
 
 		case Action::TransparencyChanged: {
 			uint8 newValue = static_cast<uint8>(fTransparencySlider->Value());
-			//fPortfolio->SetTransparency(newValue);
+			fRepository->SetTransparency(newValue);
 			break;
 		}
 
@@ -137,7 +138,7 @@ SettingsWindow::MessageReceived(BMessage *message)
 
 		case Action::RefreshrateChanged: {
 			uint8 newValue = static_cast<uint8>(fRefreshRateSlider->Value());
-			//fPortfolio->SetRefreshRate(newValue);
+			fRepository->SetRefreshRate(newValue);
 			break;
 		}
 

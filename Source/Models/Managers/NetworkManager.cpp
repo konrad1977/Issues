@@ -24,8 +24,8 @@ NetworkManager::~NetworkManager()
 	delete fMessenger;
 }
 
-void 
-NetworkManager::RunConnectionCheck() 
+void
+NetworkManager::RunConnectionCheck()
 {
 	StartConnectionThread();
 }
@@ -39,17 +39,18 @@ NetworkManager::CheckInternetConnection()
 	} else {
 		BMessage message(IS_CONNECTED);
 		fMessenger->SendMessage(&message);
-	}	
+	}
 }
 
-int32 
+int32
 NetworkManager::CheckConnectionThread(void *cookie)
 {
 	NetworkManager *manager = static_cast<NetworkManager*>(cookie);
 	manager->CheckInternetConnection();
+	return 0;
 }
 
-void 
+void
 NetworkManager::StartConnectionThread()
 {
 	StopConnectionThread();
@@ -59,7 +60,7 @@ NetworkManager::StartConnectionThread()
 		resume_thread(fThreadId);
 }
 
-void 
+void
 NetworkManager::StopConnectionThread()
 {
 	if (fThreadId == -1) {
@@ -68,13 +69,13 @@ NetworkManager::StopConnectionThread()
 	wait_for_thread(fThreadId, NULL);
 	fThreadId = -1;
 }
-	
+
 bool
-NetworkManager::IsConnectedToInternet()  
-{	
+NetworkManager::IsConnectedToInternet()
+{
 	BNetworkRoster& roster = BNetworkRoster::Default();
 	BNetworkInterface interface;
-	
+
 	uint32 cookie = 0;
 	while (roster.GetNextInterface(&cookie, interface) == B_OK) {
 		const uint32 flags = interface.Flags();

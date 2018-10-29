@@ -19,7 +19,7 @@ IssueTitleItem::IssueTitleItem(const TitleSettings &titleSettings, bool isReplic
 	,fPreviousHeight(0)
 	,fIsReplicant(isReplicant)
 {
-	fColorManager = new ColorManager(fIsReplicant);
+	fColorManager = new ColorManager(this, fIsReplicant);
 }
 
 IssueTitleItem::~IssueTitleItem()

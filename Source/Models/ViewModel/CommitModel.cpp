@@ -7,8 +7,9 @@
 #include "CommitModel.h"
 
 #include "GithubClient.h"
-#include "GithubRepository.h"
 #include "GithubCommit.h"
+#include "Repository.h"
+#include "NetRequester.h"
 
 #include "Constants.h"
 #include "CListItem.h"
@@ -19,23 +20,19 @@
 
 #include <stdio.h>
 
-CommitModel::CommitModel(BString repository, BString owner)
-	:fGithubClient(NULL)
-	,fGithubRepository(NULL)
-	,fMessenger(NULL)
+CommitModel::CommitModel(Repository *repository)
+	:fGithubClient(nullptr)
 	,fRepository(repository)
-	,fOwner(owner)
+	,fMessenger(nullptr)
 {
-
 }
 
 CommitModel::CommitModel(BMessage *message)
-	:fGithubClient(NULL)
-	,fGithubRepository(NULL)
-	,fMessenger(NULL)
+	:fGithubClient(nullptr)
+	,fRepository(nullptr)
+	,fMessenger(nullptr)
 {
-	message->FindString("Repository", &fRepository);
-	message->FindString("Owner", &fOwner);
+	fRepository = new Repository(*message);
 }
 
 CommitModel::~CommitModel()
@@ -47,14 +44,13 @@ CommitModel::~CommitModel()
 BString
 CommitModel::Name()
 {
-	return fRepository;
+	return fRepository->Name();
 }
 
 status_t
 CommitModel::Archive(BMessage *message)
 {
-	message->AddString("Repository", fRepository);
-	message->AddString("Owner", fOwner);
+	fRepository->Save(*message);
 	message->AddString("type", "commits");
 	return B_ERROR;
 }
@@ -92,18 +88,24 @@ CommitModel::AddCommits(BMessage *message)
 		delete list->RemoveItem(int32(0));
 	}
 
+/*
 	TitleSettings settings;
-	settings.title = fRepository;
+	settings.title = fRepository->Name();
 	settings.subTitle = "commits";
 
 	IssueTitleItem *titleItem = new IssueTitleItem(settings, isReplicant);
 	list->AddItem( titleItem );
+
+	*/
+	uint8 transparency = fRepository->Transparency();
+	printf("transparency %d\n", transparency);
 
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
 		if (msg.FindMessage(name, &nodeMsg) == B_OK) {
 			GithubCommit commit(nodeMsg);
 			CListItem *listItem = new CListItem(commit, isReplicant);
+			listItem->SetTransparency(transparency);
 			list->AddItem( listItem );
 		}
 	}
@@ -113,7 +115,7 @@ void
 CommitModel::MessageReceived(BMessage *message)
 {
 	switch (message->what) {
-		case kDataReceivedMessage: {
+		case NetRequesterAction::DataReceived: {
  			HandleParse(message);
 			break;
 		}
@@ -135,8 +137,8 @@ CommitModel::SetTarget(BHandler *handler)
 void
 CommitModel::RequestData()
 {
-	if (fGithubClient == NULL) {
+	if (fGithubClient == nullptr || fRepository == nullptr) {
 		return;
 	}
-	fGithubClient->RequestCommitsForRepository(fRepository.String(), fOwner.String());
+	fGithubClient->RequestCommitsForRepository(fRepository->Name().String(), fRepository->Owner().String());
 }

@@ -17,7 +17,6 @@ GithubIssue::GithubIssue(BMessage message)
 		authorMsg.FindString("login", &author);
 		authorMsg.FindString("avatarUrl", &authorUrl);
 	}
-	message.PrintToStream();
 }
 
 GithubIssue::~GithubIssue()

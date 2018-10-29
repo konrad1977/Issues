@@ -7,30 +7,43 @@
 
 
 #include <SupportDefs.h>
+#include <app/Message.h>
+
+#include "Repository.h"
 
 class BList;
 class BMessenger;
 class BHandler;
 class SettingsManager;
-class GithubRepository;
 class RepositoryManager {
 public:
+
 	RepositoryManager(BHandler *handler);
 	~RepositoryManager();
 
 	BList *Repositories() const;
 
-	void AddRepository(GithubRepository *repository);
-	void RemoveRepository(GithubRepository *repository);
-	bool HasRepository(GithubRepository *repository);
+	BMessage* RepositoryMessage(BString name);
+
+	void SaveRepositories();
+	void AddRepositories(BList *list);
+	void AddRepository(const Repository *repository);
+	void RemoveRepository(const Repository *repository);
+	bool HasRepository(const Repository *repository);
+
+	enum Action {
+		Added 	= 'repa',
+		Removed	= 'repr',
+		Loaded 	= 'repl',
+		Exists	= 'repe'
+	};
 
 private:
 
 	void LoadRepositories();
-	void SaveRepositories();
 
 	SettingsManager *fSettingsManager;
-	BList 			*fList;
+	BList 			*fRepositoryList;
 	BMessenger 		*fMessenger;
 };
 

@@ -16,31 +16,18 @@ const rgb_color kPrivateColor 	= { 255, 64, 80 };
 const rgb_color kPublicColor 	= { 38, 201, 158 };
 const rgb_color kCustomColor 	= { 198, 100, 242 };
 
-const int32 kDataReceivedMessage 	= 'kDRM';
 const int32 kWindowQuitMessage 		= 'kWQM';
 const int32 kGithubTokenSaveMessage = 'kTSM';
 const int32 kNoTokenMessage			= 'kNTM';
 const int32 kTokenLoadedMessage		= 'kTLM';
 const int32 kAutoUpdateMessage		= 'kAUM';
 
+const int32 kSettingsWindowQuit			='kswq';
 const int32 kContainerRequestResize		= 'kRZs';
-
-const int32 kMenuShowCommitsForRepository	= 'mSCm';
-const int32 kMenuShowIssueForRepository	 	= 'mSmm';
-
-const int32 kShowCommitsForRepository	= 'kSCm';
-const int32 kShowIssueForRepository		= 'kSmm';
 
 const int32 kShowAddRepository			= 'kSRm';
 const int32 kQuitAddRepository			= 'kQRm';
 const int32 kRepositoryAdded			= 'kRAm';
-
-const int32 kRepositoryManagerAdd		= 'kATm';
-const int32 kRepositoryManagerExists	= 'kREm';
-const int32 kRepositoryManagerRemove	= 'kRRm';
-const int32 kRepositoryManagerLoaded	= 'kRLm';
-
-
 
 const int32 kFilterChangedMessage	= 'kFCm';
 

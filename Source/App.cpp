@@ -5,7 +5,7 @@
 
 
 #include "App.h"
-#include "GithubRepositoryWindow.h"
+#include "RepositoryWindow.h"
 
 #include <posix/stdio.h>
 
@@ -13,10 +13,10 @@ const char *kAppSignature = "application/x-vnd.konradsson-Issues";
 
 App::App(void)
 	:BApplication(kAppSignature)
-	,fGithubRepositoryWindow(nullptr)
+	,fRepositoryWindow(nullptr)
 {
-	fGithubRepositoryWindow = new GithubRepositoryWindow();
-	fGithubRepositoryWindow->Show();
+	fRepositoryWindow = new RepositoryWindow();
+	fRepositoryWindow->Show();
 }
 
 App::~App()

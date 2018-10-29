@@ -8,14 +8,14 @@
 #include <SupportDefs.h>
 #include <Application.h>
 
-class GithubRepositoryWindow;
+class RepositoryWindow;
 class App: public BApplication {
 public:
-	App(void);		
+	App(void);
 	~App();
-	
-private:	
-	GithubRepositoryWindow *fGithubRepositoryWindow;
+
+private:
+	RepositoryWindow *fRepositoryWindow;
 };
 
 #endif // _H

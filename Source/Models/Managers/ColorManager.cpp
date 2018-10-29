@@ -11,23 +11,29 @@
 ColorManager::ColorManager(BListItem *listItem, bool isreplicant)
 	:fListItem(listItem)
 	,fIsReplicant(isreplicant)
+	,fTransparency(127)
 {
 
 }
 
-ColorManager::ColorManager(bool isreplicant)
-	:fListItem(NULL)
-	,fIsReplicant(isreplicant)
-{
-
-}
-	
 ColorManager::~ColorManager()
 {
 
 }
 
-bool 		
+void
+ColorManager::SetTransparency(uint8 transparency)
+{
+	fTransparency = transparency;
+}
+
+const uint8
+ColorManager::Transparency() const
+{
+	return fTransparency;
+}
+
+bool
 ColorManager::IsSelected() const
 {
 	return fListItem == NULL ? false : fListItem->IsSelected();
@@ -46,13 +52,13 @@ ColorManager::BackgroundColor()
 	if (fIsReplicant && IsSelected() == false) {
 		BScreen screen;
 		rgb_color color = screen.DesktopColor();
-		color.alpha = 200;
+		color.alpha = Transparency();
 		return color;
 	}
 	return IsSelected() ? ui_color(B_LIST_SELECTED_BACKGROUND_COLOR) : ui_color(B_LIST_BACKGROUND_COLOR);
 }
 
-rgb_color	
+rgb_color
 ColorManager::TextColor()
 {
 	if (fIsReplicant) {

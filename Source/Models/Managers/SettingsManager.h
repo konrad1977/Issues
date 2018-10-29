@@ -9,26 +9,32 @@
 #include <SupportDefs.h>
 #include <Message.h>
 #include <Path.h>
+#include <String.h>
+
+enum SettingsManagerType {
+	GithubToken = 0,
+	SavedData
+};
 
 class BList;
 class BLocker;
 class BMessenger;
 class SettingsManager {
 public:
-	SettingsManager();
+	SettingsManager(SettingsManagerType type);
 	~SettingsManager();
-	
+
 	void StartMonitoring(BHandler *handler);
-	
+
 	status_t LoadSettings(BMessage &message);
-	status_t SaveSettings(BMessage message);	
-	
+	status_t SaveSettings(BMessage message);
+
 private:
 
 			void SaveWithLock(BMessage *message);
 	const char*  SavePath() const;
 
-	const char 	*fFileName;	
+	BString fFileName;
 	BLocker *fLocker;
 };
 
