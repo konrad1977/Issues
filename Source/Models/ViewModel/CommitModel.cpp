@@ -87,18 +87,10 @@ CommitModel::AddCommits(BMessage *message)
 	while(list->CountItems()) {
 		delete list->RemoveItem(int32(0));
 	}
+	
+	SetupTitle(list);
 
-/*
-	TitleSettings settings;
-	settings.title = fRepository->Name();
-	settings.subTitle = "commits";
-
-	IssueTitleItem *titleItem = new IssueTitleItem(settings, isReplicant);
-	list->AddItem( titleItem );
-
-	*/
 	uint8 transparency = fRepository->Transparency();
-	printf("transparency %d\n", transparency);
 
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
@@ -109,6 +101,21 @@ CommitModel::AddCommits(BMessage *message)
 			list->AddItem( listItem );
 		}
 	}
+}
+
+void
+CommitModel::SetupTitle(BListView *list)
+{
+	if (fRepository->ShowTitle() == false) {
+		return;
+	}
+	
+	TitleSettings settings;
+	settings.title = fRepository->Name();
+	settings.subTitle = "commits";
+
+	IssueTitleItem *titleItem = new IssueTitleItem(settings, IsReplicant());
+	list->AddItem( titleItem );	
 }
 
 void

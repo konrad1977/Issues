@@ -33,6 +33,7 @@ public:
 private:
 			void HandleParse(BMessage *message);
 			void AddCommits(BMessage *message);
+			void SetupTitle(BListView *list);
 
 	GithubClient 		*fGithubClient;
 	Repository			*fRepository;
