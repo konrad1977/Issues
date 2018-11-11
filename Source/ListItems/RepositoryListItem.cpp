@@ -33,20 +33,13 @@ RepositoryListItem::CurrentRepository() const
 }
 
 void
-RepositoryListItem::DrawBackground(BListView *parent)
+RepositoryListItem::DrawBackground(BListView *parent, BRect frame, bool tint)
 {
-	const int32 index = parent->IndexOf(this);
-	BRect frame = parent->ItemFrame(index);
-
-	rgb_color backgroundColor = fListColorManager->BackgroundColor();
+	rgb_color color = fListColorManager->BackgroundColor();
+	rgb_color backgroundColor = tint ? tint_color(color, 1.02) : color;
+	
 	parent->SetHighColor(backgroundColor);
-
-	if (index % 2 == 0) {
-		parent->SetHighColor(backgroundColor);
-	} else {
-		parent->SetHighColor(tint_color(backgroundColor, 1.02));
-	}
-
+	parent->SetLowColor(backgroundColor);
 	parent->SetDrawingMode(B_OP_COPY);
 	parent->FillRect(frame);
 }
@@ -63,9 +56,10 @@ RepositoryListItem::DrawItem(BView *view, BRect rect, bool complete)
 		fMultiLineTextDrawer->SetInsets(BSize(10,0));
 	}
 
-	DrawBackground(parent);
-	parent->SetDrawingMode(B_OP_OVER);
+	bool tintItem = index % 2 == 1;
+	DrawBackground(parent, frame, tintItem);
 	DrawRepository(frame, true);
+	
 	parent->FrameResized(frame.Width(), frame.Height());
 }
 
@@ -110,6 +104,6 @@ RepositoryListItem::Update(BView *view, const BFont *font)
 			fMultiLineTextDrawer->SetInsets(BSize(10,0));
 		}
 		DrawRepository(view->Bounds(), false);
-		SetHeight(fHeight);
+		SetHeight(fPreviousHeight);
 	}
 }

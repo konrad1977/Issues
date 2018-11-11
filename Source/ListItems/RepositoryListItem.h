@@ -26,7 +26,7 @@ public:
 
 private:
 			void DrawRepository(BRect frame, bool disableOutput);
-			void DrawBackground(BListView *parent);
+			void DrawBackground(BListView *parent, BRect frame, bool tint);
 
 	Repository				*fRepository;
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;

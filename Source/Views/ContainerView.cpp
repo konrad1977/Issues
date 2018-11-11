@@ -147,7 +147,7 @@ ContainerView::SetupTargets()
 }
 
 void
-ContainerView::Reisize()
+ContainerView::Resize()
 {
 	if (fListView == nullptr ) {
 		return;
@@ -156,6 +156,9 @@ ContainerView::Reisize()
 	float width;
 	float height;
 	fListView->GetPreferredSize(&width, &height);
+
+	printf("prefferedSize (%f %f)\n", width, height);
+	
 	fListView->SetExplicitMinSize(BSize(320, height < 420 ? height : 420));
 
 	if (fIsReplicant) {
@@ -195,14 +198,13 @@ ContainerView::MessageReceived(BMessage *message)
 		}
 
 		case B_NODE_MONITOR: {
-			printf("Settings changed. Should reinitalize!\n");
 			ReloadRepositoryData();
 			SpawnDownloadThread();
 			break;
 		}
 
 		case kContainerRequestResize: {
-			Reisize();
+			Resize();
 			break;
 		}
 

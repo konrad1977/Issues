@@ -34,6 +34,7 @@ private:
 			void HandleParse(BMessage *message);
 			void AddIssues(BMessage *message);
 			void ShowAlert(const char *title, const char *text);
+			void Resize();
 
 
 	GithubClient 		*fGithubClient;

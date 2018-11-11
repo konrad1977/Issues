@@ -65,11 +65,18 @@ IssueModel::HandleParse(BMessage *message)
 	}
 
 	AddIssues(message);
+	Resize();
+}
 
-	if(fMessenger) {
-		BMessage resizeMsg(kContainerRequestResize);
-		fMessenger->SendMessage(&resizeMsg);
+void
+IssueModel::Resize()
+{
+	if(fMessenger == nullptr) {
+		return;
 	}
+	
+	BMessage resizeMsg(kContainerRequestResize);
+	fMessenger->SendMessage(&resizeMsg);
 }
 
 void

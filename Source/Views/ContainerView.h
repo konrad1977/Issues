@@ -44,7 +44,7 @@ private:
 			void StopDownloadThread();
 
 			void SetupTargets();
-			void Reisize();
+			void Resize();
 			void ReloadRepositoryData();
 
 			void StartNetworkMonitoring();

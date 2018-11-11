@@ -22,7 +22,8 @@ CListItem::CListItem(CListModel model, bool isReplicant)
 	,fMultiLineTextDrawer(nullptr)
 	,fListColorManager(nullptr)
 	,fModel(model)
-	,fHeight(10)
+	,fHeight(10.0f)
+	,fPreviousHeight(0.0f)
 	,fIsReplicant(isReplicant)
 	,fIcon(nullptr)
 {
@@ -42,14 +43,11 @@ CListItem::CurrentModel() const
 }
 
 void
-CListItem::DrawBackground(BListView *parent)
+CListItem::DrawBackground(BListView *parent, BRect frame, bool tint)
 {
-	const int32 index = parent->IndexOf(this);
-	BRect frame = parent->ItemFrame(index);
-
 	rgb_color backgroundColor = fListColorManager->BackgroundColor();
-
-	if (fIsReplicant || index % 2 == 0) {
+	
+	if (fIsReplicant || tint == false) {
 		parent->SetHighColor(backgroundColor);
 	} else {
 		parent->SetHighColor(tint_color(backgroundColor, 1.05));
@@ -76,7 +74,8 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 		fMultiLineTextDrawer->SetInsets(BSize(10,5));
 	}
 
-	DrawBackground(parent);
+	bool tint = index % 2 == 1;
+	DrawBackground(parent, frame, tint);
 	parent->SetDrawingMode(B_OP_OVER);
 	DrawIssue(frame, true);
 	parent->FrameResized(frame.Width(), frame.Height());
@@ -179,6 +178,7 @@ CListItem::Update(BView *view, const BFont *font)
 			fMultiLineTextDrawer->SetInsets(BSize(10,5));
 		}
 		DrawIssue(view->Bounds(), false);
-		SetHeight(fHeight);
+		SetHeight(fPreviousHeight);
+		printf("Update height: %f\n", fPreviousHeight);
 	}
 }

@@ -64,11 +64,18 @@ CommitModel::HandleParse(BMessage *message)
 	}
 
 	AddCommits(message);
+	Resize();
+}
 
-	if(fMessenger) {
-		BMessage resizeMsg(kContainerRequestResize);
-		fMessenger->SendMessage(&resizeMsg);
+void 
+CommitModel::Resize()
+{
+	if(fMessenger == nullptr) {
+		return;
 	}
+
+	BMessage resizeMsg(kContainerRequestResize);
+	fMessenger->SendMessage(&resizeMsg);
 }
 
 void

@@ -34,6 +34,7 @@ private:
 			void HandleParse(BMessage *message);
 			void AddCommits(BMessage *message);
 			void SetupTitle(BListView *list);
+			void Resize();
 			
 			void ShowAlert(const char *title, const char *text);
 
