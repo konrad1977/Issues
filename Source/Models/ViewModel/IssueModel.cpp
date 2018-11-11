@@ -89,12 +89,14 @@ IssueModel::AddIssues(BMessage *message)
 		delete list->RemoveItem(int32(0));
 	}
 
-	TitleSettings settings;
-	settings.title = fRepository->Name();
-	settings.subTitle = "Issues";
+	if (fRepository->ShowTitle()) {
+		TitleSettings settings;
+		settings.title = fRepository->Name();
+		settings.subTitle = "Issues";
 
-	IssueTitleItem *titleItem = new IssueTitleItem(settings, isReplicant);
-	list->AddItem( titleItem );
+		IssueTitleItem *titleItem = new IssueTitleItem(settings, isReplicant);
+		list->AddItem( titleItem );	
+	}
 
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;

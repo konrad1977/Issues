@@ -39,6 +39,7 @@ public:
 	BString Url() const;
 	BString Id() const;
 
+	bool ShowTitle() const;
 	bool IsFork() const;
 	bool IsPrivate() const;
 	bool IsManuallyAdded() const;
@@ -46,6 +47,7 @@ public:
 	void SetIsManuallyAdded(bool value);
 	int SortOrder();
 
+	void SetShowTitle(bool value);
 	void SetTransparency(uint8 value);
 	void SetRefreshRate(uint8 value);
 
@@ -57,6 +59,7 @@ private:
 	void NotifyUpdates();
 
 	bool 				fIsManuallyAdded;
+	bool				fShowTitle;
 
 	uint8				fRefreshrate;
 	uint8 				fTransparency;

@@ -10,11 +10,16 @@
 
 #include <Catalog.h>
 #include <Messenger.h>
-#include <Box.h>
-#include <Slider.h>
-#include <Button.h>
+
+#include <interface/Box.h>
+#include <interface/Slider.h>
+#include <interface/Button.h>
+#include <interface/CheckBox.h>
+
 #include <LayoutBuilder.h>
 #include <GroupLayout.h>
+
+#include <stdio.h>
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "SettingsWindow"
@@ -24,6 +29,7 @@ SettingsWindow::SettingsWindow(Repository *repository)
 	,fMessenger(nullptr)
 	,fTransparencySlider(nullptr)
 	,fRefreshRateSlider(nullptr)
+	,fShowTitleCheckbox(nullptr)
 	,fRepository(repository)
 {
 	InitLayout();
@@ -67,9 +73,12 @@ SettingsWindow::InitSavedValues()
 {
 	const uint8 transparency = fRepository->Transparency();
 	const uint8 refreshRate = fRepository->RefreshRate();
-
+		
 	fTransparencySlider->SetValue(static_cast<int32>(transparency));
 	fRefreshRateSlider->SetValue(static_cast<int32>(refreshRate));
+
+	fShowTitleCheckbox->SetValue(fRepository->ShowTitle());
+	
 	UpdateTransparencyLabel(transparency);
 	UpdateRefrehLabel(refreshRate);
 }
@@ -97,6 +106,8 @@ SettingsWindow::InitLayout()
 	SetLayout(groupLayout);
 
 	fTransparencyLabel = B_TRANSLATE("Replicant transparency");
+	
+	fShowTitleCheckbox = new BCheckBox("ShowTitleItem", B_TRANSLATE("Show title"), new BMessage(Action::ShowTitleChanged));
 
 	fTransparencySlider = new BSlider("Transparency", fTransparencyLabel.String(), new BMessage(Action::TransparencyChanged), 0, 255, B_HORIZONTAL);
 	fTransparencySlider->SetModificationMessage(new BMessage(Action::TransparancyModified));
@@ -106,15 +117,16 @@ SettingsWindow::InitLayout()
 	fRefreshRateSlider = new BSlider("Refresh", fRefreshLabel.String(), new BMessage(Action::RefreshrateChanged), 1, 300, B_HORIZONTAL);
 	fRefreshRateSlider->SetModificationMessage(new BMessage(Action::RefreshrateModified));
 
-	BGroupLayout *transparencyGroup = BLayoutBuilder::Group<>(B_VERTICAL)
+	BGroupLayout *controls = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetExplicitMinSize(BSize(400, 40))
 		.SetInsets(15,10)
+		.Add(fShowTitleCheckbox)
 		.Add(fTransparencySlider)
 		.Add(fRefreshRateSlider);
 
-
 	BGroupLayout *settingsGroup = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(5,10)
-		.Add(transparencyGroup->View());
+		.Add(controls->View());
 
 	AddChild(settingsGroup->View());
 }
@@ -145,6 +157,12 @@ SettingsWindow::MessageReceived(BMessage *message)
 		case Action::RefreshrateModified: {
 			uint8 newValue = static_cast<uint8>(fRefreshRateSlider->Value());
 			UpdateRefrehLabel(newValue);
+			break;
+		}
+
+		case Action::ShowTitleChanged: {
+			bool checked = fShowTitleCheckbox->Value();
+			fRepository->SetShowTitle(checked);
 			break;
 		}
 

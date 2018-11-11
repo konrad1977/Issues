@@ -13,6 +13,7 @@
 
 Repository::Repository()
 	:fIsManuallyAdded(false)
+	,fShowTitle(true)
 	,fRefreshrate(10)
 	,fTransparency(127)
 	,fRepository(nullptr)
@@ -23,6 +24,7 @@ Repository::Repository()
 
 Repository::Repository(BMessage &message)
 	:fIsManuallyAdded(false)
+	,fShowTitle(true)
 	,fRefreshrate(10)
 	,fTransparency(127)
 	,fRepository(nullptr)
@@ -54,6 +56,10 @@ Repository::Save(BMessage &message)
 	if (message.ReplaceUInt8("Transparency", Transparency()) != B_OK) {
 		message.AddUInt8("Transparency", Transparency());
 	}
+	
+	if (message.ReplaceUInt8("ShowTitle", ShowTitle()) != B_OK) {
+		message.AddBool("ShowTitle", ShowTitle());
+	}
 	return B_OK;
 }
 
@@ -64,6 +70,7 @@ Repository::Load(BMessage &message)
 	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
 	fTransparency = message.GetUInt8("Transparency", 127);
 	fRefreshrate = message.GetUInt8("Refreshrate", 10);
+	fShowTitle = message.GetBool("ShowTitle", true);
 	return B_OK;
 }
 
@@ -127,6 +134,12 @@ Repository::Id() const
 	return fRepository->Id();
 }
 
+bool
+Repository::ShowTitle() const 
+{
+	return fShowTitle;
+}
+
 int
 Repository::SortOrder()
 {
@@ -165,6 +178,15 @@ bool
 Repository::IsPrivate() const
 {
 	return fRepository->IsPrivate();
+}
+
+void
+Repository::SetShowTitle(bool value)
+{
+	if (fShowTitle != value) {
+		fShowTitle = value;
+		NotifyUpdates();
+	}
 }
 
 void

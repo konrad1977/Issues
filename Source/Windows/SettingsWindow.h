@@ -12,6 +12,7 @@
 
 class Repository;
 class BSlider;
+class BCheckBox;
 class BMessenger;
 class BHandler;
 class SettingsWindow : public BWindow {
@@ -32,6 +33,7 @@ private:
 	BMessenger 			*fMessenger;
 	BSlider 			*fTransparencySlider;
 	BSlider 			*fRefreshRateSlider;
+	BCheckBox			*fShowTitleCheckbox;
 	Repository			*fRepository;
 	BString 			fTransparencyLabel;
 	BString 			fRefreshLabel;
@@ -41,7 +43,8 @@ private:
 		TransparencyChanged 	= 'tcms',
 		TransparancyModified	= 'tsmm',
 		RefreshrateChanged		= 'rrcm',
-		RefreshrateModified		= 'rrmm'
+		RefreshrateModified		= 'rrmm',
+		ShowTitleChanged		= 'shtm'
 	};
 };
 
