@@ -78,9 +78,9 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 	DrawBackground(parent, frame, tint);
 	parent->SetDrawingMode(B_OP_OVER);
 	DrawIssue(frame, true);
-	parent->FrameResized(frame.Width(), frame.Height());
-
 	DrawIcon(parent, frame);
+	
+	parent->FrameResized(frame.Width(), frame.Height());
 }
 
 void
@@ -178,7 +178,6 @@ CListItem::Update(BView *view, const BFont *font)
 			fMultiLineTextDrawer->SetInsets(BSize(10,5));
 		}
 		DrawIssue(view->Bounds(), false);
-		SetHeight(fPreviousHeight);
-		printf("Update height: %f\n", fPreviousHeight);
+		SetHeight(fHeight);
 	}
 }

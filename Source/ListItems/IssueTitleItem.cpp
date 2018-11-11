@@ -86,6 +86,7 @@ IssueTitleItem::DrawItem(BView *view, BRect rect, bool complete)
 		fDrawer = new MultiLineTextDrawer(parent);
 		fDrawer->SetInsets(BSize(10,5));
 	}
+	
 	DrawBackground(parent);
 	DrawRepository(parent, frame, true);
 }
@@ -103,7 +104,7 @@ IssueTitleItem::Update(BView *view, const BFont *font)
 			fDrawer->SetInsets(BSize(10,5));
 			DrawRepository(parent, view->Bounds(), false);
 		}
-		SetHeight(fHeight);
+		SetHeight(fPreviousHeight);
 	}
 }
 
