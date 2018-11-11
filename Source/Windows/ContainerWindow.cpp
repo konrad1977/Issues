@@ -103,7 +103,7 @@ ContainerWindow::MessageReceived(BMessage *message)
 			break;
 		}
 
-		case RepositoryAction::Updated: {
+		case SettingsAction::Updated: {
 			fRepositoryManager->SaveRepositories();
 			break;
 		}

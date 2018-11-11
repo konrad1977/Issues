@@ -13,22 +13,16 @@
 
 Repository::Repository()
 	:fIsManuallyAdded(false)
-	,fShowTitle(true)
-	,fRefreshrate(10)
-	,fTransparency(127)
 	,fRepository(nullptr)
-	,fMessenger(nullptr)
+	,fSettings(nullptr)
 {
 
 }
 
 Repository::Repository(BMessage &message)
 	:fIsManuallyAdded(false)
-	,fShowTitle(true)
-	,fRefreshrate(10)
-	,fTransparency(127)
 	,fRepository(nullptr)
-	,fMessenger(nullptr)
+	,fSettings(nullptr)
 {
 	Load(message);
 }
@@ -37,40 +31,38 @@ Repository::Repository(BMessage &message)
 Repository::~Repository()
 {
 	delete fRepository;
-	delete fMessenger;
+	delete fSettings;
 }
 
 status_t
 Repository::Save(BMessage &message)
 {
 	fRepository->Save(message);
+	fSettings->Save(message);
 
 	if (message.ReplaceBool("ManuallyAdded", fIsManuallyAdded) != B_OK) {
 		message.AddBool("ManuallyAdded", fIsManuallyAdded);
 	}
 
-	if (message.ReplaceUInt8("Refreshrate", RefreshRate()) != B_OK) {
-		message.AddUInt8("Refreshrate", RefreshRate());
-	}
-
-	if (message.ReplaceUInt8("Transparency", Transparency()) != B_OK) {
-		message.AddUInt8("Transparency", Transparency());
-	}
-	
-	if (message.ReplaceUInt8("ShowTitle", ShowTitle()) != B_OK) {
-		message.AddBool("ShowTitle", ShowTitle());
-	}
 	return B_OK;
 }
 
 status_t
 Repository::Load(BMessage &message)
 {
-	fRepository = new GithubRepository(message);
+	if(fRepository == nullptr) {
+		fRepository = new GithubRepository(message);
+	} else {
+		fRepository->Load(message);
+	}
+	
+	if (fSettings == nullptr) {
+		fSettings = new Settings(message);	
+	} else {
+		fSettings->Load(message);
+	}
+	
 	fIsManuallyAdded = message.GetBool("ManuallyAdded", false);
-	fTransparency = message.GetUInt8("Transparency", 127);
-	fRefreshrate = message.GetUInt8("Refreshrate", 10);
-	fShowTitle = message.GetBool("ShowTitle", true);
 	return B_OK;
 }
 
@@ -83,8 +75,8 @@ Repository::SetIsManuallyAdded(bool value)
 void
 Repository::SetTarget(BHandler *handler)
 {
-	delete fMessenger;
-	fMessenger = new BMessenger(handler);
+	printf("SetTarget(%s)\n", handler->Name());
+	fSettings->SetTarget(handler);
 }
 
 void
@@ -134,12 +126,6 @@ Repository::Id() const
 	return fRepository->Id();
 }
 
-bool
-Repository::ShowTitle() const 
-{
-	return fShowTitle;
-}
-
 int
 Repository::SortOrder()
 {
@@ -149,17 +135,6 @@ Repository::SortOrder()
 		return 1;
 	}
 	return 0;
-}
-
-void
-Repository::NotifyUpdates()
-{
-	if (fMessenger == NULL) {
-		return;
-	}
-
-	BMessage message(RepositoryAction::Updated);
-	fMessenger->SendMessage(&message);
 }
 
 bool
@@ -180,42 +155,8 @@ Repository::IsPrivate() const
 	return fRepository->IsPrivate();
 }
 
-void
-Repository::SetShowTitle(bool value)
+Settings* 
+Repository::CurrentSettings() const
 {
-	if (fShowTitle != value) {
-		fShowTitle = value;
-		NotifyUpdates();
-	}
+	return fSettings;
 }
-
-void
-Repository::SetTransparency(uint8 value)
-{
-	if (fTransparency != value) {
-		fTransparency = value;
-		NotifyUpdates();
-	}
-}
-
-void
-Repository::SetRefreshRate(uint8 value)
-{
-	if (fRefreshrate != value) {
-		fRefreshrate = value;
-		NotifyUpdates();
-	}
-}
-
-uint8
-Repository::Transparency() const
-{
-	return fTransparency;
-}
-
-uint8
-Repository::RefreshRate() const
-{
-	return fRefreshrate;
-}
-

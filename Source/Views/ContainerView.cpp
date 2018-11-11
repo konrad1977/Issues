@@ -211,8 +211,8 @@ ContainerView::MessageReceived(BMessage *message)
 			break;
 		}
 
-		case RepositoryAction::Updated: {
-			BMessage msg(RepositoryAction::Updated);
+		case SettingsAction::Updated: {
+			BMessage msg(SettingsAction::Updated);
 			fMessenger->SendMessage(&msg);
 			break;
 		}

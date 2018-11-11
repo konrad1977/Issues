@@ -71,13 +71,18 @@ SettingsWindow::Quit()
 void
 SettingsWindow::InitSavedValues()
 {
-	const uint8 transparency = fRepository->Transparency();
-	const uint8 refreshRate = fRepository->RefreshRate();
+	Settings *settings = fRepository->CurrentSettings();
+	if (settings == nullptr) {
+		return;
+	}
+		
+	const uint8 transparency = settings->Transparency();
+	const uint8 refreshRate = settings->RefreshRate();
 		
 	fTransparencySlider->SetValue(static_cast<int32>(transparency));
 	fRefreshRateSlider->SetValue(static_cast<int32>(refreshRate));
 
-	fShowTitleCheckbox->SetValue(fRepository->ShowTitle());
+	fShowTitleCheckbox->SetValue(settings->ShowTitle());
 	
 	UpdateTransparencyLabel(transparency);
 	UpdateRefrehLabel(refreshRate);
@@ -138,7 +143,7 @@ SettingsWindow::MessageReceived(BMessage *message)
 
 		case Action::TransparencyChanged: {
 			uint8 newValue = static_cast<uint8>(fTransparencySlider->Value());
-			fRepository->SetTransparency(newValue);
+			fRepository->CurrentSettings()->SetTransparency(newValue);
 			break;
 		}
 
@@ -150,7 +155,7 @@ SettingsWindow::MessageReceived(BMessage *message)
 
 		case Action::RefreshrateChanged: {
 			uint8 newValue = static_cast<uint8>(fRefreshRateSlider->Value());
-			fRepository->SetRefreshRate(newValue);
+			fRepository->CurrentSettings()->SetRefreshRate(newValue);
 			break;
 		}
 
@@ -162,7 +167,7 @@ SettingsWindow::MessageReceived(BMessage *message)
 
 		case Action::ShowTitleChanged: {
 			bool checked = fShowTitleCheckbox->Value();
-			fRepository->SetShowTitle(checked);
+			fRepository->CurrentSettings()->SetShowTitle(checked);
 			break;
 		}
 

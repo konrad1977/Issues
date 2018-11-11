@@ -10,9 +10,7 @@
 #include <String.h>
 #include <Message.h>
 
-enum RepositoryAction {
-	Updated = 'rchs'
-};
+#include "Settings.h"
 
 class BHandler;
 class BMessenger;
@@ -39,33 +37,21 @@ public:
 	BString Url() const;
 	BString Id() const;
 
-	bool ShowTitle() const;
 	bool IsFork() const;
 	bool IsPrivate() const;
 	bool IsManuallyAdded() const;
 
 	void SetIsManuallyAdded(bool value);
+
 	int SortOrder();
 
-	void SetShowTitle(bool value);
-	void SetTransparency(uint8 value);
-	void SetRefreshRate(uint8 value);
-
-	uint8 Transparency() const;
-	uint8 RefreshRate() const;
+	Settings* CurrentSettings() const;
 
 private:
 
-	void NotifyUpdates();
-
 	bool 				fIsManuallyAdded;
-	bool				fShowTitle;
-
-	uint8				fRefreshrate;
-	uint8 				fTransparency;
-
 	GithubRepository 	*fRepository;
-	BMessenger 			*fMessenger;
+	Settings			*fSettings;
 };
 
 

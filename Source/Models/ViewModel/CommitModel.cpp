@@ -90,7 +90,7 @@ CommitModel::AddCommits(BMessage *message)
 	
 	SetupTitle(list);
 
-	uint8 transparency = fRepository->Transparency();
+	uint8 transparency = fRepository->CurrentSettings()->Transparency();
 
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
@@ -106,7 +106,7 @@ CommitModel::AddCommits(BMessage *message)
 void
 CommitModel::SetupTitle(BListView *list)
 {
-	if (fRepository->ShowTitle() == false) {
+	if (fRepository->CurrentSettings()->ShowTitle() == false) {
 		return;
 	}
 	

@@ -89,7 +89,7 @@ IssueModel::AddIssues(BMessage *message)
 		delete list->RemoveItem(int32(0));
 	}
 
-	if (fRepository->ShowTitle()) {
+	if (fRepository->CurrentSettings()->ShowTitle()) {
 		TitleSettings settings;
 		settings.title = fRepository->Name();
 		settings.subTitle = "Issues";
@@ -97,6 +97,8 @@ IssueModel::AddIssues(BMessage *message)
 		IssueTitleItem *titleItem = new IssueTitleItem(settings, isReplicant);
 		list->AddItem( titleItem );	
 	}
+	
+	uint8 transparency = fRepository->CurrentSettings()->Transparency();
 
 	for (int32 i = 0; msg.GetInfo(B_MESSAGE_TYPE, i, &name, &type, &count) == B_OK; i++) {
 		BMessage nodeMsg;
@@ -104,7 +106,7 @@ IssueModel::AddIssues(BMessage *message)
 			GithubIssue issue(nodeMsg);
 			CListModel model(issue);
 			CListItem *listItem = new CListItem(model, isReplicant);
-			listItem->SetTransparency(fRepository->Transparency());
+			listItem->SetTransparency(transparency);
 			list->AddItem(listItem);
 		}
 	}
