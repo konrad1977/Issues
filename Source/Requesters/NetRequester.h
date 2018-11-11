@@ -12,7 +12,9 @@
 #include <String.h>
 
 enum NetRequesterAction {
-	DataReceived = 'kDRM'
+	DataReceived 	= 'kDRM',
+	RequestFailed	= 'kRfm',
+	ParseFailed 	= 'kfam'
 };
 
 class BMessenger;

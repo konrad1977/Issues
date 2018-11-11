@@ -402,6 +402,16 @@ RepositoryWindow::MessageReceived(BMessage *message) {
  			ParseData(message);
 			break;
 		}
+		
+		case NetRequesterAction::RequestFailed: {
+ 			ShowAlert("Network request failed", "The network request failed!");
+			break;
+		}
+		
+		case NetRequesterAction::ParseFailed: {
+ 			ShowAlert("Parse failed", "Failed to parse JSON data!");
+			break;
+		}
 
 		case kWindowQuitMessage: {
 			fGithubTokenWindow = nullptr;

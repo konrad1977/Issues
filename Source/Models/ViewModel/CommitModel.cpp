@@ -16,6 +16,7 @@
 #include "IssueTitleItem.h"
 #include "MessageFinder.h"
 
+#include <interface/Alert.h>
 #include <app/Messenger.h>
 
 #include <stdio.h>
@@ -126,6 +127,17 @@ CommitModel::MessageReceived(BMessage *message)
  			HandleParse(message);
 			break;
 		}
+		
+		case NetRequesterAction::RequestFailed: {
+ 			ShowAlert("Network request failed", "The network request failed!");
+			break;
+		}
+		
+		case NetRequesterAction::ParseFailed: {
+ 			ShowAlert("Parse failed", "Failed to parse JSON data!");
+			break;
+		}
+		
 		default:
 			break;
 	}
@@ -148,4 +160,11 @@ CommitModel::RequestData()
 		return;
 	}
 	fGithubClient->RequestCommitsForRepository(fRepository->Name().String(), fRepository->Owner().String());
+}
+
+void
+CommitModel::ShowAlert(const char *title, const char *text)
+{
+	BAlert* alert = new BAlert(title, text, "Ok", nullptr, nullptr, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+	alert->Go();
 }

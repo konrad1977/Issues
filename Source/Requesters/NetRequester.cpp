@@ -41,21 +41,27 @@ NetRequester::DataReceived(BUrlRequest* caller, const char* data, off_t position
 void
 NetRequester::HandleData(BString data)
 {
-	//printf("%s\n", data.String());
-
 	BMessage parsedData;
-	BJson parser;
 
-	if (parser.Parse(data, parsedData) == B_OK) {
+	if (BJson().Parse(data, parsedData) != B_OK) {
+		BMessage message(NetRequesterAction::ParseFailed);
+		fMessenger->SendMessage(&message);
+	} else {
 		BMessage message(NetRequesterAction::DataReceived);
 		message.AddMessage(fCallerName, &parsedData);
-		fMessenger->SendMessage(&message);
+		fMessenger->SendMessage(&message);	
 	}
 }
 
 void
 NetRequester::RequestCompleted(BUrlRequest* caller, bool success)
 {
+	if (success == false) {
+		BMessage message(NetRequesterAction::RequestFailed);
+		fMessenger->SendMessage(&message);
+		return;
+	}
+	
 	BString jsonString;
 	jsonString.SetTo(static_cast<const char*>(fResponseData.Buffer()), fResponseData.BufferLength());
 	HandleData(jsonString);

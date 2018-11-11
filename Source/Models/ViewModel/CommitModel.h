@@ -34,6 +34,8 @@ private:
 			void HandleParse(BMessage *message);
 			void AddCommits(BMessage *message);
 			void SetupTitle(BListView *list);
+			
+			void ShowAlert(const char *title, const char *text);
 
 	GithubClient 		*fGithubClient;
 	Repository			*fRepository;
