@@ -34,6 +34,8 @@ private:
 	BSlider 			*fTransparencySlider;
 	BSlider 			*fRefreshRateSlider;
 	BCheckBox			*fShowTitleCheckbox;
+	BCheckBox			*fShowAuthorName;
+	BCheckBox			*fShowAuthorAvatar;
 	Repository			*fRepository;
 	BString 			fTransparencyLabel;
 	BString 			fRefreshLabel;
@@ -44,7 +46,9 @@ private:
 		TransparancyModified	= 'tsmm',
 		RefreshrateChanged		= 'rrcm',
 		RefreshrateModified		= 'rrmm',
-		ShowTitleChanged		= 'shtm'
+		ShowTitleChanged		= 'shtm',
+		ShowAuthorNameChanged	= 'atnm',
+		ShowAuthorAvatarChanged	= 'saac'
 	};
 };
 

@@ -11,6 +11,8 @@
 
 Settings::Settings()
 	:fShowTitle(true)
+	,fShowAuthorName(true)
+	,fShowAuthorAvatar(true)
 	,fRefreshrate(10)
 	,fTransparency(127)
 	,fMessenger(nullptr)
@@ -20,6 +22,8 @@ Settings::Settings()
 
 Settings::Settings(BMessage message)
 	:fShowTitle(true)
+	,fShowAuthorName(true)
+	,fShowAuthorAvatar(true)
 	,fRefreshrate(10)
 	,fTransparency(127)
 	,fMessenger(nullptr)
@@ -43,9 +47,13 @@ Settings::SetTarget(BHandler *handler)
 status_t 
 Settings::Load(BMessage &message)
 {
-	fRefreshrate 	= message.GetUInt8("Refreshrate", 60);
-	fTransparency 	= message.GetUInt8("Transparency", 127);	
-	fShowTitle 		= message.GetBool("ShowTitle", true);
+	fRefreshrate 		= message.GetUInt8("Refreshrate", 60);
+	fTransparency 		= message.GetUInt8("Transparency", 127);	
+	fShowTitle 			= message.GetBool("ShowTitle", true);
+	fShowAuthorName		= message.GetBool("ShowAuthorName", true);
+	fShowAuthorAvatar	= message.GetBool("ShowAuthorAvatar", true);
+	
+	return B_OK;
 }
 
 void
@@ -57,7 +65,6 @@ Settings::NotifyUpdates()
 
 	BMessage message(SettingsAction::Updated);
 	fMessenger->SendMessage(&message);
-	printf("NotifyUpdates\n");
 }
 	
 status_t
@@ -75,6 +82,14 @@ Settings::Save(BMessage &message)
 		message.AddBool("ShowTitle", ShowTitle());
 	}
 	
+	if (message.ReplaceUInt8("ShowAuthorName", ShowAuthorName()) != B_OK) {
+		message.AddBool("ShowAuthorName", ShowAuthorName());
+	}
+	
+	if (message.ReplaceUInt8("ShowAuthorAvatar", ShowAuthorAvatar()) != B_OK) {
+		message.AddBool("ShowAuthorAvatar", ShowAuthorAvatar());
+	}
+	
 	return B_OK;
 }
 	
@@ -82,6 +97,20 @@ void
 Settings::SetShowTitle(bool value) 
 {
 	fShowTitle = value;
+	NotifyUpdates();
+}
+
+void 
+Settings::SetShowAuthorName(bool value) 
+{
+	fShowAuthorName = value;
+	NotifyUpdates();
+}
+
+void 
+Settings::SetShowAuthorAvatar(bool value)
+{
+	fShowAuthorAvatar = value;
 	NotifyUpdates();
 }
 
@@ -107,6 +136,18 @@ bool
 Settings::ShowTitle() const 
 {
 	return fShowTitle;
+}
+
+bool
+Settings::ShowAuthorName() const 
+{
+	return fShowAuthorName;
+}
+
+bool
+Settings::ShowAuthorAvatar() const 
+{
+	return fShowAuthorAvatar;
 }
 
 uint8 
