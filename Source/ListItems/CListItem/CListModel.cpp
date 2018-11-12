@@ -6,22 +6,24 @@
 
 #include "CListModel.h"
 
-CListModel::CListModel(const GithubIssue &issue)
+CListModel::CListModel(const GithubIssue issue,const Settings settings)
 	:fTitle(issue.title)
 	,fBody(issue.body)
 	,fUrl(issue.url)
 	,fAuthor(issue.author)
 	,fAuthorUrl(issue.authorUrl)
+	,fSettings(settings)
 {
 
 }
 
-CListModel::CListModel(const GithubCommit &commit)
+CListModel::CListModel(const GithubCommit commit,const Settings settings)
 	:fTitle(commit.title)
 	,fBody(commit.body)
 	,fUrl(commit.url)
 	,fAuthor(commit.author)
 	,fAuthorUrl(commit.authorUrl)
+	,fSettings(settings)
 {
 
 }
@@ -54,4 +56,10 @@ BString
 CListModel::AuthorUrl() const
 {
 	return fAuthorUrl;
+}
+
+const Settings
+CListModel::CurrentSettings() const 
+{
+	return fSettings;
 }
