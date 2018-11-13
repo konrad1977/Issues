@@ -158,7 +158,6 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 	fHeight = MAX(titleHeight, authorHeight);
 
 	font = be_plain_font;
-	//font.SetSize(12);
 	frame.OffsetBy(0, fHeight);
 
 	fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);
