@@ -28,6 +28,9 @@ public:
 	status_t Save(BMessage &message);
 	
 	void SetShowTitle(bool value);
+	void SetShowAuthorName(bool value);
+	void SetShowAuthorAvatar(bool value);
+	
 	void SetTransparency(uint8 value);
 	void SetRefreshRate(uint8 value);
 
@@ -35,12 +38,16 @@ public:
 	uint8 RefreshRate() const;
 	
 	bool ShowTitle() const;
+	bool ShowAuthorName() const;
+	bool ShowAuthorAvatar() const;
 
 private:
 
 	void NotifyUpdates();
 
 	bool				fShowTitle;
+	bool				fShowAuthorName;
+	bool				fShowAuthorAvatar;
 	uint8				fRefreshrate;
 	uint8 				fTransparency;
 	BMessenger			*fMessenger;

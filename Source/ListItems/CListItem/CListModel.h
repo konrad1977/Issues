@@ -9,25 +9,30 @@
 #include <SupportDefs.h>
 #include "GithubIssue.h"
 #include "GithubCommit.h"
+#include "Settings.h"
 
 class CListModel {
 public:
-	CListModel(const GithubIssue &issue);
-	CListModel(const GithubCommit &issue);
-	
 
+	CListModel(const GithubIssue issue, Settings* settings);
+	CListModel(const GithubCommit issue, Settings* settings);
+	
 	BString Title() const;
 	BString Body() const;
 	BString Url() const;
 	BString Author() const;
 	BString AuthorUrl() const;
 	
+	bool ShowAuthorName() const;
+	bool ShowAuthorAvatar() const;
+		
 private:
 	BString fTitle;
 	BString fBody;
 	BString fUrl;
 	BString fAuthor;
 	BString fAuthorUrl;
+	Settings *fSettings;
 };
 
 

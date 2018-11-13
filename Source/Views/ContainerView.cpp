@@ -290,7 +290,7 @@ ContainerView::HandleListInvoke(BMessage *message)
 			return;
 		}
 
-		const char *url = listItem->CurrentModel().Url().String();
+		const char *url = listItem->CurrentModel()->Url().String();
 		if (strlen(url) > 10 ) {
 			be_roster->Launch("text/html", 1, const_cast<char **>(&url));
 		}
