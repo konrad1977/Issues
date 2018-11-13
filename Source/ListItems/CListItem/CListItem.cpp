@@ -17,7 +17,7 @@
 #include <interface/Screen.h>
 #include <posix/stdio.h>
 
-CListItem::CListItem(CListModel model, bool isReplicant)
+CListItem::CListItem(const CListModel *model, bool isReplicant)
 	:BListItem()
 	,fMultiLineTextDrawer(nullptr)
 	,fListColorManager(nullptr)
@@ -34,9 +34,10 @@ CListItem::~CListItem()
 {
 	delete fMultiLineTextDrawer;
 	delete fListColorManager;
+	delete fModel;
 }
 
-CListModel
+const CListModel*
 CListItem::CurrentModel() const
 {
 	return fModel;
@@ -98,14 +99,14 @@ CListItem::DrawIcon(BListView *parent, BRect rect)
 		return;
 	}
 
-	const char *url = fModel.AuthorUrl().String();
+	const char *url = fModel->AuthorUrl().String();
 
 	if (url == nullptr) {
 		return;
 	}
 
 	BMallocIO buffer;
-	FileDownloader downloader(fModel.AuthorUrl());
+	FileDownloader downloader(fModel->AuthorUrl());
 
 	if (downloader.Download(&buffer) != B_OK) {
 		return;
@@ -131,11 +132,11 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 	rgb_color textColor = fListColorManager->TextColor();
 	fMultiLineTextDrawer->SetTextColor(textColor);
 
-	const char *author = fModel.Author().String();
+	const char *author = fModel->Author().String();
 	float authorWidth = font.StringWidth(author);
 	BRect titleFrame = frame;
 	titleFrame.right -= authorWidth;
-	float titleHeight = fMultiLineTextDrawer->DrawString(titleFrame, fModel.Title().String(), &font, enableOutput);
+	float titleHeight = fMultiLineTextDrawer->DrawString(titleFrame, fModel->Title().String(), &font, enableOutput);
 
 	font = be_plain_font;
 	font.SetSize(10);
@@ -153,7 +154,7 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 	frame.OffsetBy(0, fHeight);
 
 	fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);
-	fHeight += fMultiLineTextDrawer->DrawString(frame, fModel.Body().String(), &font, enableOutput);
+	fHeight += fMultiLineTextDrawer->DrawString(frame, fModel->Body().String(), &font, enableOutput);
 	fHeight += 20;
 }
 

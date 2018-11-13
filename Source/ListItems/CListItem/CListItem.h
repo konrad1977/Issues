@@ -16,13 +16,13 @@ class BListView;
 class BBitmap;
 class CListItem : public BListItem {
 public:
-	CListItem(CListModel model, bool isReplicant);
+	CListItem(const CListModel *model, bool isReplicant);
 	~CListItem();
 
 	virtual void DrawItem(BView *view, BRect rect, bool complete = true);
 	virtual void Update(BView *view, const BFont *font);
 			void SetTransparency(uint8 value);
-	CListModel CurrentModel() const;
+	const CListModel* CurrentModel() const;
 
 private:
 			void DrawBackground(BListView *parent, BRect frame, bool tint);
@@ -31,7 +31,7 @@ private:
 
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
 	ColorManager			*fListColorManager;
-	CListModel				fModel;
+	const CListModel		*fModel;
 	float 					fHeight;
 	float					fPreviousHeight;
 	bool					fIsReplicant;

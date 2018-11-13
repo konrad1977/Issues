@@ -14,8 +14,8 @@
 class CListModel {
 public:
 
-	CListModel(const GithubIssue issue, const Settings settings);
-	CListModel(const GithubCommit issue, const Settings settings);
+	CListModel(const GithubIssue issue, Settings* settings);
+	CListModel(const GithubCommit issue, Settings* settings);
 	
 	BString Title() const;
 	BString Body() const;
@@ -23,7 +23,7 @@ public:
 	BString Author() const;
 	BString AuthorUrl() const;
 	
-	const Settings CurrentSettings() const; 
+	Settings* CurrentSettings() const; 
 	
 private:
 	BString fTitle;
@@ -31,7 +31,7 @@ private:
 	BString fUrl;
 	BString fAuthor;
 	BString fAuthorUrl;
-	Settings fSettings;
+	Settings *fSettings;
 };
 
 

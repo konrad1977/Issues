@@ -6,7 +6,7 @@
 
 #include "CListModel.h"
 
-CListModel::CListModel(const GithubIssue issue,const Settings settings)
+CListModel::CListModel(const GithubIssue issue, Settings *settings)
 	:fTitle(issue.title)
 	,fBody(issue.body)
 	,fUrl(issue.url)
@@ -17,7 +17,7 @@ CListModel::CListModel(const GithubIssue issue,const Settings settings)
 
 }
 
-CListModel::CListModel(const GithubCommit commit,const Settings settings)
+CListModel::CListModel(const GithubCommit commit, Settings *settings)
 	:fTitle(commit.title)
 	,fBody(commit.body)
 	,fUrl(commit.url)
@@ -58,7 +58,7 @@ CListModel::AuthorUrl() const
 	return fAuthorUrl;
 }
 
-const Settings
+Settings*
 CListModel::CurrentSettings() const 
 {
 	return fSettings;
