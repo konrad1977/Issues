@@ -16,7 +16,7 @@ Repository::Repository()
 	,fRepository(nullptr)
 	,fSettings(nullptr)
 {
-
+	fSettings = new Settings();
 }
 
 Repository::Repository(BMessage &message)
@@ -38,8 +38,9 @@ status_t
 Repository::Save(BMessage &message)
 {
 	fRepository->Save(message);
-	fSettings->Save(message);
 
+	fSettings->Save(message);
+	
 	if (message.ReplaceBool("ManuallyAdded", fIsManuallyAdded) != B_OK) {
 		message.AddBool("ManuallyAdded", fIsManuallyAdded);
 	}
