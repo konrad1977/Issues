@@ -77,9 +77,13 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 
 	bool tint = index % 2 == 1;
 	DrawBackground(parent, frame, tint);
+	
+	if (fModel->ShowAuthorAvatar()) {
+		DrawIcon(parent, frame);
+	}
+	
 	parent->SetDrawingMode(B_OP_OVER);
 	DrawIssue(frame, true);
-	DrawIcon(parent, frame);
 	
 	parent->FrameResized(frame.Width(), frame.Height());
 }
@@ -127,7 +131,6 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 {
 	BRect frame = rect;
 	BFont font(be_bold_font);
-	font.SetSize(13.0);
 
 	rgb_color textColor = fListColorManager->TextColor();
 	fMultiLineTextDrawer->SetTextColor(textColor);
@@ -138,19 +141,24 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 	titleFrame.right -= authorWidth;
 	float titleHeight = fMultiLineTextDrawer->DrawString(titleFrame, fModel->Title().String(), &font, enableOutput);
 
-	font = be_plain_font;
-	font.SetSize(10);
+	float authorHeight = 0.0f;
+	
+	if (fModel->ShowAuthorName()) {
+		font = be_plain_font;
+		const float size = font.Size();
+		font.SetSize(size * 0.8);
 
-	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
-	fMultiLineTextDrawer->SetAlignment(B_ALIGN_RIGHT);
-	BRect authorFrame = frame;
-	float authorHeight = fMultiLineTextDrawer->DrawString(authorFrame.OffsetBySelf(-26.0f, 0), author, &font, enableOutput);
-	fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
-
+		fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
+		fMultiLineTextDrawer->SetAlignment(B_ALIGN_RIGHT);
+		BRect authorFrame = frame;
+		authorHeight = fMultiLineTextDrawer->DrawString(authorFrame.OffsetBySelf(fIcon ? -26.0f : 0.0f, 0), author, &font, enableOutput);
+		fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
+	}
+	
 	fHeight = MAX(titleHeight, authorHeight);
 
 	font = be_plain_font;
-	font.SetSize(12);
+	//font.SetSize(12);
 	frame.OffsetBy(0, fHeight);
 
 	fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);

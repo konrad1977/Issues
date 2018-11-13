@@ -58,8 +58,14 @@ CListModel::AuthorUrl() const
 	return fAuthorUrl;
 }
 
-Settings*
-CListModel::CurrentSettings() const 
+bool
+CListModel::ShowAuthorName() const 
 {
-	return fSettings;
+	return fSettings->ShowAuthorName();
+}
+
+bool
+CListModel::ShowAuthorAvatar() const 
+{
+	return fSettings->ShowAuthorAvatar();
 }

@@ -23,8 +23,9 @@ public:
 	BString Author() const;
 	BString AuthorUrl() const;
 	
-	Settings* CurrentSettings() const; 
-	
+	bool ShowAuthorName() const;
+	bool ShowAuthorAvatar() const;
+		
 private:
 	BString fTitle;
 	BString fBody;
