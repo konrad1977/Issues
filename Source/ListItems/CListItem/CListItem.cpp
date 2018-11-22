@@ -17,6 +17,8 @@
 #include <interface/Screen.h>
 #include <posix/stdio.h>
 
+#include <Mime.h> //B_ICON_SIZE
+
 CListItem::CListItem(const CListModel *model, bool isReplicant)
 	:BListItem()
 	,fMultiLineTextDrawer(nullptr)
@@ -47,7 +49,7 @@ void
 CListItem::DrawBackground(BListView *parent, BRect frame, bool tint)
 {
 	rgb_color backgroundColor = fListColorManager->BackgroundColor();
-	
+
 	if (fIsReplicant || tint == false) {
 		parent->SetHighColor(backgroundColor);
 	} else {
@@ -77,14 +79,14 @@ CListItem::DrawItem(BView *view, BRect rect, bool complete)
 
 	bool tint = index % 2 == 1;
 	DrawBackground(parent, frame, tint);
-	
+
 	if (fModel->ShowAuthorAvatar()) {
 		DrawIcon(parent, frame);
 	}
-	
+
 	parent->SetDrawingMode(B_OP_OVER);
 	DrawIssue(frame, true);
-	
+
 	parent->FrameResized(frame.Width(), frame.Height());
 }
 
@@ -92,7 +94,7 @@ void
 CListItem::DrawIcon(BListView *parent, BRect rect)
 {
 	BRect r(rect);
-	const float SIZE = 24;
+	const float SIZE = IconSize(parent);
 	r.left = r.right - SIZE;
 	r.bottom = r.top + SIZE;
 
@@ -142,7 +144,7 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 	float titleHeight = fMultiLineTextDrawer->DrawString(titleFrame, fModel->Title().String(), &font, enableOutput);
 
 	float authorHeight = 0.0f;
-	
+
 	if (fModel->ShowAuthorName()) {
 		font = be_plain_font;
 		const float size = font.Size();
@@ -154,7 +156,7 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 		authorHeight = fMultiLineTextDrawer->DrawString(authorFrame.OffsetBySelf(fIcon ? -26.0f : 0.0f, 0), author, &font, enableOutput);
 		fMultiLineTextDrawer->SetTextColor(tint_color(textColor, B_DARKEN_1_TINT));
 	}
-	
+
 	fHeight = MAX(titleHeight, authorHeight);
 
 	font = be_plain_font;
@@ -164,6 +166,16 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 	fHeight += fMultiLineTextDrawer->DrawString(frame, fModel->Body().String(), &font, enableOutput);
 	fHeight += 20;
 }
+
+
+int32
+CListItem::IconSize(BListView* parent) const
+{
+	static int32 sIconSize = std::max((int32)B_MINI_ICON,
+		(int32)ceilf(B_MINI_ICON * be_plain_font->Size() / 12));
+	return sIconSize;
+}
+
 
 void
 CListItem::SetTransparency(uint8 transparency)
