@@ -28,6 +28,7 @@ private:
 			void DrawBackground(BListView *parent, BRect frame, bool tint);
 			void DrawIssue(BRect frame, bool disableOutput);
 			void DrawIcon(BListView *parent, BRect rect);
+			int32 IconSize(BListView* parent) const;
 
 	MultiLineTextDrawer 	*fMultiLineTextDrawer;
 	ColorManager			*fListColorManager;
