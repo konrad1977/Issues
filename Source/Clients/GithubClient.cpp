@@ -24,14 +24,17 @@
 GithubClient::GithubClient(BHandler *handler)
 	:fHandler(handler)
 	,fMessenger(nullptr)
+	,fSettingsManager(nullptr)
 {
 	SetTarget(handler);
+	fSettingsManager = new SettingsManager(SettingsManagerType::GithubToken);
 	LoadToken();
 }
 
 GithubClient::~GithubClient()
 {
 	delete fMessenger;
+	delete fSettingsManager;
 }
 
 void
@@ -46,17 +49,15 @@ GithubClient::SaveToken(const char *token)
 {
 	BMessage message;
 	message.AddString("Token", BString(token));
-	SettingsManager manager(SettingsManagerType::GithubToken);
-	manager.SaveSettings(message);
-	LoadToken();
+	fSettingsManager->SaveSettings(message);
+	//LoadToken();
 }
 
 void
 GithubClient::LoadToken()
 {
 	BMessage message;
-	SettingsManager manager(SettingsManagerType::GithubToken);
-	manager.LoadSettings(message);
+	fSettingsManager->LoadSettings(message);
 	if (message.FindString("Token", &fToken) == B_OK) {
 		InitHeaders();
 		BMessage msg(kTokenLoadedMessage);

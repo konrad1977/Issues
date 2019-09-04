@@ -24,7 +24,7 @@ public:
 	SettingsManager(SettingsManagerType type);
 	~SettingsManager();
 
-	void StartMonitoring(BHandler *handler);
+	status_t StartMonitoring(BHandler *handler);
 
 	status_t LoadSettings(BMessage &message);
 	status_t SaveSettings(BMessage message);
@@ -32,7 +32,6 @@ public:
 private:
 
 			void SaveWithLock(BMessage *message);
-	const char*  SavePath() const;
 
 	BString fFileName;
 	BLocker *fLocker;

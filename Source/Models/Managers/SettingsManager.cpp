@@ -44,18 +44,37 @@ SettingsManager::~SettingsManager()
 	delete fLocker;
 }
 
-void
+status_t
 SettingsManager::StartMonitoring(BHandler *handler)
 {
+	BPath path;
+    status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status != B_OK) {
+		return status;
+    }
+
+    status = path.Append(fFileName.String());
+    if (status != B_OK) {
+        return status;
+    }
+
 	BNode node;
-	node.SetTo( SavePath() );
+	status = node.SetTo(path.Path());
+
+    if (status != B_OK) {
+        return status;
+    }
 
 	node_ref ref;
 	node.GetNodeRef( &ref );
 
-	if (node.InitCheck() == B_OK) {
-		watch_node(&ref, B_WATCH_ALL, handler );
-	}
+    status = node.InitCheck();
+    if (status != B_OK) {
+        return status;
+    }
+
+    watch_node(&ref, B_WATCH_ALL, handler );
+    return B_OK;
 }
 
 void
@@ -66,47 +85,53 @@ SettingsManager::SaveWithLock(BMessage *message)
 	fLocker->Unlock();
 }
 
-const char *
-SettingsManager::SavePath() const
-{
-	BPath path;
-
-	if (find_directory(B_USER_SETTINGS_DIRECTORY, &path) != B_OK) {
-		return NULL;
-	}
-
-	path.Append(fFileName.String());
-	return path.Path();
-}
-
 status_t
 SettingsManager::SaveSettings(BMessage message)
 {
-	BFile file;
-	file.SetTo(SavePath(), B_WRITE_ONLY | B_ERASE_FILE | B_CREATE_FILE);
+	BPath path;
+    status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status != B_OK) {
+		return status;
+    }
 
-	if (file.InitCheck() != B_OK) {
-		return B_ERROR;
-	}
+    status = path.Append(fFileName.String());
+    if (status != B_OK) {
+        return status;
+    }
 
-	if (message.Flatten(&file) != B_OK) {
-		return B_ERROR;
-	}
-	return B_OK;
+	BFile file(path.Path(), B_WRITE_ONLY | B_ERASE_FILE | B_CREATE_FILE);
+
+    status = file.InitCheck();
+    if (status != B_OK) {
+        return status;
+    }
+
+    return message.Flatten(&file);
 }
 
 status_t
 SettingsManager::LoadSettings(BMessage &message)
 {
-	BFile file;
+	BPath path;
+    status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status != B_OK) {
+		return status;
+    }
 
-	file.SetTo(SavePath(), B_READ_ONLY);
-	if (file.InitCheck() != B_OK) {
-		return B_ERROR;
-	}
+    status = path.Append(fFileName.String());
+    if (status != B_OK) {
+        return status;
+    }
 
-	if (message.Unflatten(&file) != B_OK) {
-		return B_ERROR;
+	BFile file(path.Path(), B_READ_ONLY);
+	status = file.InitCheck();
+    if (status != B_OK) {
+        return status;
+    }
+
+    status = message.Unflatten(&file);
+	if (status != B_OK) {
+		return status;
 	}
 	return B_OK;
 }

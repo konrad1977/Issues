@@ -12,6 +12,7 @@
 
 class NetRequester;
 class BMessenger;
+class SettingsManager;
 class GithubClient {
 public:
 	GithubClient(BHandler *handler);
@@ -32,10 +33,12 @@ private:
 		BString CreateQuery(const BString &query) const;
 		void RunRequest(NetRequester *requester, BString body);
 
+
 	BHttpHeaders 	fRequestHeaders;
 	BString 		fToken;
 	BHandler 		*fHandler;
 	BMessenger		*fMessenger;
+	SettingsManager *fSettingsManager;
 };
 
 #endif // _H
