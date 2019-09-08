@@ -8,6 +8,7 @@
 #include "RepositoryWindow.h"
 
 #include <posix/stdio.h>
+#include <AboutWindow.h>
 
 const char *kAppSignature = "application/x-vnd.konradsson-Issues";
 
@@ -22,6 +23,16 @@ App::App(void)
 App::~App()
 {
 
+}
+
+void
+App::AboutRequested()  {
+
+	BAboutWindow* window = new BAboutWindow("Issues", kAppSignature);
+	window->AddCopyright(2019, "Mikael Konradsson");
+	window->AddDescription("Simple application for viewing Issues and commits from Github. Can be added to your desktop as replicants.");
+	window->AddExtraInfo("Distributed on MIT license terms.");
+	window->Show();
 }
 
 int main() {
