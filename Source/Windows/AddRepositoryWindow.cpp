@@ -86,17 +86,19 @@ AddRepositoryWindow::SetupViews()
 	SetLayout(group);
 
 	fAddButton = new BButton("AddRepository", "Add repository", new BMessage(kRepositoryAdded));
+	fAddButton->MakeDefault(true);
 
-	fRepositoryName = new BTextControl("Repository name", B_TRANSLATE("Repository name:"), "", nullptr);
-	fRepositoryOwner = new BTextControl("Repository owner", B_TRANSLATE("Repository owner:"), "", nullptr);
+	fRepositoryName = new BTextControl("Repository name", B_TRANSLATE("Name:"), "", nullptr);
+	fRepositoryOwner = new BTextControl("Repository owner", B_TRANSLATE("Owner:"), "", nullptr);
 
 	BLayoutBuilder::Group<>(this, B_HORIZONTAL)
-		.SetExplicitMinSize(BSize(400, 80))
-		.SetInsets(10,10,10,10)
-		.AddGroup(B_VERTICAL)
-			.Add(fRepositoryName)
-			.Add(fRepositoryOwner)
-		.End()
+		.SetInsets(10, 10, 10, 10)
+		.Add(BGridLayoutBuilder(10, 10)
+			.Add(fRepositoryName->CreateLabelLayoutItem(), 0, 1)
+			.Add(fRepositoryName->CreateTextViewLayoutItem(), 1, 1)
+			.Add(fRepositoryOwner->CreateLabelLayoutItem(), 0, 2)
+			.Add(fRepositoryOwner->CreateTextViewLayoutItem(), 1, 2)
+		)
 		.AddGroup(B_VERTICAL)
 			.AddGlue()
 			.Add(fAddButton)

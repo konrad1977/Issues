@@ -71,6 +71,7 @@ GithubTokenWindow::InitLayout()
 
 	BButton *createButton = new BButton("Save", "Save", new BMessage(kGithubTokenSaveMessage));
 	createButton->SetTarget(this);
+	createButton->MakeDefault(true);
 
 	BLayoutBuilder::Group<>(this, B_HORIZONTAL)
 		.SetExplicitMinSize(BSize(700, 40))
