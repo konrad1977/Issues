@@ -157,8 +157,6 @@ ContainerView::Resize()
 	float height;
 	fListView->GetPreferredSize(&width, &height);
 
-	printf("prefferedSize (%f %f)\n", width, height);
-	
 	fListView->SetExplicitMinSize(BSize(320, height < 420 ? height : 420));
 
 	if (fIsReplicant) {
@@ -188,7 +186,9 @@ ContainerView::MessageReceived(BMessage *message)
 	switch (message->what) {
 
 		case B_NETWORK_MONITOR: {
+
 			if (IsConnected() == false) {
+				StartNetworkMonitoring();
 				return;
 			}
 			SpawnDownloadThread();
@@ -198,6 +198,12 @@ ContainerView::MessageReceived(BMessage *message)
 		}
 
 		case B_NODE_MONITOR: {
+
+			if (IsConnected() == false) {
+				StartNetworkMonitoring();
+				return;
+			}
+
 			ReloadRepositoryData();
 			SpawnDownloadThread();
 			break;
@@ -331,6 +337,7 @@ ContainerView::SetupViews(bool isReplicant)
 void
 ContainerView::StartNetworkMonitoring()
 {
+	StopDownloadThread();
 	start_watching_network(B_WATCH_NETWORK_INTERFACE_CHANGES | B_WATCH_NETWORK_LINK_CHANGES, this);
 }
 

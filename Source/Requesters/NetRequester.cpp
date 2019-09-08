@@ -49,7 +49,7 @@ NetRequester::HandleData(BString data)
 	} else {
 		BMessage message(NetRequesterAction::DataReceived);
 		message.AddMessage(fCallerName, &parsedData);
-		fMessenger->SendMessage(&message);	
+		fMessenger->SendMessage(&message);
 	}
 }
 
@@ -61,8 +61,7 @@ NetRequester::RequestCompleted(BUrlRequest* caller, bool success)
 		fMessenger->SendMessage(&message);
 		return;
 	}
-	
-	BString jsonString;
-	jsonString.SetTo(static_cast<const char*>(fResponseData.Buffer()), fResponseData.BufferLength());
+
+	BString jsonString(static_cast<const char*>(fResponseData.Buffer()), fResponseData.BufferLength());
 	HandleData(jsonString);
 }
