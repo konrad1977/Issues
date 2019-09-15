@@ -14,6 +14,7 @@
 
 #include <locale/Catalog.h>
 
+#include <Application.h>
 #include <interface/MenuBar.h>
 #include <interface/MenuItem.h>
 #include <interface/StringItem.h>
@@ -95,6 +96,11 @@ ContainerWindow::MessageReceived(BMessage *message)
 	switch(message->what) {
 		case Actions::SHOW_SETTINGS_WINDOW: {
 			CurrentSettingsWindow()->Show();
+			break;
+		}
+
+		case B_ABOUT_REQUESTED: {
+			be_app->PostMessage(B_ABOUT_REQUESTED);
 			break;
 		}
 

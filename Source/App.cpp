@@ -16,8 +16,7 @@ App::App(void)
 	:BApplication(kAppSignature)
 	,fRepositoryWindow(nullptr)
 {
-	fRepositoryWindow = new RepositoryWindow();
-	fRepositoryWindow->Show();
+
 }
 
 App::~App()
@@ -26,8 +25,15 @@ App::~App()
 }
 
 void
-App::AboutRequested()  {
+App::ReadyToRun()
+{
+	fRepositoryWindow = new RepositoryWindow();
+	fRepositoryWindow->Show();
+}
 
+void
+App::AboutRequested()
+{
 	BAboutWindow* window = new BAboutWindow("Issues", kAppSignature);
 	window->AddCopyright(2019, "Mikael Konradsson");
 	window->AddDescription("Simple application for viewing Issues and commits from Github. Can be added to your desktop as replicants.");
@@ -35,7 +41,8 @@ App::AboutRequested()  {
 	window->Show();
 }
 
-int main() {
+int main()
+{
 	App app;
 	app.Run();
 	return 0;

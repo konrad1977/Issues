@@ -15,6 +15,7 @@ public:
 	~App();
 
 	virtual void AboutRequested();
+	virtual	void ReadyToRun();
 private:
 	RepositoryWindow *fRepositoryWindow;
 };
