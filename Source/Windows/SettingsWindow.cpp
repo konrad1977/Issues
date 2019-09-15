@@ -32,6 +32,7 @@ SettingsWindow::SettingsWindow(Repository *repository)
 	,fShowTitleCheckbox(nullptr)
 	,fShowAuthorName(nullptr)
 	,fShowAuthorAvatar(nullptr)
+	,fHideDescription(nullptr)
 	,fRepository(repository)
 {
 	InitLayout();
@@ -77,17 +78,18 @@ SettingsWindow::InitSavedValues()
 	if (settings == nullptr) {
 		return;
 	}
-		
+
 	const uint8 transparency = settings->Transparency();
 	const uint8 refreshRate = settings->RefreshRate();
-		
+
 	fTransparencySlider->SetValue(static_cast<int32>(transparency));
 	fRefreshRateSlider->SetValue(static_cast<int32>(refreshRate));
 
 	fShowTitleCheckbox->SetValue(settings->ShowTitle());
 	fShowAuthorName->SetValue(settings->ShowAuthorName());
 	fShowAuthorAvatar->SetValue(settings->ShowAuthorAvatar());
-	
+	fHideDescription->SetValue(settings->HideDescription());
+
 	UpdateTransparencyLabel(transparency);
 	UpdateRefrehLabel(refreshRate);
 }
@@ -115,10 +117,11 @@ SettingsWindow::InitLayout()
 	SetLayout(groupLayout);
 
 	fTransparencyLabel = B_TRANSLATE("Replicant transparency");
-	
+
 	fShowTitleCheckbox = new BCheckBox("Title", B_TRANSLATE("Title"), new BMessage(Action::ShowTitleChanged));
 	fShowAuthorName = new BCheckBox("AuthorName", B_TRANSLATE("Author name"), new BMessage(Action::ShowAuthorNameChanged));
 	fShowAuthorAvatar = new BCheckBox("Avatar", B_TRANSLATE("Author avatar"), new BMessage(Action::ShowAuthorAvatarChanged));
+	fHideDescription = new BCheckBox("Avatar", B_TRANSLATE("Hide description"), new BMessage(Action::HideDescriptionChanged));
 
 	fTransparencySlider = new BSlider("Transparency", fTransparencyLabel.String(), new BMessage(Action::TransparencyChanged), 0, 255, B_HORIZONTAL);
 	fTransparencySlider->SetModificationMessage(new BMessage(Action::TransparancyModified));
@@ -134,18 +137,19 @@ SettingsWindow::InitLayout()
 		.AddStrut(B_USE_ITEM_SPACING)
 		.SetInsets(B_USE_ITEM_SPACING,B_USE_ITEM_SPACING)
 		.Add(fShowAuthorName)
-		.Add(fShowAuthorAvatar);
+		.Add(fShowAuthorAvatar)
+		.Add(fHideDescription);
 
 	BBox *sliderBox = new BBox("SliderBox");
 	sliderBox->SetLabel(B_TRANSLATE("Alpha/Refresh"));
 
 	BLayoutBuilder::Group<>(sliderBox, B_VERTICAL, 0)
-		.AddStrut(B_USE_ITEM_SPACING)		
+		.AddStrut(B_USE_ITEM_SPACING)
 		.SetInsets(B_USE_ITEM_SPACING,B_USE_ITEM_SPACING)
 		.Add(fShowTitleCheckbox)
 		.Add(fTransparencySlider)
 		.Add(fRefreshRateSlider);
-	
+
 	BGroupLayout *settingsGroup = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetExplicitMinSize(BSize(400, 40))
 		.SetInsets(B_USE_ITEM_SPACING,B_USE_ITEM_SPACING)
@@ -189,16 +193,22 @@ SettingsWindow::MessageReceived(BMessage *message)
 			fRepository->CurrentSettings()->SetShowTitle(checked);
 			break;
 		}
-		
+
 		case Action::ShowAuthorNameChanged: {
 			bool checked = fShowAuthorName->Value();
 			fRepository->CurrentSettings()->SetShowAuthorName(checked);
 			break;
 		}
-		
+
 		case Action::ShowAuthorAvatarChanged: {
 			bool checked = fShowAuthorAvatar->Value();
 			fRepository->CurrentSettings()->SetShowAuthorAvatar(checked);
+			break;
+		}
+
+		case Action::HideDescriptionChanged: {
+			bool checked = fHideDescription->Value();
+			fRepository->CurrentSettings()->SetHideDescription(checked);
 			break;
 		}
 

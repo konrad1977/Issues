@@ -23,23 +23,25 @@ public:
 	~Settings();
 
 	void SetTarget(BHandler *handler);
-	
+
 	status_t Load(BMessage &message);
 	status_t Save(BMessage &message);
-	
+
 	void SetShowTitle(bool value);
 	void SetShowAuthorName(bool value);
 	void SetShowAuthorAvatar(bool value);
-	
+	void SetHideDescription(bool value);
+
 	void SetTransparency(uint8 value);
 	void SetRefreshRate(uint8 value);
 
 	uint8 Transparency() const;
 	uint8 RefreshRate() const;
-	
+
 	bool ShowTitle() const;
 	bool ShowAuthorName() const;
 	bool ShowAuthorAvatar() const;
+	bool HideDescription() const;
 
 private:
 
@@ -48,6 +50,7 @@ private:
 	bool				fShowTitle;
 	bool				fShowAuthorName;
 	bool				fShowAuthorAvatar;
+	bool				fHideDescription;
 	uint8				fRefreshrate;
 	uint8 				fTransparency;
 	BMessenger			*fMessenger;

@@ -16,16 +16,17 @@ public:
 
 	CListModel(const GithubIssue issue, Settings* settings);
 	CListModel(const GithubCommit issue, Settings* settings);
-	
+
 	BString Title() const;
 	BString Body() const;
 	BString Url() const;
 	BString Author() const;
 	BString AuthorUrl() const;
-	
+
 	bool ShowAuthorName() const;
 	bool ShowAuthorAvatar() const;
-		
+	bool ShowDescription() const;
+
 private:
 	BString fTitle;
 	BString fBody;

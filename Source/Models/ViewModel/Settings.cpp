@@ -13,6 +13,7 @@ Settings::Settings()
 	:fShowTitle(true)
 	,fShowAuthorName(true)
 	,fShowAuthorAvatar(true)
+	,fHideDescription(false)
 	,fRefreshrate(60)
 	,fTransparency(127)
 	,fMessenger(nullptr)
@@ -24,6 +25,7 @@ Settings::Settings(BMessage message)
 	:fShowTitle(true)
 	,fShowAuthorName(true)
 	,fShowAuthorAvatar(true)
+	,fHideDescription(false)
 	,fRefreshrate(60)
 	,fTransparency(127)
 	,fMessenger(nullptr)
@@ -36,7 +38,7 @@ Settings::~Settings()
 	delete fMessenger;
 }
 
-void 
+void
 Settings::SetTarget(BHandler *handler)
 {
 	delete fMessenger;
@@ -44,15 +46,17 @@ Settings::SetTarget(BHandler *handler)
 }
 
 
-status_t 
+status_t
 Settings::Load(BMessage &message)
 {
 	fRefreshrate 		= message.GetUInt8("Refreshrate", 60);
-	fTransparency 		= message.GetUInt8("Transparency", 127);	
+	fTransparency 		= message.GetUInt8("Transparency", 127);
 	fShowTitle 			= message.GetBool("ShowTitle", true);
 	fShowAuthorName		= message.GetBool("ShowAuthorName", true);
 	fShowAuthorAvatar	= message.GetBool("ShowAuthorAvatar", true);
-	
+	fHideDescription	= message.GetBool("HideDescription", false);
+
+
 	return B_OK;
 }
 
@@ -66,7 +70,7 @@ Settings::NotifyUpdates()
 	BMessage message(SettingsAction::Updated);
 	fMessenger->SendMessage(&message);
 }
-	
+
 status_t
 Settings::Save(BMessage &message)
 {
@@ -77,45 +81,56 @@ Settings::Save(BMessage &message)
 	if (message.ReplaceUInt8("Transparency", Transparency()) != B_OK) {
 		message.AddUInt8("Transparency", Transparency());
 	}
-	
+
 	if (message.ReplaceUInt8("ShowTitle", ShowTitle()) != B_OK) {
 		message.AddBool("ShowTitle", ShowTitle());
 	}
-	
+
 	if (message.ReplaceUInt8("ShowAuthorName", ShowAuthorName()) != B_OK) {
 		message.AddBool("ShowAuthorName", ShowAuthorName());
 	}
-	
+
 	if (message.ReplaceUInt8("ShowAuthorAvatar", ShowAuthorAvatar()) != B_OK) {
 		message.AddBool("ShowAuthorAvatar", ShowAuthorAvatar());
 	}
-	
+
+	if (message.ReplaceUInt8("HideDescription", HideDescription()) != B_OK) {
+		message.AddBool("HideDescription", HideDescription());
+	}
+
 	return B_OK;
 }
-	
-void 
-Settings::SetShowTitle(bool value) 
+
+void
+Settings::SetShowTitle(bool value)
 {
 	fShowTitle = value;
 	NotifyUpdates();
 }
 
-void 
-Settings::SetShowAuthorName(bool value) 
+void
+Settings::SetShowAuthorName(bool value)
 {
 	fShowAuthorName = value;
 	NotifyUpdates();
 }
 
-void 
+void
 Settings::SetShowAuthorAvatar(bool value)
 {
 	fShowAuthorAvatar = value;
 	NotifyUpdates();
 }
 
-void 
-Settings::SetTransparency(uint8 value) 
+void
+Settings::SetHideDescription(bool value)
+{
+	fHideDescription = value;
+	NotifyUpdates();
+}
+
+void
+Settings::SetTransparency(uint8 value)
 {
 	if (fTransparency != value) {
 		fTransparency = value;
@@ -123,8 +138,8 @@ Settings::SetTransparency(uint8 value)
 	}
 }
 
-void 
-Settings::SetRefreshRate(uint8 value) 
+void
+Settings::SetRefreshRate(uint8 value)
 {
 	if (fRefreshrate != value) {
 		fRefreshrate = value;
@@ -133,31 +148,37 @@ Settings::SetRefreshRate(uint8 value)
 }
 
 bool
-Settings::ShowTitle() const 
+Settings::ShowTitle() const
 {
 	return fShowTitle;
 }
 
 bool
-Settings::ShowAuthorName() const 
+Settings::ShowAuthorName() const
 {
 	return fShowAuthorName;
 }
 
 bool
-Settings::ShowAuthorAvatar() const 
+Settings::ShowAuthorAvatar() const
 {
 	return fShowAuthorAvatar;
 }
 
-uint8 
-Settings::Transparency() const 
+bool
+Settings::HideDescription() const
+{
+	return fHideDescription;
+}
+
+uint8
+Settings::Transparency() const
 {
 	return fTransparency;
 }
 
-uint8 
-Settings::RefreshRate() const 
+uint8
+Settings::RefreshRate() const
 {
 	return fRefreshrate;
 }

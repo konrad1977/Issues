@@ -141,6 +141,8 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 	float authorWidth = font.StringWidth(author);
 	BRect titleFrame = frame;
 	titleFrame.right -= authorWidth;
+
+	fMultiLineTextDrawer->SetAlignment(B_ALIGN_LEFT);
 	float titleHeight = fMultiLineTextDrawer->DrawString(titleFrame, fModel->Title().String(), &font, enableOutput);
 
 	float authorHeight = 0.0f;
@@ -158,6 +160,11 @@ CListItem::DrawIssue(BRect rect, bool enableOutput)
 	}
 
 	fHeight = MAX(titleHeight, authorHeight);
+
+	if (fModel->ShowDescription() == false) {
+		fHeight += 20;
+		return;
+	}
 
 	font = be_plain_font;
 	frame.OffsetBy(0, fHeight);

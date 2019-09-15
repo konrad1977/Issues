@@ -36,6 +36,7 @@ private:
 	BCheckBox			*fShowTitleCheckbox;
 	BCheckBox			*fShowAuthorName;
 	BCheckBox			*fShowAuthorAvatar;
+	BCheckBox			*fHideDescription;
 	Repository			*fRepository;
 	BString 			fTransparencyLabel;
 	BString 			fRefreshLabel;
@@ -48,7 +49,8 @@ private:
 		RefreshrateModified		= 'rrmm',
 		ShowTitleChanged		= 'shtm',
 		ShowAuthorNameChanged	= 'atnm',
-		ShowAuthorAvatarChanged	= 'saac'
+		ShowAuthorAvatarChanged	= 'saac',
+		HideDescriptionChanged	= 'hidc'
 	};
 };
 

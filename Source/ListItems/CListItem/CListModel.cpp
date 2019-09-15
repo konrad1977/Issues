@@ -28,44 +28,50 @@ CListModel::CListModel(const GithubCommit commit, Settings *settings)
 
 }
 
-BString 
+BString
 CListModel::Title() const
 {
 	return fTitle;
 }
 
-BString 
+BString
 CListModel::Body() const
 {
 	return fBody;
 }
 
-BString 
+BString
 CListModel::Url() const
 {
 	return fUrl;
 }
 
-BString 
+BString
 CListModel::Author() const
 {
 	return fAuthor;
 }
 
-BString 
+BString
 CListModel::AuthorUrl() const
 {
 	return fAuthorUrl;
 }
 
 bool
-CListModel::ShowAuthorName() const 
+CListModel::ShowAuthorName() const
 {
 	return fSettings->ShowAuthorName();
 }
 
 bool
-CListModel::ShowAuthorAvatar() const 
+CListModel::ShowAuthorAvatar() const
 {
 	return fSettings->ShowAuthorAvatar();
+}
+
+bool
+CListModel::ShowDescription() const
+{
+	return fSettings->HideDescription() == false;
 }
